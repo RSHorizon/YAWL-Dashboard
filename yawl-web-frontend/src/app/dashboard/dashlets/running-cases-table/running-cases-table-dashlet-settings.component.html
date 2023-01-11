@@ -1,0 +1,46 @@
+
+<div class="section">
+	<h2>Sorting</h2>
+
+	<div class="row">
+        <mat-form-field class="yd-input-full-width">
+            <mat-select class="yd-input-full-width" placeholder="Sort column" [(ngModel)]="settings.sortColumn" name="sortColumn" required>
+                <mat-option value="specificationName">Specification</mat-option>
+                <mat-option value="numberCases">&#35; Running Cases</mat-option>
+            </mat-select>
+        </mat-form-field>
+	</div>
+
+	<div class="row">
+        <mat-form-field class="yd-input-full-width">
+            <mat-select class="yd-input-full-width" placeholder="Sort mode" [(ngModel)]="settings.sortColumnDirection" name="sortColumnDirection" required>
+                <mat-option value="ASC">Ascending</mat-option>
+                <mat-option value="DESC">Descending</mat-option>
+            </mat-select>
+        </mat-form-field>
+	</div>
+</div>
+
+
+<div class="section">
+	<h2>Selection Specifications</h2>
+
+	<div class="row">
+        <mat-form-field class="yd-input-full-width">
+            <mat-select class="yd-input-full-width" placeholder="Filter mode" [(ngModel)]="settings.selectionMode" name="selectionMode" required>
+                <mat-option value="blacklist">All except selection</mat-option>
+                <mat-option value="whitelist">Only selection</mat-option>
+            </mat-select>
+        </mat-form-field>
+	</div>
+
+	<div class="row">
+		<label>Filter selection</label>
+        <specifications-selection *ngIf="settings.selectionMode == 'blacklist'" [(specifications)]="settings.blacklistedSpecifications">
+        </specifications-selection>
+
+        <specifications-selection *ngIf="settings.selectionMode == 'whitelist'" [(specifications)]="settings.whitelistedSpecifications">
+        </specifications-selection>
+	</div>
+</div>
+

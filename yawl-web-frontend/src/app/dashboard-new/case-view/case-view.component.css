@@ -1,0 +1,31 @@
+table {
+  width: 100%;
+  margin-top: 5em;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+span{
+  font-size: 15px;
+  font-weight: normal;
+  font-family: Roboto, Helvetica, sans-serif;
+  color: #5e5e5e;
+}
+
+a{
+  text-decoration: none;
+}
+
+mat-toolbar{
+  height: 40px;
+}
+
+.statistics{
+  width: 100%
+}
+
+.grid-form{
+  width: 98%;
+}

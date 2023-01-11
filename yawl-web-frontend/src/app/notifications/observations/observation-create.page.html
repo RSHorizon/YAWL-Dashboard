@@ -1,0 +1,66 @@
+
+<default-page>
+	<div class="page-header">
+		<h1>Create Observation</h1>
+		<ul class="page-header-actions">
+			<li>
+				<button>
+					<span class="fa fa-ellipsis-v"></span>
+				</button>
+			</li>
+		</ul>
+	</div>
+
+	<div class="row">
+        <div class="card">
+            <div class="card-body with-padding">
+                <div class="row">
+                    <mat-form-field class="yd-input-full-width">
+                        <mat-select placeholder="Observation type"
+                                    [(ngModel)]="selectedType"
+                                    [disabled]="mode != 'typeSelection'"
+                                    name="observerSelection" required>
+                                    <mat-option *ngFor="let observer of observers" [value]="observer">{{observer.displayName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="row yd-form">
+                    <mat-form-field class="yd-input-full-width" floatPlaceholder="always">
+                        <input matInput
+                                placeholder="Observation title (Optional)"
+                                name="title"
+                                [(ngModel)]="title">
+                    </mat-form-field>
+                </div>
+
+                <div class="form-actions noborder" [hidden]="mode != 'typeSelection'">
+                    <button mat-raised-button color="accent" type="button" (click)="navigateToObservationListPage()">
+                        Cancel
+                    </button>
+                    <button mat-raised-button color="accent" [disabled]="!selectedType" (click)="onSelectionComplete()">
+                        Continue <span class="fa fa-send"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+	</div>
+
+	<div class="row" [hidden]="mode != 'settings'">
+		<div class="col s12">
+			<div class="card">
+				<div class="card-body with-padding">
+					<div #settingsChild></div>
+					<div class="form-actions noborder">
+						<button mat-raised-button color="accent" type="button" (click)="navigateToObservationListPage()">
+							Cancel
+						</button>
+						<button mat-raised-button color="accent" [disabled]="isLoading" (click)="onSettingsComplete()">
+							Save <span class="fa fa-send"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</default-page>

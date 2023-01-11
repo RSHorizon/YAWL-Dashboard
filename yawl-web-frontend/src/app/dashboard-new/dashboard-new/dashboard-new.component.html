@@ -1,0 +1,14 @@
+<default-page>
+  <h1>Dashboard</h1>
+  <section class="example-section">
+    <mat-radio-group [(ngModel)]="viewType">
+      <mat-radio-button value="0">
+        Operational
+      </mat-radio-button>
+      <mat-radio-button value="1">
+        Strategical
+      </mat-radio-button>
+    </mat-radio-group>
+    <app-specification-view *ngIf="isOperationalView()"></app-specification-view>
+  </section>
+</default-page>

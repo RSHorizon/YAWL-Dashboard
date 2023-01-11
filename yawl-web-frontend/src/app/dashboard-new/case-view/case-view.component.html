@@ -1,0 +1,176 @@
+<default-page>
+  <div *ngIf="errorState">
+    <h3>Error</h3>
+  </div>
+
+  <div *ngIf="!errorState">
+    <p>
+      <a href="/dashboard">
+        <mat-toolbar>
+          <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+            <fa-icon [fixedWidth]="true" [icon]="faArrowLeft"></fa-icon>
+          </button>
+          <span>Back</span>
+          <span class="spacer"></span>
+          <span [innerHTML]="specification?.uri"></span>, <span style="margin-left: .5em;"
+                                                                [innerHTML]="specification?.specversion"></span>
+        </mat-toolbar>
+      </a>
+    </p>
+
+    <section class="example-section">
+      <mat-radio-group [(ngModel)]="viewType">
+        <mat-radio-button value="0">
+          Case
+        </mat-radio-button>
+        <mat-radio-button value="1">
+          Task
+        </mat-radio-button>
+      </mat-radio-group>
+    </section>
+  </div>
+
+  <div *ngIf="!errorState && isCaseView()">
+    <h1>Cases</h1>
+    <div class="statistics">
+      <mat-grid-list rowHeight="70px" cols="6">
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Avg. completing time</mat-label>
+            <input matInput disabled value="6h">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Avg. occuring cases</mat-label>
+            <input matInput disabled value="M2 T3 W4 T3 F2 S0 S0">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Successful cases</mat-label>
+            <input matInput disabled value="38">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Resource capacity/week</mat-label>
+            <input matInput disabled value="86h">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Resource summary</mat-label>
+            <input matInput disabled value="Luisa Aldren">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile></mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Case time limit</mat-label>
+            <input matInput value="12h">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile></mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Cancelled cases</mat-label>
+            <input matInput disabled value="3">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Avg. cost/h</mat-label>
+            <input matInput value="25">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="grid-form" appearance="fill" disabled>
+            <mat-label>Avg. cost</mat-label>
+            <input matInput disabled value="2100">
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile></mat-grid-tile>
+      </mat-grid-list>
+      <p>
+        <a style="float:right" mat-raised-button (click)="openWorkitemQueueDialog()" target="_blank">Work item queue</a>
+      </p>
+    </div>
+
+
+    <table *ngIf="dataSource !== undefined" mat-table [dataSource]="dataSource" matSort
+           (matSortChange)="announceSortChange($event)"
+           class="mat-elevation-z8">
+
+      <!-- Case ID Column -->
+      <ng-container matColumnDef="caseId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by caseId">
+          Case ID
+        </th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <!-- Initiated-->
+      <ng-container matColumnDef="initiated">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification initiated">
+          Initiated
+        </th>
+        <td mat-cell *matCellDef="let element"> </td>
+      </ng-container>
+
+      <!-- Completed Column -->
+      <ng-container matColumnDef="completed">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by completed">
+          Completed
+        </th>
+        <td mat-cell *matCellDef="let element"> </td>
+      </ng-container>
+
+      <!-- Age Column -->
+      <ng-container matColumnDef="age">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
+          Age
+        </th>
+        <td mat-cell *matCellDef="let element"></td>
+      </ng-container>
+
+      <!-- Running Cases Column -->
+      <ng-container matColumnDef="running">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by running cases">
+          Running Cases
+        </th>
+        <td mat-cell *matCellDef="let element"> </td>
+      </ng-container>
+
+      <!-- Queued Cases Column -->
+      <ng-container matColumnDef="queue">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queued cases">
+          Queued Cases
+        </th>
+        <td mat-cell *matCellDef="let element"></td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by actions">
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <a href="javascript:" (click)="openWorkitemsDialog(element.id)">
+            <fa-icon [fixedWidth]="true" [icon]="faArrowsToEye"></fa-icon>
+          </a>
+          <a [href]="casesURL" target="_blank">
+            <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
+          </a>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <div *ngIf="isTaskView()">
+    
+  </div>
+
+</default-page>

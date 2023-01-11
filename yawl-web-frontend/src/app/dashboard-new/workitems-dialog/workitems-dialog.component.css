@@ -1,0 +1,92 @@
+table {
+  width: 100%;
+  margin-top: 1em;
+}
+
+.dialog{
+  width: 1000px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+fa-icon{
+  font-size: 12px;
+}
+
+span{
+  font-size: 15px;
+  font-weight: normal;
+  font-family: Roboto, Helvetica, sans-serif;
+  color: #5e5e5e;
+}
+
+a{
+  text-decoration: none;
+}
+
+mat-toolbar{
+  height: 40px;
+}
+
+mat-toolbar:hover{
+  cursor: pointer;
+}
+
+mat-grid-list{
+  width: 100%;
+}
+
+.statistics{
+  width: 100%
+}
+
+.grid-form{
+  width: 98%;
+}
+
+
+tr.detail-row {
+  height: 0;
+}
+
+tr.element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+}
+
+.element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.element-description {
+  padding: 16px;
+}
+
+.element-description-attribution {
+  opacity: 0.5;
+}

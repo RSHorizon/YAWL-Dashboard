@@ -1,0 +1,85 @@
+
+<default-page>
+	<div class="page-header">
+		<h1>Notifications</h1>
+		<ul class="page-header-actions">
+			<li>
+                <button [matMenuTriggerFor]="moreMenu">
+                    <span class="fa fa-ellipsis-v"></span>
+                </button>
+                <mat-menu #moreMenu="matMenu">
+                    <button mat-menu-item (click)="reload()">Refresh Notifications</button>
+                    <button mat-menu-item (click)="navigateToObservationsList()">Manage Observations</button>
+                </mat-menu>
+			</li>
+		</ul>
+	</div>
+
+	<div class="row">
+        <div class="half-container">
+            <div class="half">
+                <div class="card">
+                    <mat-tab-group selectedIndex="0" (selectedIndexChange)="setMode($event)">
+                        <mat-tab label="Active"></mat-tab>
+                        <mat-tab label="Delayed"></mat-tab>
+                        <mat-tab label="Muted"></mat-tab>
+                    </mat-tab-group>
+
+                    <notifications-list #list [mode]="mode" [selectedItem]="selectedNotificationId"></notifications-list>
+                </div>
+            </div>
+            <div class="half">
+                <div class="card selected-notification" *ngIf="selectedNotification">
+
+                    <h4>Selected notification</h4>
+
+                    <div class="notification-icon INFORMATION" [hidden]="selectedNotification.priority != 'INFORMATION'">
+                        <span class="fa fa-info-circle"></span>
+                    </div>
+                    <div class="notification-icon WARNING" [hidden]="selectedNotification.priority != 'WARNING'">
+                        <span class="fa fa-question-circle"></span>
+                    </div>
+                    <div class="notification-icon CRITICAL" [hidden]="selectedNotification.priority != 'CRITICAL'">
+                        <span class="fa fa-exclamation-triangle"></span>
+                    </div>
+                    <div class="notification-data">
+                        <div class="notification-title">{{selectedNotification.title}}</div>
+                        <div class="notification-creationdate">since {{selectedNotification.creationDate | timedifference | duration}}</div>
+                        <div class="notification-meta" *ngFor="let data of selectedNotification.displayData">
+                            {{data.key}}: {{data.value}}
+                        </div>
+                    </div>
+
+                    <h4>Comments</h4>
+                    <ul class="comments">
+                        <li *ngFor="let comment of selectedNotification.comments">
+                            <div class="comment-creator">{{comment.creator}}</div>
+                            <div class="comment-text">{{comment.comment}}</div>
+                            <div class="comment-date">{{selectedNotification.creationDate*1000 | date:"medium"}}</div>
+                        </li>
+                    </ul>
+                    <textarea [(ngModel)]="newComment" class="new-comment-field"></textarea>
+                    <button mat-raised-button color="accent" (click)="submitComment()">
+                        Submit <span class="fa fa-send"></span>
+                    </button>
+
+                    <h4>Delay</h4>
+
+                    <div *ngIf="selectedNotification.delayDate">
+                        <div>Delayed until: {{selectedNotification.delayDate*1000 | date:"medium"}}</div>
+                        <button mat-raised-button color="accent" (click)="resetDelay()">
+                            Reset delay <span class="fa fa-send"></span>
+                        </button>
+                    </div>
+                    <div *ngIf="!selectedNotification.delayDate">
+                        <time-input [(time)]="newDelay"></time-input>
+                        <button mat-raised-button color="accent" (click)="setDelay()">
+                            Set delay <span class="fa fa-send"></span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+	</div>
+</default-page>

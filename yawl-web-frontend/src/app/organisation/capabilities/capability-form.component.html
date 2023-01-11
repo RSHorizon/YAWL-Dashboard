@@ -1,0 +1,46 @@
+<form *ngIf="capability != null" (ngSubmit)="save()" #form="ngForm" class="yd-form">
+
+    <div class="row">
+        <mat-form-field class="yd-input-full-width" floatPlaceholder="always">
+            <input matInput
+                    placeholder="Label"
+                    name="name"
+                    minlength="3"
+                    maxlength="50"
+                    [(ngModel)]="capability.name"
+                    required>
+        </mat-form-field>
+    </div>
+
+    <div class="row">
+        <mat-form-field class="yd-input-full-width" floatPlaceholder="always">
+            <textarea matInput
+                    placeholder="Description (Optional)"
+                    name="description"
+                    rows="4"
+                    [(ngModel)]="capability.description">
+            </textarea>
+        </mat-form-field>
+    </div>
+
+    <div class="row">
+        <mat-form-field class="yd-input-full-width" floatPlaceholder="always">
+            <textarea matInput
+                    placeholder="Notes (Optional)"
+                    name="notes"
+                    rows="4"
+                    [(ngModel)]="capability.notes">
+            </textarea>
+        </mat-form-field>
+    </div>
+
+	<div class="form-actions noborder">
+		<button mat-raised-button color="primary" type="button" (click)="cancel()">
+			<span class="fa fa-arrow-left"></span> Cancel
+		</button>
+		<button mat-raised-button color="primary" type="submit" [disabled]="!form.form.valid">
+			Save capability <span class="fa fa-send"></span>
+		</button>
+	</div>
+
+</form>

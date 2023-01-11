@@ -1,0 +1,32 @@
+
+<div class="table-responsive">
+<table class="table-hover">
+	<thead>
+		<tr>
+			<th *ngIf="settings.showColumnUsername" class="sortable yd-cell-left">Username</th>
+			<th *ngIf="settings.showColumnName" class="sortable yd-cell-left">Name</th>
+			<th *ngIf="settings.showColumnNumberOffered" class="sortable yd-cell-center">&#35; Offered WI</th>
+			<th *ngIf="settings.showColumnNumberAccepted" class="sortable yd-cell-center">&#35; Accepted WI</th>
+			<th *ngIf="settings.showColumnNumberStarted" class="sortable yd-cell-center">&#35; Started WI</th>
+			<th *ngIf="settings.showColumnNumberAcceptedAndStarted" class="sortable yd-cell-center">&#35; Accepted&and;Started WI</th>
+			<th *ngIf="settings.showColumnIdleTimeAccepted" class="sortable yd-cell-center">Idle Time Accepted</th>
+			<th *ngIf="settings.showColumnIdleTimeStarted" class="sortable yd-cell-center">Idle Time Started</th>
+			<th *ngIf="settings.showColumnSumIdleTime" class="sortable yd-cell-center">Sum Idle Time</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let item of data">
+			<td *ngIf="settings.showColumnUsername" class="sortable yd-cell-left">{{item.username}}</td>
+			<td *ngIf="settings.showColumnName && (settings.sortName == 'firstname')" class="sortable yd-cell-left">{{item.firstname}} {{item.lastname}}</td>
+			<td *ngIf="settings.showColumnName && (settings.sortName != 'firstname')" class="sortable yd-cell-left">{{item.lastname}}, {{item.firstname}}</td>
+			<td *ngIf="settings.showColumnNumberOffered" class="sortable yd-cell-center">{{item.numberOffered}}</td>
+			<td *ngIf="settings.showColumnNumberAccepted" class="sortable yd-cell-center">{{item.numberAccepted}}</td>
+			<td *ngIf="settings.showColumnNumberStarted" class="sortable yd-cell-center">{{item.numberStarted}}</td>
+			<td *ngIf="settings.showColumnNumberAcceptedAndStarted" class="sortable yd-cell-center">{{item.numberAcceptedAndStarted}}</td>
+			<td *ngIf="settings.showColumnIdleTimeAccepted" class="sortable yd-cell-center">{{item.idleTimeAccepted | duration }}</td>
+			<td *ngIf="settings.showColumnIdleTimeStarted" class="sortable yd-cell-center">{{item.idleTimeStarted | duration }}</td>
+			<td *ngIf="settings.showColumnSumIdleTime" class="sortable yd-cell-center">{{item.sumIdleTime | duration }}</td>
+		</tr>
+	</tbody>
+</table>
+</div>

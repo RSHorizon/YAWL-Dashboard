@@ -1,0 +1,33 @@
+<div *ngIf="question != null && form != null" class="row" [formGroup]="form">
+  <label [attr.for]="question.key">{{question.label}}</label>
+
+  <ng-container>
+    <input *ngIf="question | guardType: isDynFormTextboxField as question"
+           [id]="question.key"
+           [formControlName]="question.key"
+           [type]="question.type"/>
+
+    <textarea *ngIf="question | guardType: isDynFormTextboxField as question"
+              [id]="question.key"
+              [formControlName]="question.key"></textarea>
+
+    <input *ngIf="question.controlType === 'number'"
+           [id]="question.key"
+           [formControlName]="question.key"
+           type="number"/>
+
+    <select *ngIf="question | guardType: isDynFormDropdownField as question" [id]="question.key" [formControlName]="question.key">
+      <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
+    </select>
+
+    <time-input *ngIf="question.controlType === 'time'"></time-input>
+
+    <participants-selection *ngIf="question.controlType === 'participants-selection'"></participants-selection>
+
+    <specifications-selection *ngIf="question.controlType === 'specifications-selection'"></specifications-selection>
+
+    <tasks-selection *ngIf="question.controlType === 'tasks-selection'"></tasks-selection>
+  </ng-container>
+
+  <div class="errorMessage" *ngIf="!isValid">{{question.label}} is required</div>
+</div>

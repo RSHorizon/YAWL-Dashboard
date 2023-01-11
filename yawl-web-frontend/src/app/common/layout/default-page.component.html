@@ -1,0 +1,86 @@
+
+<mat-toolbar class="toolbar-primary">
+	<button class="sidebar-toggle-button btn btn-icon" (click)="sidenav.toggle()">
+    <fa-icon class="fa-fw" [icon]="faBars"></fa-icon>
+  </button>
+	<div class="toolbar-title">YAWL Web Frontend</div>
+	<div class="toolbar-right">
+		<button class="logout-button" (click)="onLogoutButton()">
+      <fa-icon class="fa-fw" [icon]="faArrowRightFromBracket"></fa-icon> Logout
+		</button>
+	</div>
+</mat-toolbar>
+
+<sidebar-layout>
+	<sidebar #sidenav>
+		<div class="sidebar-header">
+			YAWL Dashboard
+		</div>
+		<ul class="main-menu">
+      <li *ngIf="withDashboardService">
+        <a routerLink="/dashboard/" routerLinkActive="active">
+          <fa-icon [fixedWidth]="true" [icon]="faGaugeHigh"></fa-icon> Dashboard</a>
+      </li>
+
+
+			<li *ngIf="withDashboardService" [class.toggled]="dashboards.length > 1" [class.has-sub-menu]="dashboards.length > 1">
+				<a routerLink="/dashboard-old/" routerLinkActive="active">
+          <fa-icon [fixedWidth]="true" [icon]="faGaugeHigh"></fa-icon> Dashboard-Old
+        </a>
+				<ul class="main-sub-menu">
+					<li *ngFor="let item of dashboards">
+						<a [routerLink]="'/dashboard/'+item.id" routerLinkActive="active">
+              {{item.title}}</a>
+					</li>
+				</ul>
+			</li>
+			<li *ngIf="withDashboardService">
+				<a routerLink="/notifications/" routerLinkActive="active">
+          <fa-icon [fixedWidth]="true" [icon]="faBell"></fa-icon> Notifications</a>
+			</li>
+      <li>
+        <a routerLink="/cases" routerLinkActive="active"><i class="fa fa-th-list main-menu-icon"></i>
+          <fa-icon [fixedWidth]="true"  [icon]="faDatabase"></fa-icon> Cases</a>
+      </li>
+			<li>
+				<a routerLink="/workitems" routerLinkActive="active">
+          <fa-icon [fixedWidth]="true" [icon]="faCubes"></fa-icon> Work Items</a>
+			</li>
+			<li>
+				<a routerLink="/specifications" routerLinkActive="active"><fa-icon [fixedWidth]="true" [icon]="faFileCode"></fa-icon>  Specifications</a>
+			</li>
+			<li class="has-sub-menu toggled" (click)="this.toggleOrganisation($event)">
+				<a>
+          <fa-icon [fixedWidth]="true" [icon]="faSitemap"></fa-icon>
+          Organisation
+          <fa-icon *ngIf="organisationToggledOn===false" class="menu-right" [fixedWidth]="true" [icon]="faCaretRight"></fa-icon>
+          <fa-icon *ngIf="organisationToggledOn===true" class="menu-right" [fixedWidth]="true" [icon]="faCaretDown"></fa-icon>
+        </a>
+				<ul *ngIf="organisationToggledOn" class="main-sub-menu">
+					<li>
+						<a routerLink="/assets" routerLinkActive="active">Assets</a>
+					</li>
+					<li>
+						<a routerLink="/capabilities" routerLinkActive="active">Capabilities</a>
+					</li>
+					<li>
+						<a routerLink="/groups" routerLinkActive="active">Groups</a>
+					</li>
+					<li>
+						<a routerLink="/positions" routerLinkActive="active">Positions</a>
+					</li>
+					<li>
+						<a routerLink="/roles" routerLinkActive="active">Roles</a>
+					</li>
+					<li>
+						<a routerLink="/users" routerLinkActive="active">Users</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</sidebar>
+
+	<div class="app-content" [class.with-sidebar]="sidenav.opened">
+		<ng-content></ng-content>
+	</div>
+</sidebar-layout>

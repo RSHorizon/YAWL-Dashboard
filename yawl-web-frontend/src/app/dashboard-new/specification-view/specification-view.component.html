@@ -1,0 +1,76 @@
+<div>
+  <h3>Specifications <a [href]="specificationsURL" target="_blank">
+    <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
+  </a></h3>
+
+  <table *ngIf="dataSource !== undefined" mat-table [dataSource]="dataSource" matSort
+         (matSortChange)="announceSortChange($event)"
+         class="mat-elevation-z8">
+
+    <!-- URI Column -->
+    <ng-container matColumnDef="uri">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by uri">
+        URI
+      </th>
+      <td mat-cell *matCellDef="let element"> {{element.uri}} </td>
+    </ng-container>
+
+    <!-- Specification Version Column -->
+    <ng-container matColumnDef="specversion">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification version">
+        Specification Version
+      </th>
+      <td mat-cell *matCellDef="let element"> {{element.specversion}} </td>
+    </ng-container>
+
+    <!-- Documentation Column -->
+    <ng-container matColumnDef="documentation">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by documentation">
+        Documentation
+      </th>
+      <td mat-cell *matCellDef="let element"> {{element.documentation}} </td>
+    </ng-container>
+
+    <!-- Uploaded Column -->
+    <ng-container matColumnDef="uploaded">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by uploaded">
+        Uploaded
+      </th>
+      <td mat-cell *matCellDef="let element">-</td>
+    </ng-container>
+
+    <!-- Active Cases Column -->
+    <ng-container matColumnDef="a_cases">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by active cases">
+        Active Cases
+      </th>
+      <td mat-cell *matCellDef="let element"> {{element.activeCasesCount}} </td>
+    </ng-container>
+
+    <!-- Core Column -->
+    <ng-container matColumnDef="core">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by core">
+        Core Case
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <mat-slide-toggle [checked]="isCoreChecked(element)" (change)="checkCore(element)"></mat-slide-toggle>
+      </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by actions">
+        Actions
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <a href="/dashboard/specification/{{element.uri}}/{{element.id}}/{{element.specversion}}">
+          <fa-icon [fixedWidth]="true" [icon]="faArrowsToEye"></fa-icon>
+        </a>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

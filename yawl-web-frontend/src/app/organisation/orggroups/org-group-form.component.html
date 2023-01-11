@@ -1,0 +1,65 @@
+<form *ngIf="orgGroup != null" (ngSubmit)="save()" #form="ngForm" class="yd-form">
+
+    <div class="row">
+        <mat-form-field class="yd-input-full-width" floatPlaceholder="always">
+            <input matInput
+                    placeholder="Label"
+                    name="name"
+                    minlength="3"
+                    maxlength="50"
+                    [(ngModel)]="orgGroup.name"
+                    required>
+        </mat-form-field>
+    </div>
+
+	<div class="row">
+        <mat-form-field class="yd-input-full-width">
+            <mat-select placeholder="Type" [(ngModel)]="orgGroup.type" name="type" required>
+                <mat-option value="GROUP">Group</mat-option>
+                <mat-option value="TEAM">Team</mat-option>
+                <mat-option value="UNIT">Unit</mat-option>
+                <mat-option value="BRANCH">Branch</mat-option>
+                <mat-option value="DIVISION">Division</mat-option>
+                <mat-option value="CLUSTER">Cluster</mat-option>
+                <mat-option value="DEPARTMENT">Department</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="row">
+        <mat-form-field class="yd-input-full-width" floatPlaceholder="always">
+            <textarea matInput
+                    placeholder="Description (Optional)"
+                    name="description"
+                    rows="4"
+                    [(ngModel)]="orgGroup.description">
+            </textarea>
+        </mat-form-field>
+    </div>
+
+    <div class="row">
+        <mat-form-field class="yd-input-full-width" floatPlaceholder="always">
+            <textarea matInput
+                    placeholder="Notes (Optional)"
+                    name="notes"
+                    rows="4"
+                    [(ngModel)]="orgGroup.notes">
+            </textarea>
+        </mat-form-field>
+    </div>
+
+	<div class="row">
+		<label class="yd-form-label">Belongs to (Optional)</label>
+		<org-group-select [org-group]="orgGroup.belongsTo" (orgGroupChanged)="orgGroup.belongsTo = $event" [ignore]="ignoredOrgGroups"></org-group-select>
+	</div>
+
+	<div class="form-actions noborder">
+		<button mat-raised-button color="primary" type="button" (click)="cancel()">
+			<span class="fa fa-arrow-left"></span> Cancel
+		</button>
+		<button mat-raised-button color="primary" type="submit" [disabled]="!form.form.valid">
+			Save group <span class="fa fa-send"></span>
+		</button>
+	</div>
+
+</form>
