@@ -81,6 +81,22 @@ export class SpecificationService {
     )
   }
 
+  storeSpecificationAttributesById(id: string, version: string, uri: string,
+                                   specificationTimeLimit: string): Observable<Specification> {
+    let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/extension/"
+      + encodeURIComponent(uri)
+      + "/" + encodeURIComponent(id)
+      + "/" + encodeURIComponent(version)
+      + "/specificationTimeLimit";
+    let payload = 'specificationTimeLimit=' + encodeURIComponent(specificationTimeLimit);
+
+    return this.http.post<HttpResponse<any>>(url, payload, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<any>) => res),
+      catchError((error) => this.handleError(error))
+    )
+  }
+
   findDefinitionById(id: string, version: string, uri: string): Observable<Specification> {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");

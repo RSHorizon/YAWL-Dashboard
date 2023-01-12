@@ -49,6 +49,13 @@ class SpecificationController {
 	@Autowired
 	ExtensionTaskDao extensionTaskDao;
 
+	@RequestMapping(value="/test", method=RequestMethod.GET)
+	public void testRoute() {
+		//workItemManager.getSpecificationList();
+
+		workItemManager.getSpecificationDefinitionById(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
+	}
+
 	@RequestMapping(value="/api/specification", method=RequestMethod.GET)
 	public SpecificationListResource getSpecifications() {
 		return new SpecificationListResource(workItemManager.getAllLoadedSpecifications());
@@ -144,7 +151,7 @@ class SpecificationController {
 			params = "core", method= RequestMethod.POST)
 	@ResponseBody
 	@Transactional
-	public void storeSpecificationTimeLimit(@PathVariable("specificationID") String specificationID,
+	public void storeSpecificationCore(@PathVariable("specificationID") String specificationID,
 											@PathVariable("specversion") String specversion,
 											@PathVariable("uri") String uri,
 											@RequestParam("core") Boolean core) {

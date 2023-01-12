@@ -19,7 +19,7 @@ export class TaskViewComponent implements OnInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['task', 'avgCompletionTime', 'avgOccurrencesPerWeek', 'avgCostPerResourceHour', 'taskTimeLimit', 'taskQueueTimeLimit', 'actions'];
+  displayedColumns: string[] = ['taskId', 'avgCompletionTime', 'avgOccurrencesPerWeek', 'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 

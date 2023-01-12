@@ -79,6 +79,9 @@ public interface WorkItemManager {
 	Set<Case> getAllCasesFromSpecification(YSpecificationID ySpecificationID);
 
     List<Specification>		getAllLoadedSpecifications();
+
+	List<Specification> getSpecificationList();
+
 	Specification getSpecificationById(YSpecificationID ySpecificationID);
 
 	String					launchCaseById(String caseId, String data);

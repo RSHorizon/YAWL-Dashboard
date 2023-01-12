@@ -1,10 +1,10 @@
 
-<table *ngIf="dataSource !== undefined" mat-table [dataSource]="dataSource" matSort
+<table mat-table [dataSource]="dataSource" matSort
        (matSortChange)="announceSortChange($event)"
        class="mat-elevation-z8">
 
   <!-- Task Column -->
-  <ng-container matColumnDef="task">
+  <ng-container matColumnDef="taskId">
     <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by task">
       Task
     </th>
@@ -28,7 +28,7 @@
   </ng-container>
 
   <!-- Avg. cost per resource/h Column -->
-  <ng-container matColumnDef="avgCostPerResourceHour">
+  <ng-container matColumnDef="costResourceHour">
     <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by average cost per resource hour">
       Avg. cost per resource/h
     </th>
@@ -40,7 +40,7 @@
   </ng-container>
 
   <!-- Task time limit Column -->
-  <ng-container matColumnDef="taskTimeLimit">
+  <ng-container matColumnDef="maxTaskAge">
     <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by task time limit">
       Task time limit
     </th>
@@ -50,7 +50,7 @@
   </ng-container>
 
   <!-- Task queue time Column -->
-  <ng-container matColumnDef="taskQueueTimeLimit">
+  <ng-container matColumnDef="maxQueueAge">
     <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by task queue time limit">
       Task queue time limit
     </th>

@@ -21,19 +21,21 @@ export class SpecificationViewComponent implements OnInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['uri', 'specversion', 'documentation', 'uploaded', 'a_cases', 'core', 'actions'];
+  displayedColumns: string[] = ['uri', 'specversion', 'documentation', 'uploaded', 'activeCasesCount', 'core', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 
   constructor(private _liveAnnouncer: LiveAnnouncer, private specificationService: SpecificationService, private extensionSpecificationService: ExtensionSpecificationService) {
   }
 
-  extensionSpecification: ExtensionSpecification[]| undefined = undefined;
+  extensionSpecification: ExtensionSpecification[] | undefined = undefined;
 
   ngOnInit(): void {
     this.specificationService.findAll().subscribe(specifications => {
       this.dataSource = new MatTableDataSource(specifications);
       this.dataSource.sort = this.sort;
+
+      console.log(specifications);
 
       this.extensionSpecificationService.getExtensionSpecifications().subscribe(extensionSpecifications => {
         this.extensionSpecification = extensionSpecifications;
@@ -47,41 +49,47 @@ export class SpecificationViewComponent implements OnInit {
               .subscribe(extensionSpecification => this.extensionSpecification.push(extensionSpecification));
           }
         })
+
+        // add core values to specification for sorting
+        specifications.forEach(specification => {
+          specification.core = this.isCoreChecked(specification);
+        })
+
       })
     });
   }
 
-  isCoreChecked(specification: Specification): boolean{
-    if(this.extensionSpecification === undefined){
+  isCoreChecked(specification: Specification): boolean {
+    if (this.extensionSpecification === undefined) {
       return false;
     }
     let ext = this.extensionSpecification?.find((extensionSpecification) =>
       extensionSpecification.specificationId === specification.id
       && extensionSpecification.specversion === specification.specversion
       && extensionSpecification.uri === specification.uri);
-    if(ext == null){
+    if (ext == null) {
       return false;
     }
     // @ts-ignore
     return <int>ext.core;
   }
 
-  checkCore(specification: Specification): void{
+  checkCore(specification: Specification): void {
 
-    if(this.extensionSpecification === undefined){
+    if (this.extensionSpecification === undefined) {
       return;
     }
     let ext = this.extensionSpecification?.find((extensionSpecification) =>
       extensionSpecification.specificationId === specification.id
       && extensionSpecification.specversion === specification.specversion
       && extensionSpecification.uri === specification.uri
-     );
+    );
 
-    if(ext == null){
+    if (ext == null) {
       return;
     }
     let willBeCoreSpecification = false;
-    if(ext.core == "0"){
+    if (ext.core == "0") {
       willBeCoreSpecification = true;
     }
     // @ts-ignore

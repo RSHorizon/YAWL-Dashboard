@@ -634,6 +634,24 @@ public class WorkItemManagerImpl implements WorkItemManager {
         }
     }
 
+    @Override
+    public synchronized List<Specification> getSpecificationList() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getSpecList(handle.getRawHandle());
+
+            if (!connection.successful(result)) {
+                throw new RuntimeException(FailureMarshaller.parseFailure(result));
+            } else {
+                List<Specification> specifications = SpecificationMarshaller.parseSepcifications(result);
+                // Also get statistical data
+                specifications.forEach(c -> c.setActiveCasesCount(getRunningCasesBySpec(c).size()));
+                return specifications;
+            }
+        } catch (IOException | JDOMException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     public synchronized Specification getSpecificationById(YSpecificationID ySpecificationID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String specsResult = connection.getLoadedSpecs(handle.getRawHandle());

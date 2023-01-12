@@ -66,10 +66,10 @@
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Case time limit</mat-label>
-            <input matInput value="12h">
-          </mat-form-field>
+          <div style="display: block">
+            <mat-label style="color: rgba(0, 0, 0, 0.38); font-size: 8px; font-weight: 600; font-family: Roboto, 'Helvetica Neue', sans-serif">Max case time</mat-label><br>
+            <app-timestampform [(timestamp)]="specificationTimeLimit" [daySelectionActive]="true" (timestampChanged)="changedSpecificationAttributes()"></app-timestampform>
+          </div>
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
@@ -78,12 +78,7 @@
             <input matInput disabled value="3">
           </mat-form-field>
         </mat-grid-tile>
-        <mat-grid-tile>
-          <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Avg. cost/h</mat-label>
-            <input matInput value="25">
-          </mat-form-field>
-        </mat-grid-tile>
+        <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Avg. cost</mat-label>
@@ -98,12 +93,12 @@
     </div>
 
 
-    <table *ngIf="dataSource !== undefined" mat-table [dataSource]="dataSource" matSort
+    <table mat-table [dataSource]="dataSource" matSort
            (matSortChange)="announceSortChange($event)"
            class="mat-elevation-z8">
 
       <!-- Case ID Column -->
-      <ng-container matColumnDef="caseId">
+      <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by caseId">
           Case ID
         </th>
@@ -136,23 +131,31 @@
 
       <!-- Running Cases Column -->
       <ng-container matColumnDef="running">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by running cases">
-          Running Cases
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by running workitems">
+          Running Workitems
         </th>
         <td mat-cell *matCellDef="let element"> </td>
       </ng-container>
 
-      <!-- Queued Cases Column -->
+      <!-- Queued workitems Column -->
       <ng-container matColumnDef="queue">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queued cases">
-          Queued Cases
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queued workitems">
+          Queued Workitems
+        </th>
+        <td mat-cell *matCellDef="let element"></td>
+      </ng-container>
+
+      <!-- Overdue Column -->
+      <ng-container matColumnDef="overdue">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdued cases">
+          Overdue
         </th>
         <td mat-cell *matCellDef="let element"></td>
       </ng-container>
 
       <!-- Actions Column -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by actions">
+        <th mat-header-cell *matHeaderCellDef >
           Actions
         </th>
         <td mat-cell *matCellDef="let element">

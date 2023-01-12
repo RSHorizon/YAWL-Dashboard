@@ -43,7 +43,7 @@ export class WorkitemsDialogComponent implements OnInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['workitem', 'status', 'created', 'queueTime', 'age', 'resource', 'overdue'];
+  displayedColumns: string[] = ['taskName', 'resourceStatus', 'enablementTime', 'queueTime', 'age', 'assignedTo', 'overdue'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand'];
   expandedElement: { desciption: "sexy" } | undefined;
   // @ts-ignore
@@ -62,7 +62,6 @@ export class WorkitemsDialogComponent implements OnInit {
     // @ts-ignore
     workItemService.findAllByCase(this.specification.id, this.specification.specversion, this.specification.uri, this.caseId)
       .subscribe(workitems => {
-        console.log(workitems);
         this.dataSource = new MatTableDataSource(workitems);
         this.dataSource.sort = this.sort;
       });
@@ -116,14 +115,22 @@ export class WorkitemsDialogComponent implements OnInit {
 
   /** Announce the change in sort state for assistive technology. */
   announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple language, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
+    if(sortState.active== "queueTime" && sortState.direction == "asc"){
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeQueueTime(workitemA) > this.computeQueueTime(workitemB))?-1:1)
+    }else if(sortState.active== "queueTime" && sortState.direction == "desc"){
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeQueueTime(workitemA) < this.computeQueueTime(workitemB))?-1:1)
+    }
+
+    if(sortState.active== "age" && sortState.direction == "asc"){
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) > this.computeAge(workitemB))?-1:1)
+    }else if(sortState.active== "age" && sortState.direction == "desc"){
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) < this.computeAge(workitemB))?-1:1)
+    }
+
+    if(sortState.active== "overdue" && sortState.direction == "asc"){
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) > this.isOverdue(workitemB))?-1:1)
+    }else if(sortState.active== "overdue" && sortState.direction == "desc"){
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) < this.isOverdue(workitemB))?-1:1)
     }
   }
 
@@ -134,26 +141,37 @@ export class WorkitemsDialogComponent implements OnInit {
     return false;
   }
 
-  isOverdue(workitem: any): string {
+  isOverdue(workitem: any): number {
     if (workitem === undefined || this.tasks === undefined) {
-      return "";
+      return -1;
     }
     let task: any = this.tasks.filter((task: any) => task.taskId == workitem.taskID)[0];
     if (workitem.startTimeMs === "") {
       if (task.maxQueueAge < this.getTimestampFromDuration(new Date(workitem.enablementTimeMs * 1), new Date(Date.now()))) {
-        return "Yes";
+        return 1;
       }
     } else if (workitem.completionTimeMs === "") {
       if (task.maxTaskAge < this.getTimestampFromDuration(new Date(workitem.startTimeMs * 1), new Date(Date.now()))) {
-        return "Yes";
+        return 1;
       }
     } else {
       if (task.maxTaskAge < this.getTimestampFromDuration(new Date(workitem.startTimeMs * 1), new Date(workitem.completionTimeMs * 1))) {
-        return "Yes";
+        return 1;
       }
     }
 
-    return "No";
+    return 0;
+  }
+
+  isOverdueName(workitem: any): string{
+    let overdue = this.isOverdue(workitem);
+    if(overdue === 0){
+      return "No";
+    }else if(overdue === 1){
+      return "Yes";
+    }else{
+      return "";
+    }
   }
 
   getMaxQueueTime(workitem: any): string {

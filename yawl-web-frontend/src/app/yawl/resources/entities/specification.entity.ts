@@ -1,6 +1,5 @@
 
 export interface Specification {
-
 	id : string;
 	version : string;
   specversion: string;
@@ -9,5 +8,6 @@ export interface Specification {
 	description : string;
 	authors : string[];
   activeCasesCount: string;
+  core: boolean|undefined;
 
 }

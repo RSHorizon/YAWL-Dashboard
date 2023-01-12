@@ -17,6 +17,8 @@ import { WorkitemsDialogComponent } from './workitems-dialog/workitems-dialog.co
 import { TaskViewComponent } from './task-view/task-view.component';
 import { TimestampformComponent } from './timestampform/timestampform.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import {MatTableModule} from "@angular/material/table";
+import {BrowserModule} from "@angular/platform-browser";
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import {ReactiveFormsModule} from "@angular/forms";
     MatSlideToggleModule,
     MaterialSharedModule,
     FontAwesomeModule,
+    BrowserModule,
     MatSortModule,
+    MatTableModule,
     MatGridListModule,
     ReactiveFormsModule
   ]

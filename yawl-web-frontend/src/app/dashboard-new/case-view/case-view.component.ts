@@ -34,11 +34,12 @@ export class CaseViewComponent implements OnInit {
   errorState: boolean = false;
   // @ts-ignore
   viewType: number = '0';
+  specificationTimeLimit: number = 0;
 
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['caseId', 'initiated', 'completed', 'age', 'running', 'queue', 'actions'];
+  displayedColumns: string[] = ['id', 'initiated', 'completed', 'age', 'running', 'queue', 'overdue', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 
@@ -68,6 +69,8 @@ export class CaseViewComponent implements OnInit {
       this.extensionSpecificationService.getExtensionSpecification(this.specificationID, this.specversion, this.uri)
         .subscribe(extensionSpecification => {
           this.extensionSpecification = extensionSpecification;
+          // @ts-ignore
+          this.specificationTimeLimit = <number>this.extensionSpecification.specificationTimeLimit;
         });
 
       this.caseService.findAllBySpecificationId(this.specificationID, this.specversion, this.uri)
@@ -135,6 +138,14 @@ export class CaseViewComponent implements OnInit {
 
   isTaskView(): boolean{
     return this.viewType == ViewType.Task;
+  }
+
+  changedSpecificationAttributes(): void{
+    if(this.specification === undefined){
+      return;
+    }
+    this.specificationService.storeSpecificationAttributesById(this.specification.id, this.specification.specversion, this.specification.uri, ""+ this.specificationTimeLimit)
+      .subscribe()
   }
 }
 

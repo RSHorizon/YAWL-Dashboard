@@ -1,11 +1,18 @@
-<mat-form-field style="width:80px !important">
+<mat-form-field *ngIf="daySelectionActive" style="width:60px !important">
+  <mat-label>days</mat-label>
+  <mat-select [(value)]="days" (selectionChange)="change()">
+    <mat-option *ngFor="let day of dayNumbers" [value]="day">{{day}}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field style="width:60px !important">
   <mat-label>hours</mat-label>
   <mat-select [(value)]="hours" (selectionChange)="change()">
     <mat-option *ngFor="let number of hourNumbers" [value]="number">{{number}}</mat-option>
   </mat-select>
 </mat-form-field>
 
-<mat-form-field style="width:80px !important">
+<mat-form-field style="width:60px !important">
   <mat-label>minutes</mat-label>
   <mat-select [(value)]="minutes" (selectionChange)="change()">
     <mat-option *ngFor="let number of minuteNumbers" [value]="number">{{number}}</mat-option>
