@@ -26,7 +26,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Case;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 import org.yawlfoundation.yawl.engine.interfce.WorkItemRecord;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
-
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 
 /**
@@ -64,7 +64,11 @@ public interface WorkItemManager {
 
 	Set<Integer>			getAllCasesWithWorkItems();
 
-	List<Case>				getAllRunningCases();
+    Set<WorkItemRecord> getAllWorkItemsForCase(String id, String specversion, String uri, String caseId);
+
+    Set<WorkItemRecord> getAllWorkItemsForSpecification(String id, String specversion, String uri);
+
+    List<Case>				getAllRunningCases();
 
 	List<Integer>			getRunningCasesBySpec(Specification specification);
 
@@ -81,4 +85,5 @@ public interface WorkItemManager {
 
 	String					launchCaseByUri(String caseUri, String data);
 
+	List<Task> getSpecificationDefinitionById(YSpecificationID ySpecificationID);
 }

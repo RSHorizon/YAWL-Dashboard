@@ -1,28 +1,27 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
+import {YawlResourcesConfigService} from '../yawl-resources-config.service';
 
-import { Specification } from '../entities/specification.entity';
+import {Specification} from '../entities/specification.entity';
 import {catchError, map} from "rxjs/operators";
-
 
 
 @Injectable()
 export class SpecificationService {
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
-	}
+  constructor(private http: HttpClient,
+              private yawlResourcesConfigService: YawlResourcesConfigService) {
+  }
 
 
-	findAll() : Observable<Specification[]> {
-		let headers = new HttpHeaders();
-		headers.append("Accept", "application/json");
+  findAll(): Observable<Specification[]> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification";
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification";
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
@@ -30,59 +29,107 @@ export class SpecificationService {
       map((res) => res.specifications),
       catchError((error) => this.handleError(error))
     )
-	}
+  }
 
 
-	findById(id : string, version : string, uri : string) : Observable<Specification> {
-		let headers = new HttpHeaders();
-		headers.append("Accept", "application/json");
+  findById(id: string, version: string, uri: string): Observable<Specification> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
-                                      + encodeURIComponent(uri)
-																			+ "/" + encodeURIComponent(id)
-																			+ "/" + encodeURIComponent(version);
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+      + encodeURIComponent(uri)
+      + "/" + encodeURIComponent(id)
+      + "/" + encodeURIComponent(version);
 
-		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
+    return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
       catchError((error) => this.handleError(error))
     )
-	}
+  }
 
+  findTasksById(id: string, version: string, uri: string): Observable<Specification> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
 
-	save(item : string) : Observable<any> {
-		let headers = new HttpHeaders();
-		headers.append("Accept", "application/json");
-		headers.append("Content-Type", "application/xml");
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/task/"
+      + encodeURIComponent(uri)
+      + "/" + encodeURIComponent(id)
+      + "/" + encodeURIComponent(version);
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification";
+    return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<any>) => res),
+      catchError((error) => this.handleError(error))
+    )
+  }
 
-		return this.http.post<HttpResponse<any>>(url, item, {headers, withCredentials: true}).pipe(
+  storeTaskAttributesById(id: string, version: string, uri: string, taskId: string,
+                          costResourceHour: string, maxTaskAge: string, maxQueueAge: string): Observable<Specification> {
+    let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/task/"
+      + encodeURIComponent(uri)
+      + "/" + encodeURIComponent(id)
+      + "/" + encodeURIComponent(version)
+      + "/" + encodeURIComponent(taskId)
+      + "/setAttributes";
+    let payload = 'costResourceHour=' + encodeURIComponent(costResourceHour)
+      + '&maxTaskAge=' + encodeURIComponent(maxTaskAge)
+      + '&maxQueueAge=' + encodeURIComponent(maxQueueAge);
+
+    return this.http.post<HttpResponse<any>>(url, payload, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<any>) => res),
+      catchError((error) => this.handleError(error))
+    )
+  }
+
+  findDefinitionById(id: string, version: string, uri: string): Observable<Specification> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
+
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+      + encodeURIComponent(uri)
+      + "/" + encodeURIComponent(id)
+      + "/" + encodeURIComponent(version) + "/definition";
+
+    return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<any>) => res),
+      catchError((error) => this.handleError(error))
+    )
+  }
+
+  save(item: string): Observable<any> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
+    headers.append("Content-Type", "application/xml");
+
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification";
+
+    return this.http.post<HttpResponse<any>>(url, item, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
     )
 
-	}
+  }
 
 
-	remove(id : string, version : string) : Observable<any> {
-		let headers = new HttpHeaders();
-		headers.append("Accept", "application/json");
+  remove(id: string, version: string): Observable<any> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
-																			+encodeURIComponent(id)
-																			+"/"+encodeURIComponent(version);
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+      + encodeURIComponent(id)
+      + "/" + encodeURIComponent(version);
 
-		return this.http.delete(url, {headers, withCredentials: true}).pipe(
+    return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
     )
-	}
+  }
 
 
-	private handleError(error: any) : Observable<any> {
-		let errMsg = (error.json().message)
-						? error.json().message
-						: error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-		console.error(errMsg);
-		throw new Error(errMsg);
-	}
+  private handleError(error: any): Observable<any> {
+    let errMsg = (error.json().message)
+      ? error.json().message
+      : error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+    console.error(errMsg);
+    throw new Error(errMsg);
+  }
 
 }

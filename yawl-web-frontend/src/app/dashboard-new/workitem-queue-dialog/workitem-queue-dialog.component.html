@@ -39,7 +39,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by caseId">
         Case ID
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.rootCaseID}} </td>
     </ng-container>
 
     <!-- Work item-->
@@ -47,7 +47,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification work item name">
         Work item
       </th>
-      <td mat-cell *matCellDef="let element"> </td>
+      <td mat-cell *matCellDef="let element"> {{element.taskName}} </td>
     </ng-container>
 
     <!-- Status Column -->
@@ -55,7 +55,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by status">
         Status
       </th>
-      <td mat-cell *matCellDef="let element"> </td>
+      <td mat-cell *matCellDef="let element"> {{element.resourceStatus}} </td>
     </ng-container>
 
     <!-- Created Column -->
@@ -63,15 +63,15 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by created">
         Created
       </th>
-      <td mat-cell *matCellDef="let element"></td>
+      <td mat-cell *matCellDef="let element"> {{element.enablementTime}}</td>
     </ng-container>
 
-    <!-- Age Column -->
-    <ng-container matColumnDef="age">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
-        Age
+    <!-- Queue time Column -->
+    <ng-container matColumnDef="queueTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queue time">
+        Queue time
       </th>
-      <td mat-cell *matCellDef="let element"> </td>
+      <td mat-cell *matCellDef="let element"> {{computeQueueTime(element)}} </td>
     </ng-container>
 
     <!-- Resources Column -->
@@ -79,7 +79,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by resource">
         Resource
       </th>
-      <td mat-cell *matCellDef="let element"></td>
+      <td mat-cell *matCellDef="let element"> {{element.assignedTo}}</td>
     </ng-container>
 
     <!-- Overdue Column -->
@@ -87,23 +87,8 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdue">
         Overdue
       </th>
-      <td mat-cell *matCellDef="let element"></td>
+      <td mat-cell *matCellDef="let element">{{isOverdue(element)}}</td>
     </ng-container>
-
-    <!-- Actions Column
-    <ng-container matColumnDef="">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by actions">
-        Actions
-      </th>
-      <td mat-cell *matCellDef="let element">
-        <a>
-          <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
-        </a>
-        <a [href]="workitemURL" target="_blank">
-          <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
-        </a>
-      </td>
-    </ng-container>-->
 
     <!-- Expand -->
     <ng-container matColumnDef="expand">
@@ -127,7 +112,7 @@
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Max queue time</mat-label>
-                <input matInput disabled value="15 min">
+                <input matInput disabled value="{{getMaxQueueTime(element)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>

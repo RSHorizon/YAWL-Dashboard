@@ -5,7 +5,6 @@ import {dashboardRoutesConfig} from "./dashboard-new.routes";
 import {LayoutModule} from "../common/layout/layout.module";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MaterialSharedModule} from "../common/layout/material-shared.module";
-
 /* Components */
 import { SpecificationViewComponent } from './specification-view/specification-view.component';
 import { DashboardNewComponent } from './dashboard-new/dashboard-new.component';
@@ -16,7 +15,8 @@ import {MatGridListModule} from "@angular/material/grid-list";
 import { WorkitemQueueDialogComponent } from './workitem-queue-dialog/workitem-queue-dialog.component';
 import { WorkitemsDialogComponent } from './workitems-dialog/workitems-dialog.component';
 import { TaskViewComponent } from './task-view/task-view.component';
-
+import { TimestampformComponent } from './timestampform/timestampform.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -25,7 +25,8 @@ import { TaskViewComponent } from './task-view/task-view.component';
     CaseViewComponent,
     WorkitemQueueDialogComponent,
     WorkitemsDialogComponent,
-    TaskViewComponent
+    TaskViewComponent,
+    TimestampformComponent
   ],
   imports: [
     CommonModule,
@@ -36,6 +37,7 @@ import { TaskViewComponent } from './task-view/task-view.component';
     FontAwesomeModule,
     MatSortModule,
     MatGridListModule,
+    ReactiveFormsModule
   ]
 })
 export class DashboardNewModule { }

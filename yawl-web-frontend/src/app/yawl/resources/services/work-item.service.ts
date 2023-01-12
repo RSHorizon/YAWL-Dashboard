@@ -47,6 +47,39 @@ export class WorkItemService {
     )
 	}
 
+  findAllByCase(specificationId: string, specversion: string, uri: string, caseId: string) : Observable<WorkItem[]> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
+
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+      + encodeURIComponent(uri) + "/"
+      + encodeURIComponent(specificationId) + "/"
+      + encodeURIComponent(specversion) + "/"
+      + encodeURIComponent(caseId)
+      + "/workitems";
+
+    return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<any>) => res),
+      catchError((error) => this.handleError(error))
+    )
+  }
+
+  findAllBySpecification(specificationId: string, specversion: string, uri: string) : Observable<WorkItem[]> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
+
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+      + encodeURIComponent(uri) + "/"
+      + encodeURIComponent(specificationId) + "/"
+      + encodeURIComponent(specversion)
+      + "/workitems";
+
+    return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<any>) => res),
+      catchError((error) => this.handleError(error))
+    )
+  }
+
 
 	findByUser(userId : string, queue : string) : Observable<WorkItem[]> {
 		let headers = new HttpHeaders();

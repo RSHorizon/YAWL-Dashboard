@@ -3,7 +3,7 @@
     <fa-icon [fixedWidth]="true" [icon]="faArrowLeft"></fa-icon>
     <span>Back</span>
     <span class="spacer"></span>
-    <span>Case Id: {{this.case}}</span>
+    <span>Case Id: {{this.caseId}}</span>
   </mat-toolbar>
 
   <table *ngIf="dataSource !== undefined" mat-table [dataSource]="dataSource" multiTemplateDataRows matSort
@@ -15,7 +15,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification work item name">
         Work item
       </th>
-      <td mat-cell *matCellDef="let element"> </td>
+      <td mat-cell *matCellDef="let element"> {{element.taskName}} </td>
     </ng-container>
 
     <!-- Status Column -->
@@ -23,7 +23,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by status">
         Status
       </th>
-      <td mat-cell *matCellDef="let element"> </td>
+      <td mat-cell *matCellDef="let element"> {{element.resourceStatus}}</td>
     </ng-container>
 
     <!-- Created Column -->
@@ -31,7 +31,15 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by created">
         Created
       </th>
-      <td mat-cell *matCellDef="let element"></td>
+      <td mat-cell *matCellDef="let element"> {{element.enablementTime}}</td>
+    </ng-container>
+
+    <!-- QueueTime Column -->
+    <ng-container matColumnDef="queueTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queue time">
+        Queue time
+      </th>
+      <td mat-cell *matCellDef="let element">{{computeQueueTime(element)}}</td>
     </ng-container>
 
     <!-- Age Column -->
@@ -39,7 +47,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
         Age
       </th>
-      <td mat-cell *matCellDef="let element"> </td>
+      <td mat-cell *matCellDef="let element">{{computeAge(element)}}</td>
     </ng-container>
 
     <!-- Resources Column -->
@@ -47,7 +55,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by resource">
         Resource
       </th>
-      <td mat-cell *matCellDef="let element"></td>
+      <td mat-cell *matCellDef="let element"> {{element.assignedTo}}</td>
     </ng-container>
 
     <!-- Overdue Column -->
@@ -55,23 +63,8 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdue">
         Overdue
       </th>
-      <td mat-cell *matCellDef="let element"></td>
+      <td mat-cell *matCellDef="let element">{{isOverdue(element)}}</td>
     </ng-container>
-
-    <!-- Actions Column
-    <ng-container matColumnDef="">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by actions">
-        Actions
-      </th>
-      <td mat-cell *matCellDef="let element">
-        <a>
-          <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
-        </a>
-        <a [href]="workitemURL" target="_blank">
-          <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
-        </a>
-      </td>
-    </ng-container>-->
 
     <!-- Expand -->
     <ng-container matColumnDef="expand">
@@ -93,9 +86,13 @@
              [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
           <mat-grid-list rowHeight="70px" cols="6">
             <mat-grid-tile>
-              <mat-form-field class="grid-form" appearance="fill" disabled>
+              <mat-form-field *ngIf="isInQueue(element)" class="grid-form" appearance="fill" disabled>
                 <mat-label>Max queue time</mat-label>
-                <input matInput disabled value="15 min">
+                <input matInput disabled value="{{getMaxQueueTime(element)}}">
+              </mat-form-field>
+              <mat-form-field *ngIf="!isInQueue(element)" class="grid-form" appearance="fill" disabled>
+                <mat-label>Max task time</mat-label>
+                <input matInput disabled value="{{getMaxTaskTime(element)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>

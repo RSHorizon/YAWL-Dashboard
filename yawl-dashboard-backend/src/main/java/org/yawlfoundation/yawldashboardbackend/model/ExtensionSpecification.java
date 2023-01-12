@@ -1,10 +1,9 @@
 package org.yawlfoundation.yawldashboardbackend.model;
 
-import com.nimbusds.jose.crypto.impl.CompositeKey;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -30,45 +29,12 @@ public class ExtensionSpecification {
     @Column(name = "specificationTimeLimit")
     private Integer specificationTimeLimit;
 
-    @Column(name = "costResourceHour")
-    private Integer costResourceHour;
-
-    @Column(name = "maxTaskAge")
-    private Integer maxTaskAge;
-
-    @Column(name = "maxQueueAge")
-    private Integer maxQueueAge;
-
     public Integer getSpecificationTimeLimit() {
         return specificationTimeLimit;
     }
 
     public void setSpecificationTimeLimit(Integer specificationTimeLimit) {
         this.specificationTimeLimit = specificationTimeLimit;
-    }
-
-    public Integer getCostResourceHour() {
-        return costResourceHour;
-    }
-
-    public void setCostResourceHour(Integer costResourceHour) {
-        this.costResourceHour = costResourceHour;
-    }
-
-    public Integer getMaxTaskAge() {
-        return maxTaskAge;
-    }
-
-    public void setMaxTaskAge(Integer maxTaskAge) {
-        this.maxTaskAge = maxTaskAge;
-    }
-
-    public Integer getMaxQueueAge() {
-        return maxQueueAge;
-    }
-
-    public void setMaxQueueAge(Integer maxQueueAge) {
-        this.maxQueueAge = maxQueueAge;
     }
 
     public Boolean getCore() {
@@ -102,5 +68,6 @@ public class ExtensionSpecification {
     public void setUri(String uri) {
         this.uri = uri;
     }
+
 }
 

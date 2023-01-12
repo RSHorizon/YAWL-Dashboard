@@ -20,16 +20,20 @@ package org.yawlfoundation.yawldashboardbackend.endpoint.general;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.yawlfoundation.yawl.elements.YDecomposition;
+import org.yawlfoundation.yawl.elements.YSpecification;
 import org.yawlfoundation.yawl.engine.YSpecificationID;
+import org.yawlfoundation.yawl.engine.interfce.SpecificationData;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionSpecificationDao;
+import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
 import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
+import org.yawlfoundation.yawldashboardbackend.model.ExtensionTask;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @RestController
@@ -41,6 +45,9 @@ class SpecificationController {
 
 	@Autowired
 	ExtensionSpecificationDao extensionSpecificationDao;
+
+	@Autowired
+	ExtensionTaskDao extensionTaskDao;
 
 	@RequestMapping(value="/api/specification", method=RequestMethod.GET)
 	public SpecificationListResource getSpecifications() {
@@ -54,6 +61,15 @@ class SpecificationController {
 										  @PathVariable("specversion") String specversion,
 										  @PathVariable("uri") String uri) {
 		return workItemManager.getSpecificationById(new YSpecificationID(specificationID, specversion, uri));
+	}
+
+	@RequestMapping(value="/api/specification/{uri}/{specificationID}/{specversion}/definition", method= RequestMethod.GET)
+	@ResponseBody
+	@Transactional
+	public List<Task> getTaskDefinitions(@PathVariable("specificationID") String specificationID,
+										 @PathVariable("specversion") String specversion,
+										 @PathVariable("uri") String uri) {
+		return workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
 	}
 
 
@@ -72,24 +88,56 @@ class SpecificationController {
 			@PathVariable("specversion") String specversion,
 			@PathVariable("uri") String uri
 			) {
-
 		ExtensionSpecification extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
 
 		if(extensionSpecification == null){
-			ExtensionSpecification newExtensionSpecification = new ExtensionSpecification();
-			newExtensionSpecification.setSpecificationId(specificationID);
-			newExtensionSpecification.setSpecversion(specversion);
-			newExtensionSpecification.setUri(uri);
-			newExtensionSpecification.setCore(false);
-			newExtensionSpecification.setSpecificationTimeLimit(0);
-			newExtensionSpecification.setMaxTaskAge(0);
-			newExtensionSpecification.setMaxQueueAge(0);
-			newExtensionSpecification.setCostResourceHour(0);
-			extensionSpecificationDao.save(newExtensionSpecification);
-			return newExtensionSpecification;
-		}else{
-			return extensionSpecification;
+			createLocalEntities(specificationID, specversion, uri);
+			extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
 		}
+		return extensionSpecification;
+	}
+
+	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}", method= RequestMethod.GET)
+	@ResponseBody
+	@Transactional
+	public List<ExtensionTask> getExtensionTaskAttributes(
+			@PathVariable("specificationID") String specificationID,
+			@PathVariable("specversion") String specversion,
+			@PathVariable("uri") String uri
+	) {
+		ExtensionSpecification extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
+
+		if(extensionSpecification == null){
+			createLocalEntities(specificationID, specversion, uri);
+		}
+		return extensionTaskDao.findAllByComposedID(specificationID, specversion, uri);
+	}
+
+	public void createLocalEntities(String specificationID, String specversion, String uri){
+		List<Task> tasks = workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
+
+		ExtensionSpecification newExtensionSpecification = new ExtensionSpecification();
+		newExtensionSpecification.setSpecificationId(specificationID);
+		newExtensionSpecification.setSpecversion(specversion);
+		newExtensionSpecification.setUri(uri);
+		newExtensionSpecification.setCore(false);
+		newExtensionSpecification.setSpecificationTimeLimit(0);
+		extensionSpecificationDao.save(newExtensionSpecification);
+
+		List<ExtensionTask> extensionTasks = new ArrayList<>();
+
+		tasks.forEach(task -> {
+			ExtensionTask extensionTask = new ExtensionTask();
+			extensionTask.setTaskId(task.getId());
+			extensionTask.setSpecificationId(specificationID);
+			extensionTask.setSpecversion(specversion);
+			extensionTask.setUri(uri);
+			extensionTask.setCostResourceHour(0);
+			extensionTask.setMaxTaskAge(0);
+			extensionTask.setMaxQueueAge(0);
+			extensionTaskDao.save(extensionTask);
+			extensionTasks.add(extensionTask);
+		});
 	}
 
 	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/core",
@@ -114,37 +162,54 @@ class SpecificationController {
 		extensionSpecificationDao.setSpecificationTimeLimit(specificationID, specversion, uri, specificationTimeLimit);
 	}
 
-	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/costResourceHour",
+	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/{taskId}/costResourceHour",
 			params = "costResourceHour", method= RequestMethod.POST)
 	@ResponseBody
 	@Transactional
 	public void storeCostResourceHour(@PathVariable("specificationID") String specificationID,
 									  @PathVariable("specversion") String specversion,
 									  @PathVariable("uri") String uri,
+									  @PathVariable("taskId") String taskId,
 									  @RequestParam("costResourceHour") Integer costResourceHour) {
-		extensionSpecificationDao.setCostResourceHour(specificationID, specversion, uri, costResourceHour);
+		extensionTaskDao.setCostResourceHour(specificationID, specversion, uri, taskId, costResourceHour);
 	}
 
-	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/maxTaskAge",
+	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}/{taskId}/maxTaskAge",
 			params = "maxTaskAge", method= RequestMethod.POST)
 	@ResponseBody
 	@Transactional
 	public void storeMaxTaskAge(@PathVariable("specificationID") String specificationID,
 								@PathVariable("specversion") String specversion,
 								@PathVariable("uri") String uri,
+								@PathVariable("taskId") String taskId,
 								@RequestParam("maxTaskAge") Integer maxTaskAge) {
-		extensionSpecificationDao.setMaxTaskAge(specificationID, specversion, uri, maxTaskAge);
+		extensionTaskDao.setMaxTaskAge(specificationID, specversion, uri, taskId, maxTaskAge);
 	}
 
-	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/maxQueueAge",
+	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}/{taskId}/maxQueueAge",
 			params = "maxQueueAge", method= RequestMethod.POST)
 	@ResponseBody
 	@Transactional
 	public void storeMaxQueueAge(@PathVariable("specificationID") String specificationID,
 								 @PathVariable("specversion") String specversion,
 								 @PathVariable("uri") String uri,
+								 @PathVariable("taskId") String taskId,
 								@RequestParam("maxQueueAge") Integer maxQueueAge) {
-		extensionSpecificationDao.setMaxQueueAge(specificationID, specversion, uri, maxQueueAge);
+		extensionTaskDao.setMaxQueueAge(specificationID, specversion, uri, taskId, maxQueueAge);
+	}
+
+	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}/{taskId}/setAttributes",
+			params = "maxQueueAge", method= RequestMethod.POST)
+	@ResponseBody
+	@Transactional
+	public void storeMaxQueueAge(@PathVariable("specificationID") String specificationID,
+								 @PathVariable("specversion") String specversion,
+								 @PathVariable("uri") String uri,
+								 @PathVariable("taskId") String taskId,
+								 @RequestParam("costResourceHour") Integer costResourceHour,
+								 @RequestParam("maxTaskAge") Integer maxTaskAge,
+								 @RequestParam("maxQueueAge") Integer maxQueueAge) {
+		extensionTaskDao.setAttributes(specificationID, specversion, uri, taskId, costResourceHour, maxTaskAge, maxQueueAge);
 	}
 
 }

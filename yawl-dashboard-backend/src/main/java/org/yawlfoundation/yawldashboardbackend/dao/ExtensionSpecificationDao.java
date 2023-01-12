@@ -19,16 +19,4 @@ public interface ExtensionSpecificationDao extends JpaRepository<ExtensionSpecif
     @Query(value = "UPDATE extension_specifications e SET e.specification_time_limit = ?4 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3", nativeQuery = true)
     void setSpecificationTimeLimit(String specificationID, String version, String uri, Integer specificationTimeLimit);
 
-    @Modifying
-    @Query(value = "UPDATE extension_specifications e SET e.cost_resource_hour = ?4 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3", nativeQuery = true)
-    void setCostResourceHour(String specificationID, String version, String uri, Integer costResourceHour);
-
-    @Modifying
-    @Query(value = "UPDATE extension_specifications e SET e.max_task_age = ?4 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3", nativeQuery = true)
-    void setMaxTaskAge(String specificationID, String version, String uri, Integer maxTaskAge);
-
-    @Modifying
-    @Query(value = "UPDATE extension_specifications e SET e.max_queue_age = ?3 WHERE e.specification_id = ?1 AND e.specversion = ?2", nativeQuery = true)
-    void setMaxQueueAge(String specificationID, String version, String uri, Integer maxQueueAge);
-
 }

@@ -83,8 +83,6 @@ export class CaseViewComponent implements OnInit {
             // @ts-ignore
             this.cases.push(caseInstance);
           });
-          console.log(this.cases);
-
           this.dataSource = new MatTableDataSource(this.cases);
           this.dataSource.sort = this.sort;
         });

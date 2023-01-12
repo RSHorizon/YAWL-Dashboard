@@ -23,6 +23,7 @@ import { DashboardModule }		from './dashboard/dashboard.module';
 import { DashboardNewModule }		from './dashboard-new/dashboard-new.module';
 import { NotificationsModule }  from './notifications/notifications.module';
 
+
 // Services
 import {ConfigService} from "./common/config/config.service";
 

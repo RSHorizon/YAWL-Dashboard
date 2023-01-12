@@ -25,6 +25,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.yawlfoundation.yawl.elements.YSpecification;
+import org.yawlfoundation.yawl.engine.interfce.SpecificationData;
+import org.yawlfoundation.yawl.exceptions.YSyntaxException;
+import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceMarshaller;
+import org.yawlfoundation.yawl.unmarshal.YMarshal;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 
 
@@ -48,11 +53,9 @@ public abstract class SpecificationMarshaller {
 	}
 
 
-	public static Specification parseSepcification(String xml) throws IOException, JDOMException {
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		return parseSepcification(root);
+	public static SpecificationData parseSpecificationDefinition(String xml) throws IOException, JDOMException, YSyntaxException {
+		ResourceMarshaller resourceMarshaller = new ResourceMarshaller();
+		return resourceMarshaller.unmarshallSpecificationData(xml);
 	}
 
 
