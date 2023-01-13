@@ -106,11 +106,11 @@
       </ng-container>
 
       <!-- Initiated-->
-      <ng-container matColumnDef="initiated">
+      <ng-container matColumnDef="start">
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification initiated">
           Initiated
         </th>
-        <td mat-cell *matCellDef="let element"> </td>
+        <td mat-cell *matCellDef="let element">{{dateFormat(element.start)}}</td>
       </ng-container>
 
       <!-- Completed Column -->
@@ -126,7 +126,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
           Age
         </th>
-        <td mat-cell *matCellDef="let element"></td>
+        <td mat-cell *matCellDef="let element">{{computeAge(element)}}</td>
       </ng-container>
 
       <!-- Running Cases Column -->

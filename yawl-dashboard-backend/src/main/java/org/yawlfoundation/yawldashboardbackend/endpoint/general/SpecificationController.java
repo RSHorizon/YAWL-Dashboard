@@ -28,6 +28,7 @@ import org.yawlfoundation.yawldashboardbackend.dao.ExtensionSpecificationDao;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
 import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
 import org.yawlfoundation.yawldashboardbackend.model.ExtensionTask;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceLogManagerImpl;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
@@ -44,16 +45,20 @@ class SpecificationController {
 	private WorkItemManager workItemManager;
 
 	@Autowired
-	ExtensionSpecificationDao extensionSpecificationDao;
-
+	private ResourceLogManagerImpl resourceLogManager;
 	@Autowired
-	ExtensionTaskDao extensionTaskDao;
+	private ExtensionSpecificationDao extensionSpecificationDao;
+	@Autowired
+	private ExtensionTaskDao extensionTaskDao;
+
 
 	@RequestMapping(value="/test", method=RequestMethod.GET)
 	public void testRoute() {
+		//resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
+		resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
 		//workItemManager.getSpecificationList();
 
-		workItemManager.getSpecificationDefinitionById(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
+		//workItemManager.getSpecificationDefinitionById(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
 	}
 
 	@RequestMapping(value="/api/specification", method=RequestMethod.GET)
@@ -70,7 +75,8 @@ class SpecificationController {
 		return workItemManager.getSpecificationById(new YSpecificationID(specificationID, specversion, uri));
 	}
 
-	@RequestMapping(value="/api/specification/{uri}/{specificationID}/{specversion}/definition", method= RequestMethod.GET)
+	@RequestMapping(value="/api/specification/{uri}/{specificationID}/{specversion}/definition",
+			method= RequestMethod.GET)
 	@ResponseBody
 	@Transactional
 	public List<Task> getTaskDefinitions(@PathVariable("specificationID") String specificationID,

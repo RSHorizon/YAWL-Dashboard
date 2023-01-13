@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jdom2.JDOMException;
+import org.yawlfoundation.yawl.elements.YDecomposition;
 import org.yawlfoundation.yawl.elements.YSpecification;
 import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawl.engine.interfce.SpecificationData;
@@ -677,16 +678,15 @@ public class WorkItemManagerImpl implements WorkItemManager {
     public synchronized List<Task> getSpecificationDefinitionById(YSpecificationID ySpecificationID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String specData = connection.getSpecData(ySpecificationID, handle.getRawHandle());
-
             try {
                 SpecificationData specificationData = SpecificationMarshaller.parseSpecificationDefinition(specData);
                 List<YSpecification> ySpecification = YMarshal.unmarshalSpecifications(specificationData.getAsXML());
                 return ySpecification.get(0).getDecompositions().stream()
                         .filter(d -> d.getClass().getName()
                                 .equals("org.yawlfoundation.yawl.elements.YAWLServiceGateway"))
-                        .map(d -> d.getID())
-                        .map(d -> new Task(d,
-                                ySpecificationID.getIdentifier(), ySpecificationID.getVersionAsString(), ySpecificationID.getUri()))
+                        .map(YDecomposition::getID)
+                        .map(d -> new Task(d, ySpecificationID.getIdentifier(), ySpecificationID.getVersionAsString(),
+                                ySpecificationID.getUri()))
                         .collect(Collectors.toList());
             } catch (YSyntaxException e) {
                 throw new RuntimeException(e);

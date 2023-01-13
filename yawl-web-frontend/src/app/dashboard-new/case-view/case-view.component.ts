@@ -21,16 +21,16 @@ import {TaskViewComponent} from "../task-view/task-view.component";
   styleUrls: ['./case-view.component.css']
 })
 export class CaseViewComponent implements OnInit {
-  faPencil=faPencil;
-  faArrowLeft=faArrowLeft;
-  faArrowsToEye=faArrowsToEye;
+  faPencil = faPencil;
+  faArrowLeft = faArrowLeft;
+  faArrowsToEye = faArrowsToEye;
   casesURL = "http://localhost:8080/resourceService/faces/caseMgt.jsp"
   specificationID: string | null = null;
   specversion: string | null = null;
   uri: string | null = null;
   specification: Specification | undefined = undefined;
   extensionSpecification: ExtensionSpecification | undefined = undefined;
-  cases: Case[]| undefined = undefined;
+  cases: Case[] | undefined = undefined;
   errorState: boolean = false;
   // @ts-ignore
   viewType: number = '0';
@@ -39,7 +39,7 @@ export class CaseViewComponent implements OnInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['id', 'initiated', 'completed', 'age', 'running', 'queue', 'overdue', 'actions'];
+  displayedColumns: string[] = ['id', 'start', 'completed', 'age', 'running', 'queue', 'overdue', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 
@@ -74,15 +74,25 @@ export class CaseViewComponent implements OnInit {
         });
 
       this.caseService.findAllBySpecificationId(this.specificationID, this.specversion, this.uri)
-        .subscribe( cases => {
+        .subscribe(cases => {
           this.cases = [];
-          cases.forEach(caseId => {
+          cases.forEach(caseResponse => {
             // @ts-ignore
             let caseInstance: Case = {};
             // @ts-ignore
-            caseInstance.id = caseId;
+            caseInstance.id = caseResponse.id;
             // @ts-ignore
             caseInstance.specification = this.specification;
+            // @ts-ignore
+            caseInstance.events = JSON.parse(caseResponse.jsonEvents).event;
+            let start = caseInstance.events.filter((cs: any) => cs.eventtype === "launch_case")[0];
+            let end = caseInstance.events.filter((cs: any) => cs.eventtype === "complete_case")[0];
+            if (start !== undefined) {
+              caseInstance.start = start.timestamp;
+            }
+            if (end !== undefined) {
+              caseInstance.end = end.timestamp;
+            }
             // @ts-ignore
             this.cases.push(caseInstance);
           });
@@ -92,7 +102,7 @@ export class CaseViewComponent implements OnInit {
     });
   }
 
-  openWorkitemQueueDialog(): void{
+  openWorkitemQueueDialog(): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
@@ -105,7 +115,7 @@ export class CaseViewComponent implements OnInit {
     this.dialog.open(WorkitemQueueDialogComponent, dialogConfig);
   }
 
-  openWorkitemsDialog(caseId: string): void{
+  openWorkitemsDialog(caseId: string): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
@@ -132,21 +142,52 @@ export class CaseViewComponent implements OnInit {
     }
   }
 
-  isCaseView(): boolean{
+  isCaseView(): boolean {
     return this.viewType == ViewType.Case;
   }
 
-  isTaskView(): boolean{
+  isTaskView(): boolean {
     return this.viewType == ViewType.Task;
   }
 
-  changedSpecificationAttributes(): void{
-    if(this.specification === undefined){
+  changedSpecificationAttributes(): void {
+    if (this.specification === undefined) {
       return;
     }
-    this.specificationService.storeSpecificationAttributesById(this.specification.id, this.specification.specversion, this.specification.uri, ""+ this.specificationTimeLimit)
+    this.specificationService.storeSpecificationAttributesById(this.specification.id, this.specification.specversion, this.specification.uri, "" + this.specificationTimeLimit)
       .subscribe()
   }
+
+  computeAge(caseInstance: Case): string{
+    if(caseInstance.start === undefined){
+      return this.applyPastTimeFormatForTimestamp(0);
+    }else if(caseInstance.end === undefined ){
+      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(caseInstance.start*1), new Date(Date.now())));
+    }else{
+      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(caseInstance.start*1), new Date(caseInstance.end*1)));
+    }
+  }
+
+  getTimestampFromDuration(start: Date, end: Date): number{
+    // @ts-ignore
+    return Math.abs(start - end);
+  }
+
+  applyPastTimeFormatForTimestamp(timestamp: number): string{
+    // @ts-ignore
+    let hoursMs = timestamp
+    let minutesMs = hoursMs % (1000 * 60 * 60)
+
+    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
+    let minutes = Math.floor( minutesMs / (1000 * 60))
+
+    return hours + "h " + minutes + "m";
+  }
+
+  dateFormat(timestamp: number): string{
+    return new Date(timestamp*1).toLocaleDateString();
+  }
+
 }
 
 enum ViewType {

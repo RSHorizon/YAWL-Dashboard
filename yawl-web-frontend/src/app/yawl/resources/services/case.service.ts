@@ -43,7 +43,18 @@ export class CaseService {
       map((res: HttpResponse<any>) => res.body.json()),
       catchError((error) => this.handleError(error))
     )
+  }
 
+  findCaseEventsById(caseId: string): Observable<Case> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
+
+    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "case/" + encodeURIComponent(caseId)+ "/events";
+
+    return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<any>) => res),
+      catchError((error) => this.handleError(error))
+    )
   }
 
 
