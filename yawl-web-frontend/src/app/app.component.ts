@@ -9,9 +9,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-root',
   template: `<router-outlet></router-outlet>\n\
-				<context-menu></context-menu>\n\
-				<popup-menu></popup-menu>\n\n\
-				<modal-placeholder></modal-placeholder>
         <notifier-container></notifier-container>`,
   styleUrls: ['app.component.css']
 })

@@ -2,11 +2,10 @@ import { Injectable, EventEmitter } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
-
 import { Capability } from '../entities/capability.entity';
 import {catchError, map} from "rxjs/operators";
 
+import { env } from '../../../../environments/environment';
 
 
 @Injectable()
@@ -17,8 +16,7 @@ export class AbstractResourceService<T> {
   public getAllAttribute : string = '';
   private http : HttpClient;
 
-	constructor(http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(http: HttpClient) {
     this.http = http;
 	}
 
@@ -26,7 +24,7 @@ export class AbstractResourceService<T> {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + this.resourceUrlPath;
+		let url = env.apiUrl + this.resourceUrlPath;
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -40,7 +38,7 @@ export class AbstractResourceService<T> {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + this.resourceUrlPath + "/"+encodeURIComponent(id);
+		let url = env.apiUrl + this.resourceUrlPath + "/"+encodeURIComponent(id);
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -53,7 +51,7 @@ export class AbstractResourceService<T> {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + this.resourceUrlPath;
+		let url = env.apiUrl + this.resourceUrlPath;
 
 		return this.http.post<HttpResponse<any>>(url, resource, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -66,7 +64,7 @@ export class AbstractResourceService<T> {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + this.resourceUrlPath + "/"+encodeURIComponent(id);
+		let url = env.apiUrl + this.resourceUrlPath + "/"+encodeURIComponent(id);
 
 		return this.http.put(url, resource, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -78,7 +76,7 @@ export class AbstractResourceService<T> {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + this.resourceUrlPath + "/"+encodeURIComponent(id);
+		let url = env.apiUrl + this.resourceUrlPath + "/"+encodeURIComponent(id);
 
 		return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))

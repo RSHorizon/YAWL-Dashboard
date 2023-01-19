@@ -3,17 +3,18 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
 
-import {YawlResourcesConfigService} from '../yawl-resources-config.service';
+
 
 import {Specification} from '../entities/specification.entity';
 import {catchError, map} from "rxjs/operators";
+
+import { env } from '../../../../environments/environment';
 
 
 @Injectable()
 export class SpecificationService {
 
-  constructor(private http: HttpClient,
-              private yawlResourcesConfigService: YawlResourcesConfigService) {
+  constructor(private http: HttpClient) {
   }
 
 
@@ -21,7 +22,7 @@ export class SpecificationService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification";
+    let url = env.apiUrl + "specification";
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
@@ -36,7 +37,7 @@ export class SpecificationService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+    let url = env.apiUrl + "specification/"
       + encodeURIComponent(uri)
       + "/" + encodeURIComponent(id)
       + "/" + encodeURIComponent(version);
@@ -51,7 +52,7 @@ export class SpecificationService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/task/"
+    let url = env.apiUrl + "specification/task/"
       + encodeURIComponent(uri)
       + "/" + encodeURIComponent(id)
       + "/" + encodeURIComponent(version);
@@ -65,7 +66,7 @@ export class SpecificationService {
   storeTaskAttributesById(id: string, version: string, uri: string, taskId: string,
                           costResourceHour: string, maxTaskAge: string, maxQueueAge: string): Observable<Specification> {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/task/"
+    let url = env.apiUrl + "specification/task/"
       + encodeURIComponent(uri)
       + "/" + encodeURIComponent(id)
       + "/" + encodeURIComponent(version)
@@ -84,7 +85,7 @@ export class SpecificationService {
   storeSpecificationAttributesById(id: string, version: string, uri: string,
                                    specificationTimeLimit: string): Observable<Specification> {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/extension/"
+    let url = env.apiUrl + "specification/extension/"
       + encodeURIComponent(uri)
       + "/" + encodeURIComponent(id)
       + "/" + encodeURIComponent(version)
@@ -101,7 +102,7 @@ export class SpecificationService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+    let url = env.apiUrl + "specification/"
       + encodeURIComponent(uri)
       + "/" + encodeURIComponent(id)
       + "/" + encodeURIComponent(version) + "/definition";
@@ -117,7 +118,7 @@ export class SpecificationService {
     headers.append("Accept", "application/json");
     headers.append("Content-Type", "application/xml");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification";
+    let url = env.apiUrl + "specification";
 
     return this.http.post<HttpResponse<any>>(url, item, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -130,7 +131,7 @@ export class SpecificationService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+    let url = env.apiUrl + "specification/"
       + encodeURIComponent(id)
       + "/" + encodeURIComponent(version);
 

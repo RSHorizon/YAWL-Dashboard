@@ -3,18 +3,15 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
-
 import { Participant } from '../entities/participant.entity';
 import {catchError, map} from "rxjs/operators";
 
-
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class ParticipantService {
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(private http: HttpClient) {
 	}
 
 
@@ -22,7 +19,7 @@ export class ParticipantService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "users";
+		let url = env.apiUrl + "users";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),

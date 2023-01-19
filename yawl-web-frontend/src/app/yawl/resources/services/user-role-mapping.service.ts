@@ -4,12 +4,10 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
-
 import { User }		from '../entities/user.entity';
 import { Role }		from '../entities/role.entity';
 import {catchError, map} from "rxjs/operators";
-
+import { env } from '../../../../environments/environment';
 
 
 @Injectable()
@@ -18,8 +16,7 @@ export class UserRoleMappingService {
 	public notificationsChanged = new Subject();
 
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(private http: HttpClient) {
 	}
 
 
@@ -27,7 +24,7 @@ export class UserRoleMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "role/"+encodeURIComponent(roleId)
+		let url = env.apiUrl + "role/"+encodeURIComponent(roleId)
 																		  +"/users";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
@@ -42,7 +39,7 @@ export class UserRoleMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/"+encodeURIComponent(userId)
+		let url = env.apiUrl + "user/"+encodeURIComponent(userId)
 																		  +"/roles";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
@@ -57,7 +54,7 @@ export class UserRoleMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "role/"+encodeURIComponent(roleId)+"/users/identifiers";
+		let url = env.apiUrl + "role/"+encodeURIComponent(roleId)+"/users/identifiers";
 
 		return this.http.post<HttpResponse<any>>(url, userId, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -70,7 +67,7 @@ export class UserRoleMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "role/"+encodeURIComponent(roleId)
+		let url = env.apiUrl + "role/"+encodeURIComponent(roleId)
 																		  +"/user/"+encodeURIComponent(userId);
 
 		return this.http.delete(url, {headers, withCredentials: true}).pipe(

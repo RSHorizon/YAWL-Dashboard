@@ -4,17 +4,17 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 
-import {YawlResourcesConfigService} from '../yawl-resources-config.service';
+
 
 import {AssetCategory} from '../entities/asset-category.entity';
 import {catchError, map} from "rxjs/operators";
 
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class AssetCategoryService {
 
-  constructor(private http: HttpClient,
-              private yawlResourcesConfigService: YawlResourcesConfigService) {
+  constructor(private http: HttpClient) {
   }
 
 
@@ -22,7 +22,7 @@ export class AssetCategoryService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assetcategories";
+    let url = env.apiUrl + "assetcategories";
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -36,7 +36,7 @@ export class AssetCategoryService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assetcategory/" + encodeURIComponent(id);
+    let url = env.apiUrl + "assetcategory/" + encodeURIComponent(id);
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => <AssetCategory>res.body.json()),
@@ -49,7 +49,7 @@ export class AssetCategoryService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assetcategory";
+    let url = env.apiUrl + "assetcategory";
 
     return this.http.post<HttpResponse<any>>(url, assetCategory, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => <AssetCategory>res.body.json()),
@@ -63,7 +63,7 @@ export class AssetCategoryService {
     headers.append("Accept", "application/json");
     headers.append("Content-Type", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assetcategory/" + encodeURIComponent(assetCategory.id);
+    let url = env.apiUrl + "assetcategory/" + encodeURIComponent(assetCategory.id);
 
     return this.http.put(url, assetCategory, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -75,7 +75,7 @@ export class AssetCategoryService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assetcategory/" + encodeURIComponent(assetCategoryId);
+    let url = env.apiUrl + "assetcategory/" + encodeURIComponent(assetCategoryId);
 
     return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -87,7 +87,7 @@ export class AssetCategoryService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assetcategory/" + encodeURIComponent(assetCategoryId) + "/subcategory";
+    let url = env.apiUrl + "assetcategory/" + encodeURIComponent(assetCategoryId) + "/subcategory";
 
     let data = {
       'name': subCategoryName
@@ -103,7 +103,7 @@ export class AssetCategoryService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assetcategory/" + encodeURIComponent(assetCategoryId) + "/subcategory/" + assetSubCategoryId;
+    let url = env.apiUrl + "assetcategory/" + encodeURIComponent(assetCategoryId) + "/subcategory/" + assetSubCategoryId;
 
     return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))

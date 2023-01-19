@@ -3,12 +3,11 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import { Observable, Subject } from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
 
 import { Role } from '../entities/role.entity';
 import {catchError, map} from "rxjs/operators";
 
-
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class RoleService {
@@ -16,8 +15,7 @@ export class RoleService {
 	public notificationsChanged = new Subject();
 
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(private http: HttpClient) {
 	}
 
 
@@ -26,7 +24,7 @@ export class RoleService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "roles";
+		let url = env.apiUrl + "roles";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -41,7 +39,7 @@ export class RoleService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "role/"+encodeURIComponent(id);
+		let url = env.apiUrl + "role/"+encodeURIComponent(id);
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -55,7 +53,7 @@ export class RoleService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "role";
+		let url = env.apiUrl + "role";
 
 		return this.http.post<HttpResponse<any>>(url, role, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -69,7 +67,7 @@ export class RoleService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "role/"+encodeURIComponent(role.id);
+		let url = env.apiUrl + "role/"+encodeURIComponent(role.id);
 
 		return this.http.put(url, role, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -82,7 +80,7 @@ export class RoleService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "role/"+encodeURIComponent(roleId);
+		let url = env.apiUrl + "role/"+encodeURIComponent(roleId);
 
 		return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))

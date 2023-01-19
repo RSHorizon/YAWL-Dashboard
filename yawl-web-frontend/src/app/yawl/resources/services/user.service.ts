@@ -4,12 +4,10 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
-
 import { User } from '../entities/user.entity';
 import {catchError, map} from "rxjs/operators";
 
-
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class UserService {
@@ -17,8 +15,7 @@ export class UserService {
 	public notificationsChanged = new Subject();
 
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(private http: HttpClient) {
 	}
 
 
@@ -27,7 +24,7 @@ export class UserService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "users";
+		let url = env.apiUrl + "users";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -42,7 +39,7 @@ export class UserService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/"+encodeURIComponent(id);
+		let url = env.apiUrl + "user/"+encodeURIComponent(id);
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -56,7 +53,7 @@ export class UserService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user";
+		let url = env.apiUrl + "user";
 
 		return this.http.post<HttpResponse<any>>(url, user, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -72,7 +69,7 @@ export class UserService {
 		headers.append("Content-Type", "application/json");
 
 		// @ts-ignore
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/"+encodeURIComponent(user.id);
+    let url = env.apiUrl + "user/"+encodeURIComponent(user.id);
 
 		return this.http.put(url, user, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -86,7 +83,7 @@ export class UserService {
 		headers.append("Accept", "application/json");
 		headers.append("Content-Type", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/" + encodeURIComponent(userId);
+		let url = env.apiUrl + "user/" + encodeURIComponent(userId);
 
 		let data = {
 			'password': newPassword
@@ -103,7 +100,7 @@ export class UserService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/"+encodeURIComponent(userId);
+		let url = env.apiUrl + "user/"+encodeURIComponent(userId);
 
 		return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))

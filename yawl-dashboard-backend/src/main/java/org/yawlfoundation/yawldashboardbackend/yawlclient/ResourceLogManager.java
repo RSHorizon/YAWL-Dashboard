@@ -12,4 +12,6 @@ public interface ResourceLogManager {
     String getTaskStatisticsForSpecification(YSpecificationID specID);
 
     String getTaskStatisticsForCase(String caseId);
+
+    String getMergedXESLog(YSpecificationID specID);
 }

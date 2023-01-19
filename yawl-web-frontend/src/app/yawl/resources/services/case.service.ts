@@ -3,17 +3,17 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
 
-import {YawlResourcesConfigService} from '../yawl-resources-config.service';
+
 
 import {Case} from '../entities/case.entity';
 import {catchError, map} from "rxjs/operators";
 
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class CaseService {
 
-  constructor(private http: HttpClient,
-              private yawlResourcesConfigService: YawlResourcesConfigService) {
+  constructor(private http: HttpClient) {
   }
 
 
@@ -21,7 +21,7 @@ export class CaseService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "case";
+    let url = env.apiUrl + "case";
 
     // @ts-ignore
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
@@ -37,7 +37,7 @@ export class CaseService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "case/" + encodeURIComponent(id);
+    let url = env.apiUrl + "case/" + encodeURIComponent(id);
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -49,7 +49,7 @@ export class CaseService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "case/" + encodeURIComponent(caseId)+ "/events";
+    let url = env.apiUrl + "case/" + encodeURIComponent(caseId)+ "/events";
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
@@ -62,7 +62,7 @@ export class CaseService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+    let url = env.apiUrl + "specification/"
       + encodeURIComponent(uri)
       + "/" + encodeURIComponent(id)
       + "/" + encodeURIComponent(version)
@@ -80,7 +80,7 @@ export class CaseService {
     headers.append("Accept", "application/json");
     headers.append("Content-Type", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+    let url = env.apiUrl + "specification/"
       + encodeURIComponent(id)
       + "/" + encodeURIComponent(version)
       + "/start";
@@ -95,7 +95,7 @@ export class CaseService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "case/" + encodeURIComponent(id);
+    let url = env.apiUrl + "case/" + encodeURIComponent(id);
 
     return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))

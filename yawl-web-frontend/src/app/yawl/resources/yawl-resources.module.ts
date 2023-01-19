@@ -15,14 +15,11 @@ import { UserPositionMappingService }	from './services/user-position-mapping.ser
 import { UserRoleMappingService }		from './services/user-role-mapping.service';
 import { WorkItemService }				from './services/work-item.service';
 
-import { YawlResourcesConfigService }	from './yawl-resources-config.service';
-
-
 
 /**
  * This is the module that should be importet
  * by the root app component as it provides resource services.
- * 
+ *
  * @author Philipp Thomas
  */
 @NgModule({
@@ -40,9 +37,8 @@ import { YawlResourcesConfigService }	from './yawl-resources-config.service';
 		UserCapabilityMappingService,
 		UserPositionMappingService,
 		UserRoleMappingService,
-		WorkItemService,
-		YawlResourcesConfigService
-	]
+		WorkItemService
+  ]
 })
 export class YawlResourcesModule { }
 

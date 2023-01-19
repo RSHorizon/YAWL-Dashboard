@@ -3,19 +3,17 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
 
 import { WorkItem } from '../entities/work-item.entity';
 import { User } from '../entities/user.entity';
 import {catchError, map} from "rxjs/operators";
 
-
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class WorkItemService {
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(private http: HttpClient) {
 	}
 
 
@@ -23,7 +21,7 @@ export class WorkItemService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitems";
+		let url = env.apiUrl + "workitems";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -38,7 +36,7 @@ export class WorkItemService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitems/unoffered";
+		let url = env.apiUrl + "workitems/unoffered";
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -51,7 +49,7 @@ export class WorkItemService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+    let url = env.apiUrl + "specification/"
       + encodeURIComponent(uri) + "/"
       + encodeURIComponent(specificationId) + "/"
       + encodeURIComponent(specversion) + "/"
@@ -68,7 +66,7 @@ export class WorkItemService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "specification/"
+    let url = env.apiUrl + "specification/"
       + encodeURIComponent(uri) + "/"
       + encodeURIComponent(specificationId) + "/"
       + encodeURIComponent(specversion)
@@ -89,7 +87,7 @@ export class WorkItemService {
 			console.log("Illegal queue");
 		}
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/"
+		let url = env.apiUrl + "user/"
 																		  + encodeURIComponent(userId)
 																		  + "/workitems/" + queue;
 
@@ -105,7 +103,7 @@ export class WorkItemService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitem/" + encodeURIComponent(id);
+		let url = env.apiUrl + "workitem/" + encodeURIComponent(id);
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -119,7 +117,7 @@ export class WorkItemService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitem/" + encodeURIComponent(id) + "/participants";
+		let url = env.apiUrl + "workitem/" + encodeURIComponent(id) + "/participants";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -135,7 +133,7 @@ export class WorkItemService {
 		headers.append("Accept", "application/json");
 		headers.append("Content-Type", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitem/" + encodeURIComponent(id) + "/offer";
+		let url = env.apiUrl + "workitem/" + encodeURIComponent(id) + "/offer";
 
 		let data = {
 			'users': userIds
@@ -153,7 +151,7 @@ export class WorkItemService {
 		headers.append("Accept", "application/json");
 		headers.append("Content-Type", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitem/" + encodeURIComponent(id) + "/allocate";
+		let url = env.apiUrl + "workitem/" + encodeURIComponent(id) + "/allocate";
 
 		let data = {
 			'user': userId
@@ -171,7 +169,7 @@ export class WorkItemService {
 		headers.append("Accept", "application/json");
 		headers.append("Content-Type", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitem/" + encodeURIComponent(id) + "/start";
+		let url = env.apiUrl + "workitem/" + encodeURIComponent(id) + "/start";
 
 		let data = {
 			'user': userId
@@ -189,7 +187,7 @@ export class WorkItemService {
 		headers.append("Accept", "application/json");
 		headers.append("Content-Type", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "workitem/" + encodeURIComponent(id) + "/documentation";
+		let url = env.apiUrl + "workitem/" + encodeURIComponent(id) + "/documentation";
 
 		let data = {
 			'documentation': documentation

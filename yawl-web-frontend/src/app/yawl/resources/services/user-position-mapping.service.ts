@@ -3,12 +3,10 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import { Observable, Subject } from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
-
 import { User }		from '../entities/user.entity';
 import { Position }	from '../entities/position.entity';
 import {catchError, map} from "rxjs/operators";
-
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class UserPositionMappingService {
@@ -16,8 +14,7 @@ export class UserPositionMappingService {
 	public notificationsChanged = new Subject();
 
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(private http: HttpClient) {
 	}
 
 
@@ -25,7 +22,7 @@ export class UserPositionMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "position/"+encodeURIComponent(positionId)
+		let url = env.apiUrl + "position/"+encodeURIComponent(positionId)
 																		  +"/users";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
@@ -40,7 +37,7 @@ export class UserPositionMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/"+encodeURIComponent(userId)
+		let url = env.apiUrl + "user/"+encodeURIComponent(userId)
 																		  +"/positions";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
@@ -55,7 +52,7 @@ export class UserPositionMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "position/"+encodeURIComponent(positionId)
+		let url = env.apiUrl + "position/"+encodeURIComponent(positionId)
 																		  +"/users/identifiers";
 
 		return this.http.post<HttpResponse<any>>(url, userId, {headers, withCredentials: true}).pipe(
@@ -69,7 +66,7 @@ export class UserPositionMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "position/"+encodeURIComponent(positionId)
+		let url = env.apiUrl + "position/"+encodeURIComponent(positionId)
 																		  +"/user/"+encodeURIComponent(userId);
 
 		return this.http.delete(url, {headers, withCredentials: true}).pipe(

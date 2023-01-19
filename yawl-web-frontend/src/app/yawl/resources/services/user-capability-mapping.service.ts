@@ -3,13 +3,11 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import { Observable, Subject } from 'rxjs';
 
-import { YawlResourcesConfigService } from '../yawl-resources-config.service';
-
 import { User }			from '../entities/user.entity';
 import { Capability }	from '../entities/capability.entity';
 import {catchError, map} from "rxjs/operators";
 
-
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class UserCapabilityMappingService {
@@ -17,8 +15,7 @@ export class UserCapabilityMappingService {
 	public notificationsChanged = new Subject();
 
 
-	constructor(private http: HttpClient,
-				private yawlResourcesConfigService : YawlResourcesConfigService) {
+	constructor(private http: HttpClient) {
 	}
 
 
@@ -26,7 +23,7 @@ export class UserCapabilityMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "capability/"+encodeURIComponent(capabilityId)
+		let url = env.apiUrl + "capability/"+encodeURIComponent(capabilityId)
 																		  +"/users";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
@@ -41,7 +38,7 @@ export class UserCapabilityMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "user/"+encodeURIComponent(userId)
+		let url = env.apiUrl + "user/"+encodeURIComponent(userId)
 																		  +"/capabilities";
 
 		return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
@@ -56,7 +53,7 @@ export class UserCapabilityMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "capability/"+encodeURIComponent(capabilityId)
+		let url = env.apiUrl + "capability/"+encodeURIComponent(capabilityId)
 																		  +"/users/identifiers";
 
 		return this.http.post<HttpResponse<any>>(url, userId, {headers, withCredentials: true}).pipe(
@@ -70,7 +67,7 @@ export class UserCapabilityMappingService {
 		let headers = new HttpHeaders();
 		headers.append("Accept", "application/json");
 
-		let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "capability/"+encodeURIComponent(capabilityId)
+		let url = env.apiUrl + "capability/"+encodeURIComponent(capabilityId)
 																		  +"/user/"+encodeURIComponent(userId);
 
 		return this.http.delete(url, {headers, withCredentials: true}).pipe(

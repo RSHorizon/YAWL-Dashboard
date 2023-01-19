@@ -16,12 +16,8 @@ import { LayoutModule }			from './common/layout/layout.module';
 import { ModalModule }			from './util/modal/modal.module';
 import { SessionModule }		from './common/session/session.module';
 import { YawlResourcesModule }	from './yawl/resources/yawl-resources.module';
-import { DynFormModule }		from './dyn-form/dyn-form.module';
-import { OrganisationModule }	from './organisation/organisation.module';
 import { DialogsRootModule }	from './util/dialogs/dialogs-root.module';
-import { DashboardModule }		from './dashboard/dashboard.module';
 import { DashboardNewModule }		from './dashboard-new/dashboard-new.module';
-import { NotificationsModule }  from './notifications/notifications.module';
 
 
 // Services
@@ -63,11 +59,7 @@ export function appInitializing(config: ConfigService) {
     LayoutModule,
     SessionModule,
     YawlResourcesModule,
-    DynFormModule,
-    OrganisationModule,
     DialogsRootModule,
-    NotificationsModule,
-    DashboardModule,
     DashboardNewModule,
     MatMenuModule,
     MaterialModule,

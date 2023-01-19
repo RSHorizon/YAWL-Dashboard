@@ -3,17 +3,17 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
 
-import {YawlResourcesConfigService} from '../yawl-resources-config.service';
+
 
 import {Asset} from '../entities/asset.entity';
 import {catchError, map} from "rxjs/operators";
 
+import { env } from '../../../../environments/environment';
 
 @Injectable()
 export class AssetService {
 
-  constructor(private http: HttpClient,
-              private yawlResourcesConfigService: YawlResourcesConfigService) {
+  constructor(private http: HttpClient) {
   }
 
 
@@ -21,7 +21,7 @@ export class AssetService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "assets";
+    let url = env.apiUrl + "assets";
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res.body.json()),
@@ -35,7 +35,7 @@ export class AssetService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "asset/" + encodeURIComponent(id);
+    let url = env.apiUrl + "asset/" + encodeURIComponent(id);
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => <Asset>res.body.json()),
@@ -48,7 +48,7 @@ export class AssetService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "asset";
+    let url = env.apiUrl + "asset";
 
     return this.http.post<HttpResponse<any>>(url, asset, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => <Asset>res.body.json()),
@@ -62,7 +62,7 @@ export class AssetService {
     headers.append("Accept", "application/json");
     headers.append("Content-Type", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "asset/" + encodeURIComponent(asset.id);
+    let url = env.apiUrl + "asset/" + encodeURIComponent(asset.id);
 
     return this.http.put(url, asset, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
@@ -74,7 +74,7 @@ export class AssetService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = this.yawlResourcesConfigService.getResourceServiceUrl() + "asset/" + encodeURIComponent(assetId);
+    let url = env.apiUrl + "asset/" + encodeURIComponent(assetId);
 
     return this.http.delete(url, {headers, withCredentials: true}).pipe(
       catchError((error) => this.handleError(error))
