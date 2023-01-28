@@ -1,17 +1,23 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient;
 
 import org.yawlfoundation.yawl.engine.YSpecificationID;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.SpecificationStatistic;
+
+import java.util.List;
 
 public interface ResourceLogManager {
     String getCaseEvents(String caseId);
 
     String getSpecificationEvents(YSpecificationID specID);
 
-    String getStatisticsForSpecification(YSpecificationID specID);
+    SpecificationStatistic getStatisticsForSpecification(YSpecificationID specID);
 
     String getTaskStatisticsForSpecification(YSpecificationID specID);
 
     String getTaskStatisticsForCase(String caseId);
 
-    String getMergedXESLog(YSpecificationID specID);
+    YSpecificationID getSpecificationIdentifiers(String speckey);
+
+    List<Event> getAllResourceEvents(YSpecificationID specID);
 }

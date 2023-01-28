@@ -19,8 +19,8 @@ public class ExtensionTask {
     private String uri;
 
     @Id
-    @Column(name = "taskId", columnDefinition = "varchar2(255)")
-    private String taskId;
+    @Column(name = "taskid", columnDefinition = "varchar2(255)")
+    private String taskid;
 
     @Column(name = "costResourceHour")
     private Integer costResourceHour;
@@ -55,12 +55,12 @@ public class ExtensionTask {
         this.maxQueueAge = maxQueueAge;
     }
 
-    public String getTaskId() {
-        return taskId;
+    public String getTaskid() {
+        return taskid;
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public void setTaskid(String taskid) {
+        this.taskid = taskid;
     }
 
     public String getSpecificationId() {

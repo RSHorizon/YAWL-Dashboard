@@ -6,17 +6,17 @@ public class ExtensionTaskId implements Serializable {
     private String specificationId;
     private String specversion;
     private String uri;
-    private String taskId;
+    private String taskid;
 
     public ExtensionTaskId() {
 
     }
 
-    public ExtensionTaskId(String specificationId, String specversion, String uri, String taskId) {
+    public ExtensionTaskId(String specificationId, String specversion, String uri, String taskid) {
         this.specificationId = specificationId;
         this.specversion = specversion;
         this.uri = uri;
-        this.taskId = taskId;
+        this.taskid = taskid;
     }
 
     public String getSpecversion() {
@@ -43,11 +43,11 @@ public class ExtensionTaskId implements Serializable {
         this.uri = uri;
     }
 
-    public String getTaskId() {
-        return taskId;
+    public String getTaskid() {
+        return taskid;
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public void setTaskid(String taskid) {
+        this.taskid = taskid;
     }
 }

@@ -2,6 +2,7 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
 public class Task {
     String id;
+    String order;
     String specificationId;
     String specversion;
     String uri;

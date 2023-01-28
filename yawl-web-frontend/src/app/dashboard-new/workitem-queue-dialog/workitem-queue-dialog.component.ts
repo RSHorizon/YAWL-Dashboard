@@ -9,6 +9,8 @@ import {MatTableDataSource} from "@angular/material/table";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {WorkItemService} from "../../yawl/resources/services/work-item.service";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
+import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
+import {Participant} from "../../yawl/resources/entities/participant.entity";
 
 @Component({
   selector: 'app-workitem-queue-dialog',
@@ -28,8 +30,9 @@ export class WorkitemQueueDialogComponent implements OnInit {
   faChevronUp=faChevronUp;
   faChevronDown=faChevronDown;
   workitemURL = "http://localhost:8080/resourceService/faces/adminQueues.jsp"
-  specification: Specification;
+  specificationStatistic: SpecificationStatistic;
   tasks: any |undefined;
+  queueSize = 0;
 
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
@@ -47,17 +50,17 @@ export class WorkitemQueueDialogComponent implements OnInit {
               private dialogRef: MatDialogRef<WorkitemQueueDialogComponent>,
               // @ts-ignore
               @Inject(MAT_DIALOG_DATA) data) {
-    this.specification = data.specification;
+    this.specificationStatistic = data.specificationStatistic;
 
-    workItemService.findAllBySpecification(this.specification.id, this.specification.specversion, this.specification.uri)
+    workItemService.findAllBySpecification(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri)
       .subscribe(workitems => {
         workitems = workitems.filter((workitem: any) => workitem.resourceStatus === "Offered" || workitem.resourceStatus === "Allocated")
+        this.queueSize = workitems.length;
         this.dataSource = new MatTableDataSource(workitems);
         this.dataSource.sort = this.sort;
-        console.log(this.sort);
       });
 
-    specificationService.findTasksById(this.specification.id, this.specification.specversion, this.specification.uri)
+    specificationService.findTasksById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri)
       .subscribe(tasks => {
         this.tasks = tasks;
       })
@@ -121,7 +124,7 @@ export class WorkitemQueueDialogComponent implements OnInit {
     if (workitem === undefined || this.tasks === undefined) {
       return -1;
     }
-    let task: any = this.tasks.filter((task: any) => task.taskId == workitem.taskID)[0];
+    let task: any = this.specificationStatistic.taskStatisticDTOS.filter((task: any) => task.taskid == workitem.taskID)[0];
     if (workitem.startTimeMs === "") {
       if (task.maxQueueAge < this.getTimestampFromDuration(new Date(workitem.enablementTimeMs * 1), new Date(Date.now()))) {
         return 1;
@@ -153,7 +156,53 @@ export class WorkitemQueueDialogComponent implements OnInit {
     if(workitem === undefined || this.tasks === undefined){
       return "";
     }
-    let task: any = this.tasks.filter((task: any) => task.taskId == workitem.taskID)[0];
+    let task: any = this.specificationStatistic.taskStatisticDTOS.filter((task: any) => task.taskid == workitem.taskID)[0];
     return this.applyPastTimeFormatForTimestamp(task.maxQueueAge);
+  }
+
+  getAvgQueueTime(workitem: any): string{
+    if(workitem === undefined || this.tasks === undefined){
+      return "";
+    }
+    let task: any = this.specificationStatistic.taskStatisticDTOS.filter((task: any) => task.taskid == workitem.taskID)[0];
+    return this.applyPastTimeFormatForTimestamp(task.avgQueueTime);
+  }
+
+  getAvgQueueTimeForAllTasks(): string{
+    let total = 0;
+    let counter = 0;
+    this.specificationStatistic.taskStatisticDTOS.forEach(task => {
+      total += task.avgQueueTime;
+      counter++;
+    })
+    return this.applyPastTimeFormatForTimestamp(total/counter);
+  }
+
+  getAvgTimeToReach(workitem: any): string{
+    if(workitem === undefined || this.tasks === undefined){
+      return "";
+    }
+    let task: any = this.specificationStatistic.taskStatisticDTOS.filter((task: any) => task.taskid == workitem.taskID)[0];
+    return this.applyPastTimeFormatForTimestamp(task.avgTimeToReach);
+  }
+
+  getCommonParticipants(workitem: any): Participant[]{
+    if(workitem === undefined || this.tasks === undefined){
+      return [];
+    }
+    let task: any = this.specificationStatistic.taskStatisticDTOS.filter((task: any) => task.taskid == workitem.taskID)[0];
+    return task.participants;
+  }
+
+  applyParticipantsArrayFormat(participants: Participant[]): string{
+    if(participants === undefined){
+      return "";
+    }
+
+    let chain = "";
+    participants.forEach(participant => {
+      chain += ", " + participant.firstname + " " + participant.lastname
+    })
+    return chain.substring(2);
   }
 }

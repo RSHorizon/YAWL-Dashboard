@@ -6,7 +6,8 @@ import {SpecificationService} from '../../yawl/resources/services/specification.
 import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {MatTableDataSource} from "@angular/material/table";
 import {ExtensionSpecificationService} from "../services/extension-specification.service";
-import {ExtensionSpecification} from "../../yawl/resources/entities/extensionSpecification.entity";
+import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
+import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
 
 @Component({
   selector: 'app-specification-view',
@@ -21,7 +22,7 @@ export class SpecificationViewComponent implements OnInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['uri', 'specversion', 'documentation', 'uploaded', 'activeCasesCount', 'core', 'actions'];
+  displayedColumns: string[] = ['uri', 'specversion', 'documentation', 'activeCasesCount', 'core', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 
@@ -34,8 +35,6 @@ export class SpecificationViewComponent implements OnInit {
     this.specificationService.findAll().subscribe(specifications => {
       this.dataSource = new MatTableDataSource(specifications);
       this.dataSource.sort = this.sort;
-
-      console.log(specifications);
 
       this.extensionSpecificationService.getExtensionSpecifications().subscribe(extensionSpecifications => {
         this.extensionSpecification = extensionSpecifications;
@@ -99,17 +98,18 @@ export class SpecificationViewComponent implements OnInit {
   }
 
   /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple language, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
+  announceSortChange(sort: Sort) {
+    const isAsc = sort.direction === 'asc';
+    if (sort.direction === '') {
+      this.dataSource?.data.sort((a: Specification, b: Specification) => this.compare(a.specversion, b.specversion, false));
     }
+    return;
   }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
 
 
 }

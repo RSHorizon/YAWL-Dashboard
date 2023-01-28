@@ -7,12 +7,15 @@ import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceLogGatewayClient;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.FailureMarshaller;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.SpecificationMarshaller;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.SpecificationStatistic;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 import static org.apache.commons.lang3.time.DateUtils.parseDate;
 
@@ -39,13 +42,13 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
     }
 
     @Override
-    public String getStatisticsForSpecification(YSpecificationID specID) {
+    public SpecificationStatistic getStatisticsForSpecification(YSpecificationID specID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd");
-            Date myDate = parser.parse("2014-02-14");
+            Date myDate = parser.parse("2000-01-01");
             String result = connection.getSpecificationStatistics(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), myDate, new Date(), handle.getRawHandle());
 
-            return getJsonFromXML(result);
+            return SpecificationMarshaller.unmarshallSpecificationStatistic(result);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } catch (ParseException e) {
@@ -78,7 +81,7 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
     @Override
     public String getCaseEvents(String caseId) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getCaseEvents(caseId, handle.getRawHandle());
+            String result = connection.getCaseEvent(caseId, false, handle.getRawHandle());
 
             return getJsonFromXML(result);
         } catch (IOException ex) {
@@ -87,13 +90,21 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
     }
 
     @Override
-    public String getMergedXESLog(YSpecificationID specID) {
+    public YSpecificationID getSpecificationIdentifiers(String speckey) {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getSpecificationIdentifiers(Long.parseLong(speckey), handle.getRawHandle());
+            return SpecificationMarshaller.unmarshallYSpecificationID(result);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Event> getAllResourceEvents(YSpecificationID specID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getAllResourceEvents(handle.getRawHandle());
-            // String result = connection.getMergedXESLog(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), true, handle.getRawHandle());
-
-            return getJsonFromXML(result);
-        } catch (IOException ex) {
+            return SpecificationMarshaller.unmarshallEvents(result);
+        } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);
         }
     }

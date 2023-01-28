@@ -12,8 +12,8 @@
           </button>
           <span>Back</span>
           <span class="spacer"></span>
-          <span [innerHTML]="specification?.uri"></span>, <span style="margin-left: .5em;"
-                                                                [innerHTML]="specification?.specversion"></span>
+          <span [innerHTML]="specificationStatistic?.uri"></span>, <span style="margin-left: .5em;"
+                                                                [innerHTML]="specificationStatistic?.version"></span>
         </mat-toolbar>
       </a>
     </p>
@@ -30,38 +30,37 @@
     </section>
   </div>
 
-  <div *ngIf="!errorState && isCaseView()">
-    <h1>Cases</h1>
+  <div *ngIf="!errorState && isCaseView() && specificationStatistic != undefined">
     <div class="statistics">
       <mat-grid-list rowHeight="70px" cols="6">
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Avg. completing time</mat-label>
-            <input matInput disabled value="6h">
+            <input matInput disabled value="{{applyPastTimeFormatForTimestamp(specificationStatistic.avgCaseCompletionTime)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Avg. occuring cases</mat-label>
-            <input matInput disabled value="M2 T3 W4 T3 F2 S0 S0">
+            <mat-label>Avg. occuring case</mat-label>
+            <input matInput disabled value="{{applyOccurencesFormat(specificationStatistic.caseOccurrencesPerDayOfWeek)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Successful cases</mat-label>
-            <input matInput disabled value="38">
+            <mat-label>Successful case</mat-label>
+            <input matInput disabled value="{{specificationStatistic.successfulCases}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Resource capacity/week</mat-label>
-            <input matInput disabled value="86h">
+            <mat-label>Avg. capacity needed per week</mat-label>
+            <input matInput disabled value="{{applyPastTimeFormatForTimestamp(specificationStatistic.avgResourceTimePerWeekSummed)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Resource summary</mat-label>
-            <input matInput disabled value="Luisa Aldren">
+            <input matInput disabled value="{{applyParticipantsArrayFormat(specificationStatistic.participants)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
@@ -74,15 +73,15 @@
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Cancelled cases</mat-label>
-            <input matInput disabled value="3">
+            <mat-label>Cancelled case</mat-label>
+            <input matInput disabled value="{{specificationStatistic.unsuccessfulCases}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Avg. cost</mat-label>
-            <input matInput disabled value="2100">
+            <mat-label>Avg. cost per week</mat-label>
+            <input matInput disabled value="{{costs.toFixed(2)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
@@ -92,17 +91,18 @@
       </p>
     </div>
 
-
+    <h1>Cases</h1>
     <table mat-table [dataSource]="dataSource" matSort
+           matSortActive="caseid" matSortDirection="asc"
            (matSortChange)="announceSortChange($event)"
            class="mat-elevation-z8">
 
       <!-- Case ID Column -->
-      <ng-container matColumnDef="id">
+      <ng-container matColumnDef="caseid">
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by caseId">
           Case ID
         </th>
-        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.caseid}} </td>
       </ng-container>
 
       <!-- Initiated-->
@@ -110,15 +110,15 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification initiated">
           Initiated
         </th>
-        <td mat-cell *matCellDef="let element">{{dateFormat(element.start)}}</td>
+        <td mat-cell *matCellDef="let element">{{datetimeFormat(element.start)}}</td>
       </ng-container>
 
       <!-- Completed Column -->
-      <ng-container matColumnDef="completed">
+      <ng-container matColumnDef="end">
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by completed">
           Completed
         </th>
-        <td mat-cell *matCellDef="let element"> </td>
+        <td mat-cell *matCellDef="let element">{{datetimeFormat(element.end)}}</td>
       </ng-container>
 
       <!-- Age Column -->
@@ -126,7 +126,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
           Age
         </th>
-        <td mat-cell *matCellDef="let element">{{computeAge(element)}}</td>
+        <td mat-cell *matCellDef="let element">{{applyPastTimeFormatForTimestamp(element.age)}}</td>
       </ng-container>
 
       <!-- Running Cases Column -->
@@ -134,7 +134,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by running workitems">
           Running Workitems
         </th>
-        <td mat-cell *matCellDef="let element"> </td>
+        <td mat-cell *matCellDef="let element">{{element.runningWorkitemsCount}}</td>
       </ng-container>
 
       <!-- Queued workitems Column -->
@@ -142,15 +142,29 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queued workitems">
           Queued Workitems
         </th>
-        <td mat-cell *matCellDef="let element"></td>
+        <td mat-cell *matCellDef="let element">{{element.queuedWorkitemsCount}}</td>
       </ng-container>
 
       <!-- Overdue Column -->
       <ng-container matColumnDef="overdue">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdued cases">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdued case">
           Overdue
         </th>
-        <td mat-cell *matCellDef="let element"></td>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="extensionSpecification !== undefined">
+            {{applyIsOverdueFormat(element.age, +extensionSpecification.specificationTimeLimit)}}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Cancelled Column -->
+      <ng-container matColumnDef="cancelled">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by cancelled case">
+          Cancelled
+        </th>
+        <td mat-cell *matCellDef="let element">
+            {{applyBooleanFormat(element.cancelled)}}
+        </td>
       </ng-container>
 
       <!-- Actions Column -->
@@ -172,8 +186,8 @@
     </table>
   </div>
 
-  <div *ngIf="isTaskView()">
-    <app-task-view [specification]="this.specification"></app-task-view>
+  <div *ngIf="isTaskView()" >
+    <app-task-view [specificationStatistic]="this.specificationStatistic"></app-task-view>
   </div>
 
 </default-page>

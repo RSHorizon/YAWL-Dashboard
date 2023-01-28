@@ -14,20 +14,20 @@ public interface ExtensionTaskDao extends JpaRepository<ExtensionTask, String> {
     List<ExtensionTask> findAllByComposedID(String specificationID, String version, String uri);
 
     @Modifying
-    @Query(value = "UPDATE extension_tasks e SET e.cost_resource_hour = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.task_id = ?4", nativeQuery = true)
-    void setCostResourceHour(String specificationID, String version, String uri, String taskId, Integer costResourceHour);
+    @Query(value = "UPDATE extension_tasks e SET e.cost_resource_hour = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
+    void setCostResourceHour(String specificationID, String version, String uri, String taskid, Integer costResourceHour);
 
     @Modifying
-    @Query(value = "UPDATE extension_tasks e SET e.max_task_age = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.task_id = ?4", nativeQuery = true)
-    void setMaxTaskAge(String specificationID, String version, String uri, String taskId, Integer maxTaskAge);
+    @Query(value = "UPDATE extension_tasks e SET e.max_task_age = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
+    void setMaxTaskAge(String specificationID, String version, String uri, String taskid, Integer maxTaskAge);
 
     @Modifying
-    @Query(value = "UPDATE extension_tasks e SET e.max_queue_age = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.task_id = ?4", nativeQuery = true)
-    void setMaxQueueAge(String specificationID, String version, String uri, String taskId, Integer maxQueueAge);
+    @Query(value = "UPDATE extension_tasks e SET e.max_queue_age = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
+    void setMaxQueueAge(String specificationID, String version, String uri, String taskid, Integer maxQueueAge);
 
     @Modifying
-    @Query(value = "UPDATE extension_tasks e SET e.cost_resource_hour = ?5, e.max_task_age = ?6, e.max_queue_age = ?7 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.task_id = ?4", nativeQuery = true)
-    void setAttributes(String specificationID, String version, String uri, String taskId, Integer costResourceHour, Integer maxTaskAge, Integer maxQueueAge);
+    @Query(value = "UPDATE extension_tasks e SET e.cost_resource_hour = ?5, e.max_task_age = ?6, e.max_queue_age = ?7 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
+    void setAttributes(String specificationID, String version, String uri, String taskid, Integer costResourceHour, Integer maxTaskAge, Integer maxQueueAge);
 
 
 }

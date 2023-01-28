@@ -1,10 +1,10 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {faPencil, faArrowLeft, faArrowsToEye} from '@fortawesome/free-solid-svg-icons';
 import {ExtensionSpecificationService} from "../services/extension-specification.service";
 import {ActivatedRoute} from "@angular/router";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
 import {Specification} from "../../yawl/resources/entities/specification.entity";
-import {ExtensionSpecification} from "../../yawl/resources/entities/extensionSpecification.entity";
+import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {CaseService} from "../../yawl/resources/services/case.service";
 import {Case} from "../../yawl/resources/entities/case.entity";
 import {MatSort, Sort} from "@angular/material/sort";
@@ -14,6 +14,11 @@ import {WorkitemQueueDialogComponent} from "../workitem-queue-dialog/workitem-qu
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {WorkitemsDialogComponent} from "../workitems-dialog/workitems-dialog.component";
 import {TaskViewComponent} from "../task-view/task-view.component";
+import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
+import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
+import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
+import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
+import {Participant} from "../../yawl/resources/entities/participant.entity";
 
 @Component({
   selector: 'app-case-view',
@@ -28,24 +33,33 @@ export class CaseViewComponent implements OnInit {
   specificationID: string | null = null;
   specversion: string | null = null;
   uri: string | null = null;
-  specification: Specification | undefined = undefined;
+  specificationStatistic: SpecificationStatistic | undefined = undefined;
   extensionSpecification: ExtensionSpecification | undefined = undefined;
-  cases: Case[] | undefined = undefined;
+  extensionTasks: ExtensionTask[] | undefined = undefined;
+  cases: CaseStatistic[] | undefined = undefined;
   errorState: boolean = false;
   // @ts-ignore
   viewType: number = '0';
   specificationTimeLimit: number = 0;
+  costs: number = 0;
 
   // @ts-ignore
-  @ViewChild(MatSort) sort: MatSort;
+  sort: MatSort;
 
-  displayedColumns: string[] = ['id', 'start', 'completed', 'age', 'running', 'queue', 'overdue', 'actions'];
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    this.sort = ms;
+    if (this.dataSource != undefined) {
+      this.dataSource.sort = this.sort;
+    }
+  }
+
+
+  displayedColumns: string[] = ['caseid', 'start', 'end', 'age', 'running', 'queue', 'overdue', 'cancelled','actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 
 
-  constructor(private _liveAnnouncer: LiveAnnouncer,
-              public dialog: MatDialog,
+  constructor(public dialog: MatDialog,
               private extensionSpecificationService: ExtensionSpecificationService,
               private specificationService: SpecificationService,
               private caseService: CaseService,
@@ -62,42 +76,36 @@ export class CaseViewComponent implements OnInit {
         return;
       }
 
-      this.specificationService.findById(this.specificationID, this.specversion, this.uri).subscribe(specification =>
-        this.specification = specification
-      );
+      this.specificationService.getSpecificationStatistic(this.specificationID, this.specversion, this.uri).subscribe(specificationStatistic => {
+        this.specificationStatistic = specificationStatistic;
+        this.cases = specificationStatistic.caseStatisticDTOS;
+        this.dataSource = new MatTableDataSource<CaseStatistic>(this.cases);
+        this.dataSource.sort = this.sort;
+
+        this.extensionSpecificationService.getSpecificationExtensionTasks(this.specificationID!, this.specversion!, this.uri!)
+          .subscribe(extensionTasks => {
+            this.extensionTasks = extensionTasks;
+            this.specificationStatistic!.taskStatisticDTOS.forEach((taskStatistic: TaskStatistic) => {
+              this.extensionTasks?.forEach(extensionTask => {
+                if (taskStatistic.taskid === extensionTask.taskid) {
+                  taskStatistic.costResourceHour = +extensionTask.costResourceHour;
+                  taskStatistic.maxQueueAge = +extensionTask.maxQueueAge;
+                  taskStatistic.maxTaskAge = +extensionTask.maxTaskAge;
+                }
+              })
+            });
+            this.costs = 0;
+            this.specificationStatistic?.taskStatisticDTOS.forEach((taskStatistic: TaskStatistic) => {
+              this.costs += (taskStatistic.avgCompletionTime/(1000 * 60 * 60)) * taskStatistic.avgOccurrencesPerWeek[7] * taskStatistic.costResourceHour!;
+            });
+          });
+      });
 
       this.extensionSpecificationService.getExtensionSpecification(this.specificationID, this.specversion, this.uri)
         .subscribe(extensionSpecification => {
           this.extensionSpecification = extensionSpecification;
           // @ts-ignore
           this.specificationTimeLimit = <number>this.extensionSpecification.specificationTimeLimit;
-        });
-
-      this.caseService.findAllBySpecificationId(this.specificationID, this.specversion, this.uri)
-        .subscribe(cases => {
-          this.cases = [];
-          cases.forEach(caseResponse => {
-            // @ts-ignore
-            let caseInstance: Case = {};
-            // @ts-ignore
-            caseInstance.id = caseResponse.id;
-            // @ts-ignore
-            caseInstance.specification = this.specification;
-            // @ts-ignore
-            caseInstance.events = JSON.parse(caseResponse.jsonEvents).event;
-            let start = caseInstance.events.filter((cs: any) => cs.eventtype === "launch_case")[0];
-            let end = caseInstance.events.filter((cs: any) => cs.eventtype === "complete_case")[0];
-            if (start !== undefined) {
-              caseInstance.start = start.timestamp;
-            }
-            if (end !== undefined) {
-              caseInstance.end = end.timestamp;
-            }
-            // @ts-ignore
-            this.cases.push(caseInstance);
-          });
-          this.dataSource = new MatTableDataSource(this.cases);
-          this.dataSource.sort = this.sort;
         });
     });
   }
@@ -109,7 +117,7 @@ export class CaseViewComponent implements OnInit {
     dialogConfig.autoFocus = true;
 
     dialogConfig.data = {
-      specification: this.specification
+      specificationStatistic: this.specificationStatistic
     };
 
     this.dialog.open(WorkitemQueueDialogComponent, dialogConfig);
@@ -122,7 +130,7 @@ export class CaseViewComponent implements OnInit {
     dialogConfig.autoFocus = true;
 
     dialogConfig.data = {
-      specification: this.specification,
+      specificationStatistic: this.specificationStatistic,
       caseId: caseId
     };
 
@@ -130,16 +138,25 @@ export class CaseViewComponent implements OnInit {
   }
 
   /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple language, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+  announceSortChange(sort: Sort) {
+    const isAsc = sort.direction === 'asc';
+    if (sort.direction === '') {
+      this.dataSource?.data.sort((a: CaseStatistic, b: CaseStatistic) => this.compare(a.caseid, b.caseid, true));
     } else {
-      this._liveAnnouncer.announce('Sorting cleared');
+      switch (sort.active) {
+        case 'overdue':
+          this.dataSource?.data.sort((a: CaseStatistic, b: CaseStatistic) => this.compare(+(a.age > +this.extensionSpecification!.specificationTimeLimit), +(b.age > +this.extensionSpecification!.specificationTimeLimit), isAsc));
+          return;
+        default:
+          return 0;
+      }
     }
+
+    return;
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   isCaseView(): boolean {
@@ -151,43 +168,65 @@ export class CaseViewComponent implements OnInit {
   }
 
   changedSpecificationAttributes(): void {
-    if (this.specification === undefined) {
+    if (this.specificationStatistic === undefined) {
       return;
     }
-    this.specificationService.storeSpecificationAttributesById(this.specification.id, this.specification.specversion, this.specification.uri, "" + this.specificationTimeLimit)
+    this.specificationService.storeSpecificationAttributesById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri, "" + this.specificationTimeLimit)
       .subscribe()
   }
 
-  computeAge(caseInstance: Case): string{
-    if(caseInstance.start === undefined){
-      return this.applyPastTimeFormatForTimestamp(0);
-    }else if(caseInstance.end === undefined ){
-      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(caseInstance.start*1), new Date(Date.now())));
-    }else{
-      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(caseInstance.start*1), new Date(caseInstance.end*1)));
+  applyPastTimeFormatForTimestamp(timestamp: number): string {
+    // @ts-ignore
+    let hoursMs = timestamp
+    let minutesMs = timestamp % (1000 * 60 * 60)
+    let secondsMs = timestamp % (1000 * 60)
+
+    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
+    let minutes = Math.floor(minutesMs / (1000 * 60))
+    let seconds = Math.floor(secondsMs / (1000))
+
+    return hours + "h " + minutes + "m " + seconds + "s";
+  }
+
+  datetimeFormat(timestamp: number): string {
+    if(timestamp === 0){
+      return ""
+    }
+    let date = new Date(timestamp);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString()
+  }
+
+  applyOccurencesFormat(occurences: number[]): string {
+    if (occurences.length != 8) {
+      return "";
+    }
+
+    return "M" + occurences[0] + " T" + occurences[1] + " W" + occurences[2] + " T" + occurences[3] + " F" + occurences[4] + " S" + occurences[5] + " S" + occurences[6] + ""
+  }
+
+  applyIsOverdueFormat(age: number, maxTime: number): string {
+    if (age > maxTime) {
+      return "Yes";
+    } else {
+      return "No";
     }
   }
 
-  getTimestampFromDuration(start: Date, end: Date): number{
-    // @ts-ignore
-    return Math.abs(start - end);
+  applyBooleanFormat(bool: boolean){
+    return (bool)? "Yes": "No";
   }
 
-  applyPastTimeFormatForTimestamp(timestamp: number): string{
-    // @ts-ignore
-    let hoursMs = timestamp
-    let minutesMs = hoursMs % (1000 * 60 * 60)
+  applyParticipantsArrayFormat(participants: Participant[]): string{
+    if(participants === undefined){
+      return "";
+    }
 
-    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    let minutes = Math.floor( minutesMs / (1000 * 60))
-
-    return hours + "h " + minutes + "m";
+    let chain = "";
+    participants.forEach(participant => {
+      chain += ", " + participant.firstname + " " + participant.lastname
+    })
+    return chain.substring(2);
   }
-
-  dateFormat(timestamp: number): string{
-    return new Date(timestamp*1).toLocaleDateString();
-  }
-
 }
 
 enum ViewType {

@@ -3,7 +3,9 @@ import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {Specification} from "../../yawl/resources/entities/specification.entity";
-import {ExtensionSpecification} from "../../yawl/resources/entities/extensionSpecification.entity";
+import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
+import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
+import {env} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +27,21 @@ export class ExtensionSpecificationService {
     return this.http.get<HttpResponse<any>>(this.baseURL + "specification/extension/" + uri + "/" + specificationId + "/" + version, {withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
       catchError((error: any) => this.handleError(error))
+    )
+  }
+
+  getSpecificationExtensionTasks(id: string, version: string, uri: string): Observable<ExtensionTask[]> {
+    let headers = new HttpHeaders();
+    headers.append("Accept", "application/json");
+
+    let url = env.apiUrl + "specification/task/"
+      + encodeURIComponent(uri)
+      + "/" + encodeURIComponent(id)
+      + "/" + encodeURIComponent(version);
+
+    return this.http.get<HttpResponse<ExtensionTask>>(url, {headers, withCredentials: true}).pipe(
+      map((res: HttpResponse<ExtensionTask>) => res),
+      catchError((error) => this.handleError(error))
     )
   }
 

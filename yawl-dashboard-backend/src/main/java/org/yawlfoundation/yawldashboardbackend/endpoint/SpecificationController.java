@@ -23,205 +23,600 @@ import org.springframework.web.bind.annotation.*;
 import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionSpecificationDao;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
-import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
-import org.yawlfoundation.yawldashboardbackend.model.ExtensionTask;
+import org.yawlfoundation.yawldashboardbackend.dto.*;
+import org.yawlfoundation.yawldashboardbackend.model.*;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceLogManager;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceLogManagerImpl;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManager;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 
 @RestController
 @Secured("ROLE_ADMIN")
 class SpecificationController {
 
-	@Autowired
-	private WorkItemManager workItemManager;
+    @Autowired
+    private WorkItemManager workItemManager;
 
-	@Autowired
-	private ResourceLogManager resourceLogManager;
-	@Autowired
-	private ExtensionSpecificationDao extensionSpecificationDao;
-	@Autowired
-	private ExtensionTaskDao extensionTaskDao;
-
-
-	@RequestMapping(value="/test", method=RequestMethod.GET)
-	public void testRoute() {
-		YSpecificationID specId = new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung");
-		//resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
-		//resourceLogManager.getSpecificationEvents(specId);
-		//workItemManager.getSpecificationList();
-		resourceLogManager.getMergedXESLog(specId);
-		//workItemManager.getSpecificationDefinitionById(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
-	}
-
-	@RequestMapping(value="/api/specification", method=RequestMethod.GET)
-	public SpecificationListResource getSpecifications() {
-		return new SpecificationListResource(workItemManager.getAllLoadedSpecifications());
-	}
-
-	@RequestMapping(value="/api/specification/{uri}/{specificationID}/{specversion}", method= RequestMethod.GET)
-	@ResponseBody
-	@Transactional
-	public Specification getSpecification(@PathVariable("specificationID") String specificationID,
-										  @PathVariable("specversion") String specversion,
-										  @PathVariable("uri") String uri) {
-		return workItemManager.getSpecificationById(new YSpecificationID(specificationID, specversion, uri));
-	}
-
-	@RequestMapping(value="/api/specification/{uri}/{specificationID}/{specversion}/definition",
-			method= RequestMethod.GET)
-	@ResponseBody
-	@Transactional
-	public List<Task> getTaskDefinitions(@PathVariable("specificationID") String specificationID,
-										 @PathVariable("specversion") String specversion,
-										 @PathVariable("uri") String uri) {
-		return workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
-	}
+    @Autowired
+    private ResourceManager resourceManager;
+    @Autowired
+    private ResourceLogManager resourceLogManager;
+    @Autowired
+    private ExtensionSpecificationDao extensionSpecificationDao;
+    @Autowired
+    private ExtensionTaskDao extensionTaskDao;
 
 
-	@RequestMapping(value="/api/specification/extension", method= RequestMethod.GET)
-	@ResponseBody
-	@Transactional
-	public List<ExtensionSpecification> getExtensionAttributes() {
-		return extensionSpecificationDao.findAll();
-	}
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public void testRoute() {
+        YSpecificationID specId = new YSpecificationID("UID_abd5e00c-fb54-4ee9-b31a-197f2d65f685", "0.6", "Test_Prozess");
+        //resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
+        //resourceLogManager.getSpecificationEvents(specId);
+        //workItemManager.getSpecificationList();
+    }
 
-	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}", method= RequestMethod.GET)
-	@ResponseBody
-	@Transactional
-	public ExtensionSpecification getExtensionAttributesForSpecifications(
-			@PathVariable("specificationID") String specificationID,
-			@PathVariable("specversion") String specversion,
-			@PathVariable("uri") String uri
-			) {
-		ExtensionSpecification extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
+    @RequestMapping(value = "/api/specification/{uri}/{specificationID}/{specversion}/statistic", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public SpecificationStatisticDTO getSpecificationStatistic(@PathVariable("specificationID") String specificationID,
+                                                               @PathVariable("specversion") String specversion,
+                                                               @PathVariable("uri") String uri) {
+        YSpecificationID specId = new YSpecificationID(specificationID, specversion, uri);
+        String currentSpeckey = resourceLogManager.getStatisticsForSpecification(specId).getSpeckey();
+        List<Event> events = resourceLogManager.getAllResourceEvents(specId);
 
-		if(extensionSpecification == null){
-			createLocalEntities(specificationID, specversion, uri);
-			extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
-		}
-		return extensionSpecification;
-	}
+        Map<String, Participant> participantsMap = new HashMap<>();
+        for (Participant participant : resourceManager.getParticipants()) {
+            participantsMap.put(participant.getId(), participant);
+        }
+        Set<String> participantIDsRelatedToCase = new HashSet<>();
 
-	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}", method= RequestMethod.GET)
-	@ResponseBody
-	@Transactional
-	public List<ExtensionTask> getExtensionTaskAttributes(
-			@PathVariable("specificationID") String specificationID,
-			@PathVariable("specversion") String specversion,
-			@PathVariable("uri") String uri
-	) {
-		ExtensionSpecification extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
+        // Map all resource events to cases of the specification
+        List<CaseDTO> caseDTOS = new ArrayList<>();
+        events.stream().filter(event -> event.getSpeckey().equals(currentSpeckey)).forEach(event -> {
+            String pureCaseId = event.getCaseid().split("\\.")[0];
+            // Ensure case object exists
+            if (caseDTOS.stream().noneMatch(caseDTOInstance -> caseDTOInstance.getId().equals(event.getCaseid().split("\\.")[0]))) {
+                CaseDTO newCaseDTO = new CaseDTO(pureCaseId);
+                caseDTOS.add(newCaseDTO);
+            }
 
-		if(extensionSpecification == null){
-			createLocalEntities(specificationID, specversion, uri);
-		}
-		return extensionTaskDao.findAllByComposedID(specificationID, specversion, uri);
-	}
+            // Find relevant case
+            CaseDTO associatedCaseDTO = caseDTOS.stream()
+                    .filter(caseDTOInstance -> caseDTOInstance.getId().equals(pureCaseId))
+                    .findFirst()
+                    .get();
 
-	public void createLocalEntities(String specificationID, String specversion, String uri){
-		List<Task> tasks = workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
+            // Add event to case object
+            if (event.getTaskid().equals("")) {
+                associatedCaseDTO.getCaseEvents().add(event);
+            } else {
+                associatedCaseDTO.getTaskEvents().add(event);
+            }
+        });
+        List<String> resources = new ArrayList<>();
+        Map<String, CaseStatisticDTO> caseStatisticMap = new HashMap<>();
+        Map<String, Map<String, TaskTimingDTO>> taskTimings = new HashMap<>();
+        Map<String, String> smallestCaseDecompositionOrder = new HashMap<>();
+        for (CaseDTO caseDTOInstance : caseDTOS) {
+            // Initiate case statistic per case and get it
+            caseStatisticMap.put(caseDTOInstance.getId(), new CaseStatisticDTO(caseDTOInstance.getId()));
+            CaseStatisticDTO caseStatisticDTO = caseStatisticMap.get(caseDTOInstance.getId());
 
-		ExtensionSpecification newExtensionSpecification = new ExtensionSpecification();
-		newExtensionSpecification.setSpecificationId(specificationID);
-		newExtensionSpecification.setSpecversion(specversion);
-		newExtensionSpecification.setUri(uri);
-		newExtensionSpecification.setCore(false);
-		newExtensionSpecification.setSpecificationTimeLimit(0);
-		extensionSpecificationDao.save(newExtensionSpecification);
+            // Repair case data for first offer/allocation/cancelled_by_case events
+            // as they don't have the decompositionOrder in their caseid
+            // Search for smallest progress of an event
+            for (Event event : caseDTOInstance.getTaskEvents()) {
+                if (!smallestCaseDecompositionOrder.containsKey(event.getTaskid())) {
+                    smallestCaseDecompositionOrder.put(event.getTaskid(), "");
+                }
+                String currentSmallestDecompositionOrder = smallestCaseDecompositionOrder.get(event.getTaskid());
+                String eventDecompositionOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
+                if (decompositionOrderIsSmaller(currentSmallestDecompositionOrder, eventDecompositionOrder)) {
+                    smallestCaseDecompositionOrder.replace(event.getTaskid(), eventDecompositionOrder);
+                }
+            }
+            // Set smallest progress for offer/allocation/cancelled_by_case events
+            for (Event event : caseDTOInstance.getTaskEvents()) {
+                if ((event.getEventtype().equals("offer") || event.getEventtype().equals("allocate") || event.getEventtype().equals("cancelled_by_case"))
+                        && event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "").equals("")) {
+                    event.setCaseid(event.getCaseid() + "." + smallestCaseDecompositionOrder.get(event.getTaskid()));
+                }
+            }
 
-		List<ExtensionTask> extensionTasks = new ArrayList<>();
+            // Fill timings, where one timing is identified by its taskid and caseId
+            // and set initial start and end dates for cases
+            for (Event event : caseDTOInstance.getTaskEvents()) {
+                participantIDsRelatedToCase.add(event.getResourceid());
+                if (!taskTimings.containsKey(event.getTaskid())) {
+                    taskTimings.put(event.getTaskid(), new HashMap<>());
+                }
+                Map<String, TaskTimingDTO> timingMap = taskTimings.get(event.getTaskid());
 
-		tasks.forEach(task -> {
-			ExtensionTask extensionTask = new ExtensionTask();
-			extensionTask.setTaskId(task.getId());
-			extensionTask.setSpecificationId(specificationID);
-			extensionTask.setSpecversion(specversion);
-			extensionTask.setUri(uri);
-			extensionTask.setCostResourceHour(0);
-			extensionTask.setMaxTaskAge(0);
-			extensionTask.setMaxQueueAge(0);
-			extensionTaskDao.save(extensionTask);
-			extensionTasks.add(extensionTask);
-		});
-	}
+                String eventIdentifier = event.getTaskid() + "__" + event.getCaseid();
+                if (!timingMap.containsKey(eventIdentifier)) {
+                    TaskTimingDTO newTiming = new TaskTimingDTO(event.getTaskid(), event.getCaseid());
+                    timingMap.put(eventIdentifier, newTiming);
+                }
 
-	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/core",
-			params = "core", method= RequestMethod.POST)
-	@ResponseBody
-	@Transactional
-	public void storeSpecificationCore(@PathVariable("specificationID") String specificationID,
-											@PathVariable("specversion") String specversion,
-											@PathVariable("uri") String uri,
-											@RequestParam("core") Boolean core) {
-		extensionSpecificationDao.setCore(specificationID, specversion, uri, core);
-	}
+                TaskTimingDTO taskTimingDTO = timingMap.get(eventIdentifier);
+                taskTimingDTO.getParticipantsIds().add(event.getResourceid());
+                switch (event.getEventtype()) {
+                    case "offer":
+                        taskTimingDTO.setOfferedTimestamp(Long.parseLong(event.getTimestamp()));
+                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
+                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        }
+                        break;
+                    case "allocate":
+                        taskTimingDTO.setAllocatedTimestamp(Long.parseLong(event.getTimestamp()));
+                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
+                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        }
+                        break;
+                    case "start":
+                        taskTimingDTO.setStartTimestamp(Long.parseLong(event.getTimestamp()));
+                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
+                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        }
+                        break;
+                    case "autotask_start":
+                        taskTimingDTO.setStartTimestamp(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setAutomated(true);
+                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
+                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        }
+                        break;
+                    case "complete":
+                        taskTimingDTO.setEndTimestamp(Long.parseLong(event.getTimestamp()));
+                        break;
+                    case "autotask_complete":
+                        taskTimingDTO.setEndTimestamp(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setAutomated(true);
+                        if(isHighestDecompositionOrder(smallestCaseDecompositionOrder,
+                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
+                            caseStatisticDTO.setEnd(Long.parseLong(event.getTimestamp()));
+                        }
+                        break;
+                    case "cancelled_by_case":
+                        taskTimingDTO.setCancelled(true);
+                        break;
+                }
+            }
+        }
 
-	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/specificationTimeLimit",
-			params = "specificationTimeLimit", method= RequestMethod.POST)
-	@ResponseBody
-	@Transactional
-	public void storeSpecificationTimeLimit(@PathVariable("specificationID") String specificationID,
-											@PathVariable("specversion") String specversion,
-											@PathVariable("uri") String uri,
-											@RequestParam("specificationTimeLimit") Integer specificationTimeLimit) {
-		extensionSpecificationDao.setSpecificationTimeLimit(specificationID, specversion, uri, specificationTimeLimit);
-	}
+        // Set specification statistic
+        long avgCaseCompletionTime = 0L;
+        List<Long> caseStartTimestamps = new ArrayList<>();
+        int successful = 0;
+        int unsuccessful = 0;
+        int casesImpactingCompletionTimeCount = 0;
+        for (CaseDTO caseDTOInstance : caseDTOS) {
+            CaseStatisticDTO caseStatisticDTO = caseStatisticMap.get(caseDTOInstance.getId());
 
-	@RequestMapping(value="/api/specification/extension/{uri}/{specificationID}/{specversion}/{taskId}/costResourceHour",
-			params = "costResourceHour", method= RequestMethod.POST)
-	@ResponseBody
-	@Transactional
-	public void storeCostResourceHour(@PathVariable("specificationID") String specificationID,
-									  @PathVariable("specversion") String specversion,
-									  @PathVariable("uri") String uri,
-									  @PathVariable("taskId") String taskId,
-									  @RequestParam("costResourceHour") Integer costResourceHour) {
-		extensionTaskDao.setCostResourceHour(specificationID, specversion, uri, taskId, costResourceHour);
-	}
+            boolean cancelled = false;
+            for (Event event : caseDTOInstance.getCaseEvents()) {
+                participantIDsRelatedToCase.add(event.getResourceid());
+                switch (event.getEventtype()) {
+                    case "cancel_case":
+                        cancelled = true;
+                        caseStatisticDTO.setEnd(Long.parseLong(event.getTimestamp()));
+                        caseStatisticDTO.setCancelled(true);
+                        break;
+                    case "launch_case":
+                        caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        break;
+                    case "complete_case":
+                        caseStatisticDTO.setEnd(Long.parseLong(event.getTimestamp()));
+                        break;
+                }
+            }
+            if (caseStatisticDTO.getStart() == 0) {
+                continue;
+            }
+            caseStartTimestamps.add(caseStatisticDTO.getStart());
+            if (cancelled) {
+                unsuccessful++;
+                continue;
+            }
+            casesImpactingCompletionTimeCount++;
+            if (caseStatisticDTO.getEnd() != 0) {
+                caseStatisticDTO.setAge(caseStatisticDTO.getEnd() - caseStatisticDTO.getStart());
+                avgCaseCompletionTime += caseStatisticDTO.getEnd() - caseStatisticDTO.getStart();
+                successful++;
+            } else {
+                caseStatisticDTO.setAge(new Date().getTime() - caseStatisticDTO.getStart());
+                avgCaseCompletionTime += new Date().getTime() - caseStatisticDTO.getStart();
+            }
+        }
+        if (casesImpactingCompletionTimeCount != 0) {
+            avgCaseCompletionTime /= casesImpactingCompletionTimeCount;
+        }
 
-	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}/{taskId}/maxTaskAge",
-			params = "maxTaskAge", method= RequestMethod.POST)
-	@ResponseBody
-	@Transactional
-	public void storeMaxTaskAge(@PathVariable("specificationID") String specificationID,
-								@PathVariable("specversion") String specversion,
-								@PathVariable("uri") String uri,
-								@PathVariable("taskId") String taskId,
-								@RequestParam("maxTaskAge") Integer maxTaskAge) {
-		extensionTaskDao.setMaxTaskAge(specificationID, specversion, uri, taskId, maxTaskAge);
-	}
+        // Occurrences per week divided by weeks, where case occurred
+        Integer[] caseOccurrencesPerDayOfWeek = occurrencesInWeeks(caseStartTimestamps);
 
-	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}/{taskId}/maxQueueAge",
-			params = "maxQueueAge", method= RequestMethod.POST)
-	@ResponseBody
-	@Transactional
-	public void storeMaxQueueAge(@PathVariable("specificationID") String specificationID,
-								 @PathVariable("specversion") String specversion,
-								 @PathVariable("uri") String uri,
-								 @PathVariable("taskId") String taskId,
-								@RequestParam("maxQueueAge") Integer maxQueueAge) {
-		extensionTaskDao.setMaxQueueAge(specificationID, specversion, uri, taskId, maxQueueAge);
-	}
+        List<TaskStatisticDTO> taskStatisticDTOS = new ArrayList<>();
+        List<String> availableTasks = new ArrayList<String>(taskTimings.keySet());
+        final long now = new Date().getTime();
+        for (String taskid : availableTasks) {
+            TaskStatisticDTO taskStatisticDTO = new TaskStatisticDTO(taskid);
+            List<Long> creationTimestamps = new ArrayList<>();
+            AtomicLong avgQueueTime = new AtomicLong();
+            AtomicLong avgQueueTimeCounter = new AtomicLong();
+            AtomicLong avgCompletionTime = new AtomicLong();
+            AtomicLong avgCompletionTimeCounter = new AtomicLong();
 
-	@RequestMapping(value="/api/specification/task/{uri}/{specificationID}/{specversion}/{taskId}/setAttributes",
-			params = "maxQueueAge", method= RequestMethod.POST)
-	@ResponseBody
-	@Transactional
-	public void storeMaxQueueAge(@PathVariable("specificationID") String specificationID,
-								 @PathVariable("specversion") String specversion,
-								 @PathVariable("uri") String uri,
-								 @PathVariable("taskId") String taskId,
-								 @RequestParam("costResourceHour") Integer costResourceHour,
-								 @RequestParam("maxTaskAge") Integer maxTaskAge,
-								 @RequestParam("maxQueueAge") Integer maxQueueAge) {
-		extensionTaskDao.setAttributes(specificationID, specversion, uri, taskId, costResourceHour, maxTaskAge, maxQueueAge);
-	}
+            taskTimings.get(taskid).values().stream()
+                    .filter(taskTimingDTO -> !taskTimingDTO.isCancelled())
+                    .forEach(taskTimingDTO -> {
+                        CaseStatisticDTO relatedCaseDTO = caseStatisticMap.get(taskTimingDTO.getCaseid().split("\\.")[0]);
+                        long creationTimestamp = 0;
+                        long queueTime = 0;
+                        long completionTime = 0;
 
+                        taskStatisticDTO.getParticipants().addAll(
+                                taskTimingDTO.getParticipantsIds()
+                                        .stream()
+                                        .map(participantsMap::get)
+                                        .filter(Objects::nonNull)
+                                        .collect(Collectors.toList())
+                        );
+
+                        // one of the offered or allocated times must be set
+                        if (taskTimingDTO.getOfferedTimestamp() == 0L || taskTimingDTO.getAllocatedTimestamp() == 0L) {
+                            creationTimestamp = Math.max(taskTimingDTO.getOfferedTimestamp(), taskTimingDTO.getAllocatedTimestamp());
+                        } else {
+                            creationTimestamp = Math.min(taskTimingDTO.getOfferedTimestamp(), taskTimingDTO.getAllocatedTimestamp());
+                        }
+
+                        if (taskTimingDTO.getStartTimestamp() == 0L) {
+                            queueTime = now - creationTimestamp;
+                            if(!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()){
+                                relatedCaseDTO.incQueuedWorkitemsCount();
+                            }
+                        } else {
+                            queueTime = taskTimingDTO.getStartTimestamp() - creationTimestamp;
+                            if (taskTimingDTO.getEndTimestamp() == 0L) {
+                                completionTime = now - taskTimingDTO.getStartTimestamp();
+                                if(!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()){
+                                    relatedCaseDTO.incRunningWorkitemsCount();
+                                }
+                            } else {
+                                completionTime = taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp();
+                            }
+                            avgCompletionTime.addAndGet(completionTime);
+                            avgCompletionTimeCounter.incrementAndGet();
+                        }
+
+                        if (taskTimingDTO.getOfferedTimestamp() == 0L && taskTimingDTO.getAllocatedTimestamp() == 0L) {
+                            // this is the case fot autotasks
+                            if (taskTimingDTO.getStartTimestamp() != 0L) {
+                                creationTimestamps.add(taskTimingDTO.getStartTimestamp());
+                            }
+                        } else {
+                            avgQueueTime.addAndGet(queueTime);
+                            avgQueueTimeCounter.incrementAndGet();
+                            creationTimestamps.add(creationTimestamp);
+                        }
+                    });
+
+            if (avgQueueTimeCounter.get() != 0) {
+                // Avg. queue time of task
+                taskStatisticDTO.setAvgQueueTime(avgQueueTime.get() / avgQueueTimeCounter.get());
+            }
+            if (avgCompletionTimeCounter.get() != 0) {
+                // Avg. completion time of task
+                taskStatisticDTO.setAvgCompletionTime(avgCompletionTime.get() / avgCompletionTimeCounter.get());
+            }
+            // Avg. occurences/week
+            taskStatisticDTO.setAvgOccurrencesPerWeek(occurrencesInWeeks(creationTimestamps));
+            //
+            taskStatisticDTOS.add(taskStatisticDTO);
+        }
+
+        long avgResourceTimePerWeekSummed = 0;
+        for (TaskStatisticDTO taskStatisticDTO : taskStatisticDTOS) {
+            // Save decompositionOrder
+            taskStatisticDTO.setDecompositionOrder(smallestCaseDecompositionOrder.get(taskStatisticDTO.getTaskid()));
+
+            // Avg. Capacity needed
+            avgResourceTimePerWeekSummed += taskStatisticDTO.getAvgCompletionTime() * taskStatisticDTO.getAvgOccurrencesPerWeek()[7];
+        }
+
+        // Avg. Time to reach of task
+        taskStatisticDTOS = taskStatisticDTOS.stream().sorted().collect(Collectors.toList());
+        String currentDecomposition = "";
+        long additiveAvgTimeToReach = 0;
+        long additiveAvgTimeToReachStep = 0;
+        int additiveAvgTimeToReachStepCounter = 0;
+        for (TaskStatisticDTO taskStatisticDTO : taskStatisticDTOS) {
+            // TimeToReach
+            if (!currentDecomposition.equals(taskStatisticDTO.getDecompositionOrder())) {
+                if (additiveAvgTimeToReachStepCounter != 0) {
+                    additiveAvgTimeToReach += additiveAvgTimeToReachStep / additiveAvgTimeToReachStepCounter;
+                    additiveAvgTimeToReachStep = 0;
+                    additiveAvgTimeToReachStepCounter = 0;
+                }
+                currentDecomposition = taskStatisticDTO.getDecompositionOrder();
+                taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
+                additiveAvgTimeToReachStep += taskStatisticDTO.getAvgQueueTime() + taskStatisticDTO.getAvgCompletionTime();
+                additiveAvgTimeToReachStepCounter++;
+            } else {
+                additiveAvgTimeToReachStep += taskStatisticDTO.getAvgQueueTime() + taskStatisticDTO.getAvgCompletionTime();
+                additiveAvgTimeToReachStepCounter++;
+                taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
+            }
+        }
+
+        SpecificationStatisticDTO specificationStatisticDTO = new SpecificationStatisticDTO(specificationID, specversion, uri);
+        specificationStatisticDTO.setSpeckey(currentSpeckey);
+        specificationStatisticDTO.setAvgCaseCompletionTime(avgCaseCompletionTime);
+        specificationStatisticDTO.setSuccessfulCases(successful);
+        specificationStatisticDTO.setUnsuccessfulCases(unsuccessful);
+        specificationStatisticDTO.setCaseOccurrencesPerDayOfWeek(caseOccurrencesPerDayOfWeek);
+        specificationStatisticDTO.setAvgResourceTimePerWeekSummed(avgResourceTimePerWeekSummed);
+        specificationStatisticDTO.setCaseStatisticDTOS(new ArrayList<>(caseStatisticMap.values()));
+        specificationStatisticDTO.setTaskStatisticDTOS(taskStatisticDTOS);
+        specificationStatisticDTO.getParticipants().addAll(
+                participantIDsRelatedToCase.stream()
+                        .map(participantsMap::get).filter(Objects::nonNull)
+                        .collect(Collectors.toList())
+        );
+
+        return specificationStatisticDTO;
+    }
+
+    @RequestMapping(value = "/api/specification", method = RequestMethod.GET)
+    public SpecificationListResource getSpecifications() {
+        return new SpecificationListResource(workItemManager.getAllLoadedSpecifications());
+    }
+
+    @RequestMapping(value = "/api/specification/{uri}/{specificationID}/{specversion}", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public Specification getSpecification(@PathVariable("specificationID") String specificationID,
+                                          @PathVariable("specversion") String specversion,
+                                          @PathVariable("uri") String uri) {
+        return workItemManager.getSpecificationById(new YSpecificationID(specificationID, specversion, uri));
+    }
+
+    @RequestMapping(value = "/api/specification/{uri}/{specificationID}/{specversion}/definition",
+            method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public List<Task> getTaskDefinitions(@PathVariable("specificationID") String specificationID,
+                                         @PathVariable("specversion") String specversion,
+                                         @PathVariable("uri") String uri) {
+        return workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
+    }
+
+
+    @RequestMapping(value = "/api/specification/extension", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public List<ExtensionSpecification> getExtensionAttributes() {
+        return extensionSpecificationDao.findAll();
+    }
+
+    @RequestMapping(value = "/api/specification/extension/{uri}/{specificationID}/{specversion}", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public ExtensionSpecification getExtensionAttributesForSpecifications(
+            @PathVariable("specificationID") String specificationID,
+            @PathVariable("specversion") String specversion,
+            @PathVariable("uri") String uri
+    ) {
+        ExtensionSpecification extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
+
+        if (extensionSpecification == null) {
+            createLocalEntities(specificationID, specversion, uri);
+            extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
+        }
+        return extensionSpecification;
+    }
+
+    @RequestMapping(value = "/api/specification/task/{uri}/{specificationID}/{specversion}", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public List<ExtensionTask> getExtensionTaskAttributes(
+            @PathVariable("specificationID") String specificationID,
+            @PathVariable("specversion") String specversion,
+            @PathVariable("uri") String uri
+    ) {
+        ExtensionSpecification extensionSpecification = extensionSpecificationDao.findByComposedID(specificationID, specversion, uri);
+
+        if (extensionSpecification == null) {
+            createLocalEntities(specificationID, specversion, uri);
+        }
+        return extensionTaskDao.findAllByComposedID(specificationID, specversion, uri);
+    }
+
+    @RequestMapping(value = "/api/specification/extension/{uri}/{specificationID}/{specversion}/core",
+            params = "core", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public void storeSpecificationCore(@PathVariable("specificationID") String specificationID,
+                                       @PathVariable("specversion") String specversion,
+                                       @PathVariable("uri") String uri,
+                                       @RequestParam("core") Boolean core) {
+        extensionSpecificationDao.setCore(specificationID, specversion, uri, core);
+    }
+
+    @RequestMapping(value = "/api/specification/extension/{uri}/{specificationID}/{specversion}/specificationTimeLimit",
+            params = "specificationTimeLimit", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public void storeSpecificationTimeLimit(@PathVariable("specificationID") String specificationID,
+                                            @PathVariable("specversion") String specversion,
+                                            @PathVariable("uri") String uri,
+                                            @RequestParam("specificationTimeLimit") Integer specificationTimeLimit) {
+        extensionSpecificationDao.setSpecificationTimeLimit(specificationID, specversion, uri, specificationTimeLimit);
+    }
+
+    @RequestMapping(value = "/api/specification/extension/{uri}/{specificationID}/{specversion}/{taskid}/costResourceHour",
+            params = "costResourceHour", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public void storeCostResourceHour(@PathVariable("specificationID") String specificationID,
+                                      @PathVariable("specversion") String specversion,
+                                      @PathVariable("uri") String uri,
+                                      @PathVariable("taskid") String taskid,
+                                      @RequestParam("costResourceHour") Integer costResourceHour) {
+        extensionTaskDao.setCostResourceHour(specificationID, specversion, uri, taskid, costResourceHour);
+    }
+
+    @RequestMapping(value = "/api/specification/task/{uri}/{specificationID}/{specversion}/{taskid}/maxTaskAge",
+            params = "maxTaskAge", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public void storeMaxTaskAge(@PathVariable("specificationID") String specificationID,
+                                @PathVariable("specversion") String specversion,
+                                @PathVariable("uri") String uri,
+                                @PathVariable("taskid") String taskid,
+                                @RequestParam("maxTaskAge") Integer maxTaskAge) {
+        extensionTaskDao.setMaxTaskAge(specificationID, specversion, uri, taskid, maxTaskAge);
+    }
+
+    @RequestMapping(value = "/api/specification/task/{uri}/{specificationID}/{specversion}/{taskid}/maxQueueAge",
+            params = "maxQueueAge", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public void storeMaxQueueAge(@PathVariable("specificationID") String specificationID,
+                                 @PathVariable("specversion") String specversion,
+                                 @PathVariable("uri") String uri,
+                                 @PathVariable("taskid") String taskid,
+                                 @RequestParam("maxQueueAge") Integer maxQueueAge) {
+        extensionTaskDao.setMaxQueueAge(specificationID, specversion, uri, taskid, maxQueueAge);
+    }
+
+    @RequestMapping(value = "/api/specification/task/{uri}/{specificationID}/{specversion}/{taskid}/setAttributes",
+            params = "maxQueueAge", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public void storeMaxQueueAge(@PathVariable("specificationID") String specificationID,
+                                 @PathVariable("specversion") String specversion,
+                                 @PathVariable("uri") String uri,
+                                 @PathVariable("taskid") String taskid,
+                                 @RequestParam("costResourceHour") Integer costResourceHour,
+                                 @RequestParam("maxTaskAge") Integer maxTaskAge,
+                                 @RequestParam("maxQueueAge") Integer maxQueueAge) {
+        extensionTaskDao.setAttributes(specificationID, specversion, uri, taskid, costResourceHour, maxTaskAge, maxQueueAge);
+    }
+
+    private void createLocalEntities(String specificationID, String specversion, String uri) {
+        List<Task> tasks = workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
+
+        ExtensionSpecification newExtensionSpecification = new ExtensionSpecification();
+        newExtensionSpecification.setSpecificationId(specificationID);
+        newExtensionSpecification.setSpecversion(specversion);
+        newExtensionSpecification.setUri(uri);
+        newExtensionSpecification.setCore(false);
+        newExtensionSpecification.setSpecificationTimeLimit(0);
+        extensionSpecificationDao.save(newExtensionSpecification);
+
+        List<ExtensionTask> extensionTasks = new ArrayList<>();
+
+        tasks.forEach(task -> {
+            ExtensionTask extensionTask = new ExtensionTask();
+            extensionTask.setTaskid(task.getId());
+            extensionTask.setSpecificationId(specificationID);
+            extensionTask.setSpecversion(specversion);
+            extensionTask.setUri(uri);
+            extensionTask.setCostResourceHour(0);
+            extensionTask.setMaxTaskAge(0);
+            extensionTask.setMaxQueueAge(0);
+            extensionTaskDao.save(extensionTask);
+            extensionTasks.add(extensionTask);
+        });
+    }
+
+    private boolean decompositionOrderIsSmaller(String order, String order2) {
+        if (order2.equals("")) {
+            return false;
+        }
+        if (order.equals("")) {
+            return true;
+        }
+        String[] orderElements = order.split("\\.");
+        String[] order2Elements = order2.split("\\.");
+
+        // select smallest array
+        int limiter = orderElements.length;
+        if (limiter > order2Elements.length) {
+            limiter = order2Elements.length;
+        }
+
+        // compare progress on individual levels
+        for (int i = 0; i < limiter; i++) {
+            if (Integer.parseInt(orderElements[i]) > Integer.parseInt(order2Elements[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isHighestDecompositionOrder(Map<String, String> smallestCaseDecompositionOrder, String order){
+        List<String> orderedDecompositionOrderList = smallestCaseDecompositionOrder.values().stream().sorted(
+                TaskStatisticDTO::decompositionOrderComparison).collect(Collectors.toList());
+        if(decompositionOrderIsSmaller(orderedDecompositionOrderList.get(orderedDecompositionOrderList.size() - 1), order)){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isSmallestDecompositionOrder(Map<String, String> smallestCaseDecompositionOrder, String order){
+        List<String> orderedDecompositionOrderList = smallestCaseDecompositionOrder.values().stream().sorted(
+                TaskStatisticDTO::decompositionOrderComparison).collect(Collectors.toList());
+        if(decompositionOrderIsSmaller(order, orderedDecompositionOrderList.get(0))){
+            return false;
+        }
+        return true;
+    }
+
+    private Integer[] occurrencesInWeeks(List<Long> timestamps) {
+        Integer[] occurrencesPerDayOfWeek = new Integer[]{0, 0, 0, 0, 0, 0, 0, 0};
+        List<Set<String>> weeksWithOccurrences = List.of(new HashSet<String>(), new HashSet<String>(), new HashSet<String>(),
+                new HashSet<String>(), new HashSet<String>(), new HashSet<String>(), new HashSet<String>());
+        Calendar calendar = Calendar.getInstance();
+        for (long start : timestamps) {
+            calendar.setTimeInMillis(start);
+            int year = calendar.get(Calendar.YEAR);
+            int week = calendar.get(Calendar.WEEK_OF_YEAR);
+            int weekDay = calendar.get(Calendar.DAY_OF_WEEK) - 2;
+            // Mapping start of week at sunday to start of week at monday
+            if (weekDay == -1) {
+                weekDay = 6;
+            }
+            occurrencesPerDayOfWeek[weekDay]++;
+            weeksWithOccurrences.get(weekDay).add(year + "_" + week);
+        }
+
+        for (int i = 0; i < 7; i++) {
+            int weeksOccurring = weeksWithOccurrences.get(i).size();
+            if (weeksOccurring == 0) {
+                occurrencesPerDayOfWeek[i] = 0;
+                continue;
+            }
+            int avgOccurrencePerWeekday = (int) Math.ceil((double) occurrencesPerDayOfWeek[i] / weeksOccurring);
+            occurrencesPerDayOfWeek[i] = avgOccurrencePerWeekday;
+            occurrencesPerDayOfWeek[7] += avgOccurrencePerWeekday;
+        }
+
+        return occurrencesPerDayOfWeek;
+    }
 }

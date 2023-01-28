@@ -4,7 +4,7 @@
   </a></h3>
 
   <table mat-table [dataSource]="dataSource" matSort
-         (matSortChange)="announceSortChange($event)"
+         (matSortChange)="announceSortChange($event)" matSortActive="specversion" matSortDirection="desc"
          class="mat-elevation-z8">
 
     <!-- URI Column -->
@@ -41,7 +41,7 @@
 
     <!-- Active Cases Column -->
     <ng-container matColumnDef="activeCasesCount">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by active cases">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by active caseDTOS">
         Active Cases
       </th>
       <td mat-cell *matCellDef="let element">{{element.activeCasesCount}}</td>

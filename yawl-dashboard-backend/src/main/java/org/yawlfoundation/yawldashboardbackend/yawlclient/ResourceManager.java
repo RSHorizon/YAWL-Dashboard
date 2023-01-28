@@ -33,7 +33,9 @@ public interface ResourceManager {
 
 	List<String>	getAllParticipantNames();
 
-	Participant	getParticipantById(String id);
+    List<Participant> getParticipants();
+
+    Participant	getParticipantById(String id);
 
 	Participant	getParticipantByName(String name);
 
