@@ -6,3 +6,15 @@ table {
 mat-form-field{
   padding: 0;
 }
+
+.mat-cell {
+  height: 130px;
+}
+
+.mat-column-taskid{
+  line-break: anywhere;
+}
+
+.occurence-box{
+  margin-right: 3px;
+}

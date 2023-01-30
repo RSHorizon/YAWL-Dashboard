@@ -36,6 +36,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -71,7 +72,7 @@ class SpecificationController {
                                                                @PathVariable("specversion") String specversion,
                                                                @PathVariable("uri") String uri) {
         YSpecificationID specId = new YSpecificationID(specificationID, specversion, uri);
-        String currentSpeckey = resourceLogManager.getStatisticsForSpecification(specId).getSpeckey();
+        AtomicReference<String> currentSpeckey = new AtomicReference<>("");
         List<Event> events = resourceLogManager.getAllResourceEvents(specId);
 
         Map<String, Participant> participantsMap = new HashMap<>();
@@ -80,9 +81,22 @@ class SpecificationController {
         }
         Set<String> participantIDsRelatedToCase = new HashSet<>();
 
+        Set<String> speckeys = new HashSet<>();
+        events.forEach(event -> {
+            if (currentSpeckey.get().equals("") && !speckeys.contains(event.getSpeckey())) {
+                speckeys.add(event.getSpeckey());
+                YSpecificationID ySpecificationID = resourceLogManager.getSpecificationIdentifiers(event.getSpeckey());
+                if (ySpecificationID.equals(specId)) {
+                    currentSpeckey.set(event.getSpeckey());
+                }
+            }
+        });
+
+
         // Map all resource events to cases of the specification
         List<CaseDTO> caseDTOS = new ArrayList<>();
-        events.stream().filter(event -> event.getSpeckey().equals(currentSpeckey)).forEach(event -> {
+        events.stream().filter(event -> event.getSpeckey().equals(currentSpeckey.get())).forEach(event -> {
+
             String pureCaseId = event.getCaseid().split("\\.")[0];
             // Ensure case object exists
             if (caseDTOS.stream().noneMatch(caseDTOInstance -> caseDTOInstance.getId().equals(event.getCaseid().split("\\.")[0]))) {
@@ -103,7 +117,7 @@ class SpecificationController {
                 associatedCaseDTO.getTaskEvents().add(event);
             }
         });
-        List<String> resources = new ArrayList<>();
+
         Map<String, CaseStatisticDTO> caseStatisticMap = new HashMap<>();
         Map<String, Map<String, TaskTimingDTO>> taskTimings = new HashMap<>();
         Map<String, String> smallestCaseDecompositionOrder = new HashMap<>();
@@ -136,6 +150,8 @@ class SpecificationController {
             // Fill timings, where one timing is identified by its taskid and caseId
             // and set initial start and end dates for cases
             for (Event event : caseDTOInstance.getTaskEvents()) {
+                String decompositionOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
+                long eventTimestamp = Long.parseLong(event.getTimestamp());
                 participantIDsRelatedToCase.add(event.getResourceid());
                 if (!taskTimings.containsKey(event.getTaskid())) {
                     taskTimings.put(event.getTaskid(), new HashMap<>());
@@ -144,55 +160,100 @@ class SpecificationController {
 
                 String eventIdentifier = event.getTaskid() + "__" + event.getCaseid();
                 if (!timingMap.containsKey(eventIdentifier)) {
-                    TaskTimingDTO newTiming = new TaskTimingDTO(event.getTaskid(), event.getCaseid());
+                    TaskTimingDTO newTiming = new TaskTimingDTO(event.getTaskid(), event.getCaseid().split("\\.")[0], decompositionOrder);
                     timingMap.put(eventIdentifier, newTiming);
+                    caseStatisticDTO.getTaskTimingDTOS().add(newTiming);
                 }
 
                 TaskTimingDTO taskTimingDTO = timingMap.get(eventIdentifier);
-                taskTimingDTO.getParticipantsIds().add(event.getResourceid());
+
+                if (!event.getResourceid().equals("") && !event.getEventtype().equals("offer") && taskTimingDTO.getParticipants()
+                        .stream().noneMatch(participant -> participant.getId().equals(event.getResourceid()))) {
+                    taskTimingDTO.getParticipants().add(participantsMap.get(event.getResourceid()));
+                }
                 switch (event.getEventtype()) {
                     case "offer":
-                        taskTimingDTO.setOfferedTimestamp(Long.parseLong(event.getTimestamp()));
-                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
-                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setOfferedTimestamp(eventTimestamp);
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Offered");
+                        }
+                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                decompositionOrder)) {
+                            caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
                     case "allocate":
-                        taskTimingDTO.setAllocatedTimestamp(Long.parseLong(event.getTimestamp()));
-                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
-                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setAllocatedTimestamp(eventTimestamp);
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Allocated");
+                        }
+                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                decompositionOrder)) {
+                            caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
                     case "start":
-                        taskTimingDTO.setStartTimestamp(Long.parseLong(event.getTimestamp()));
-                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
-                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setStartTimestamp(eventTimestamp);
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Started");
+                        }
+                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                decompositionOrder)) {
+                            caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
                     case "autotask_start":
-                        taskTimingDTO.setStartTimestamp(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setStartTimestamp(eventTimestamp);
                         taskTimingDTO.setAutomated(true);
-                        if(caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
-                            caseStatisticDTO.setStart(Long.parseLong(event.getTimestamp()));
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Running");
+                        }
+                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
+                                decompositionOrder)) {
+                            caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
                     case "complete":
-                        taskTimingDTO.setEndTimestamp(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setEndTimestamp(eventTimestamp);
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Completed");
+                        }
                         break;
                     case "autotask_complete":
-                        taskTimingDTO.setEndTimestamp(Long.parseLong(event.getTimestamp()));
+                        taskTimingDTO.setEndTimestamp(eventTimestamp);
                         taskTimingDTO.setAutomated(true);
-                        if(isHighestDecompositionOrder(smallestCaseDecompositionOrder,
-                                event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""))){
-                            caseStatisticDTO.setEnd(Long.parseLong(event.getTimestamp()));
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Completed");
+                        }
+                        if (isHighestDecompositionOrder(smallestCaseDecompositionOrder,
+                                decompositionOrder)) {
+                            caseStatisticDTO.setEnd(eventTimestamp);
                         }
                         break;
                     case "cancelled_by_case":
                         taskTimingDTO.setCancelled(true);
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Cancelled");
+                        }
+                        break;
+                    case "suspended":
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Suspended");
+                        }
+                        break;
+                    case "resumed":
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Resumed");
+                        }
                         break;
                 }
             }
@@ -263,18 +324,12 @@ class SpecificationController {
             taskTimings.get(taskid).values().stream()
                     .filter(taskTimingDTO -> !taskTimingDTO.isCancelled())
                     .forEach(taskTimingDTO -> {
-                        CaseStatisticDTO relatedCaseDTO = caseStatisticMap.get(taskTimingDTO.getCaseid().split("\\.")[0]);
+                        CaseStatisticDTO relatedCaseDTO = caseStatisticMap.get(taskTimingDTO.getCaseid());
                         long creationTimestamp = 0;
                         long queueTime = 0;
                         long completionTime = 0;
 
-                        taskStatisticDTO.getParticipants().addAll(
-                                taskTimingDTO.getParticipantsIds()
-                                        .stream()
-                                        .map(participantsMap::get)
-                                        .filter(Objects::nonNull)
-                                        .collect(Collectors.toList())
-                        );
+                        taskStatisticDTO.getParticipants().addAll(taskTimingDTO.getParticipants());
 
                         // one of the offered or allocated times must be set
                         if (taskTimingDTO.getOfferedTimestamp() == 0L || taskTimingDTO.getAllocatedTimestamp() == 0L) {
@@ -285,14 +340,14 @@ class SpecificationController {
 
                         if (taskTimingDTO.getStartTimestamp() == 0L) {
                             queueTime = now - creationTimestamp;
-                            if(!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()){
+                            if (!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()) {
                                 relatedCaseDTO.incQueuedWorkitemsCount();
                             }
                         } else {
                             queueTime = taskTimingDTO.getStartTimestamp() - creationTimestamp;
                             if (taskTimingDTO.getEndTimestamp() == 0L) {
                                 completionTime = now - taskTimingDTO.getStartTimestamp();
-                                if(!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()){
+                                if (!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()) {
                                     relatedCaseDTO.incRunningWorkitemsCount();
                                 }
                             } else {
@@ -363,7 +418,7 @@ class SpecificationController {
         }
 
         SpecificationStatisticDTO specificationStatisticDTO = new SpecificationStatisticDTO(specificationID, specversion, uri);
-        specificationStatisticDTO.setSpeckey(currentSpeckey);
+        specificationStatisticDTO.setSpeckey(currentSpeckey.get());
         specificationStatisticDTO.setAvgCaseCompletionTime(avgCaseCompletionTime);
         specificationStatisticDTO.setSuccessfulCases(successful);
         specificationStatisticDTO.setUnsuccessfulCases(unsuccessful);
@@ -570,19 +625,19 @@ class SpecificationController {
         return false;
     }
 
-    private boolean isHighestDecompositionOrder(Map<String, String> smallestCaseDecompositionOrder, String order){
+    private boolean isHighestDecompositionOrder(Map<String, String> smallestCaseDecompositionOrder, String order) {
         List<String> orderedDecompositionOrderList = smallestCaseDecompositionOrder.values().stream().sorted(
                 TaskStatisticDTO::decompositionOrderComparison).collect(Collectors.toList());
-        if(decompositionOrderIsSmaller(orderedDecompositionOrderList.get(orderedDecompositionOrderList.size() - 1), order)){
+        if (decompositionOrderIsSmaller(orderedDecompositionOrderList.get(orderedDecompositionOrderList.size() - 1), order)) {
             return false;
         }
         return true;
     }
 
-    private boolean isSmallestDecompositionOrder(Map<String, String> smallestCaseDecompositionOrder, String order){
+    private boolean isSmallestDecompositionOrder(Map<String, String> smallestCaseDecompositionOrder, String order) {
         List<String> orderedDecompositionOrderList = smallestCaseDecompositionOrder.values().stream().sorted(
                 TaskStatisticDTO::decompositionOrderComparison).collect(Collectors.toList());
-        if(decompositionOrderIsSmaller(order, orderedDecompositionOrderList.get(0))){
+        if (decompositionOrderIsSmaller(order, orderedDecompositionOrderList.get(0))) {
             return false;
         }
         return true;

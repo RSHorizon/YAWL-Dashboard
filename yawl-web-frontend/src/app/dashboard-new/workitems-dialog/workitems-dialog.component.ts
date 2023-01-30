@@ -1,8 +1,8 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {
   faPencil,
-  faArrowLeft,
+  faArrowLeftLong,
   faArrowsToEye,
   faPlus,
   faChevronDown,
@@ -16,6 +16,11 @@ import {MatTableDataSource} from "@angular/material/table";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {WorkItemService} from "../../yawl/resources/services/work-item.service";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
+import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
+import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
+import {TaskTiming} from "../../yawl/resources/dto/task-timing.entity";
+import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 
 
 @Component({
@@ -30,22 +35,22 @@ import {SpecificationService} from "../../yawl/resources/services/specification.
     ]),
   ],
 })
-export class WorkitemsDialogComponent implements OnInit {
-  faArrowLeft = faArrowLeft;
+export class WorkitemsDialogComponent implements AfterViewInit {
+  faArrowLeftLong = faArrowLeftLong;
   faPencil = faPencil;
   faChevronUp = faChevronUp;
   faChevronDown = faChevronDown;
   workitemURL = "http://localhost:8080/resourceService/faces/adminQueues.jsp"
-  specification: Specification;
+  specificationStatistic: SpecificationStatistic;
   tasks: any | undefined;
-  caseId: number | undefined;
+  caseid: string | undefined;
 
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['taskName', 'resourceStatus', 'enablementTime', 'queueTime', 'age', 'assignedTo', 'overdue'];
+  displayedColumns: string[] = ['taskid', 'decompositionOrder', 'status', 'created', 'endTimestamp', 'queueTime', 'age', 'participants', 'overdue'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand'];
-  expandedElement: { desciption: "sexy" } | undefined;
+  expandedElement: { desciption: "xxxx" } | undefined;
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 
@@ -56,45 +61,85 @@ export class WorkitemsDialogComponent implements OnInit {
               private dialogRef: MatDialogRef<WorkitemsDialogComponent>,
               // @ts-ignore
               @Inject(MAT_DIALOG_DATA) data) {
-    this.specification = data.specification;
-    this.caseId = data.caseId;
+    this.specificationStatistic = data.specificationStatistic;
+    this.caseid = data.caseid;
+
+    let caseStatisticDTO: CaseStatistic = this.specificationStatistic.caseStatisticDTOS
+      .filter(caseInstance => caseInstance.caseid === this.caseid)[0]
 
     // @ts-ignore
-    workItemService.findAllByCase(this.specification.id, this.specification.specversion, this.specification.uri, this.caseId)
-      .subscribe(workitems => {
-        this.dataSource = new MatTableDataSource(workitems);
-        this.dataSource.sort = this.sort;
-      });
-
-    specificationService.findTasksById(this.specification.id, this.specification.specversion, this.specification.uri)
-      .subscribe(tasks => {
-        this.tasks = tasks;
-      })
+    this.dataSource = new MatTableDataSource(caseStatisticDTO.taskTimingDTOS);
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    console.log(this.sort);
   }
 
   close() {
     this.dialogRef.close();
   }
 
-  computeQueueTime(workitem: any): string {
-    if (workitem.startTimeMs === "") {
-      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(workitem.enablementTimeMs * 1), new Date(Date.now())));
-    } else {
-      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(workitem.enablementTimeMs * 1), new Date(workitem.startTimeMs * 1)));
+  computeQueueTime(workitem: TaskTiming): number {
+    let smallestNumbers = [];
+    if(workitem.allocatedTimestamp !== 0){
+      smallestNumbers.push(workitem.allocatedTimestamp);
     }
+    if(workitem.offeredTimestamp !== 0){
+      smallestNumbers.push(workitem.offeredTimestamp);
+    }
+    if(workitem.startTimestamp !== 0){
+      smallestNumbers.push(workitem.startTimestamp);
+    }
+    smallestNumbers = smallestNumbers.sort((a: number, b: number) => this.compare(a,b, true))
+    let creationTimestamp = (smallestNumbers.length !== 0)? smallestNumbers[0]: 0;
+    let queueTime = 0;
+    if(workitem.startTimestamp === 0){
+      queueTime = Date.now() - creationTimestamp;
+    }else{
+      queueTime = workitem.startTimestamp - creationTimestamp;
+    }
+
+    return queueTime;
   }
 
-  computeAge(workitem: any): string {
-    if (workitem.startTimeMs === "") {
-      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(workitem.enablementTimeMs * 1), new Date(Date.now())));
-    } else if (workitem.completionTimeMs === "") {
-      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(workitem.startTimeMs * 1), new Date(Date.now())));
-    } else {
-      return this.applyPastTimeFormatForTimestamp(this.getTimestampFromDuration(new Date(workitem.startTimeMs * 1), new Date(workitem.completionTimeMs * 1)));
+  computeAge(workitem: TaskTiming): number {
+    let smallestNumbers = [];
+    if(workitem.allocatedTimestamp !== 0){
+      smallestNumbers.push(workitem.allocatedTimestamp);
     }
+    if(workitem.offeredTimestamp !== 0){
+      smallestNumbers.push(workitem.offeredTimestamp);
+    }
+    if(workitem.startTimestamp !== 0){
+      smallestNumbers.push(workitem.startTimestamp);
+    }
+    smallestNumbers = smallestNumbers.sort((a: number, b: number) => this.compare(a,b, true))
+    let creationTimestamp = (smallestNumbers.length !== 0)? smallestNumbers[0]: 0;
+    let age = 0;
+    if(workitem.endTimestamp === 0){
+      age = Date.now() - creationTimestamp;
+    }else{
+      age = workitem.endTimestamp - creationTimestamp;
+    }
+
+    return age;
+  }
+
+  computeCreationTimestamp(workitem: TaskTiming): number{
+    let smallestNumbers = [];
+    if(workitem.allocatedTimestamp !== 0){
+      smallestNumbers.push(workitem.allocatedTimestamp);
+    }
+    if(workitem.offeredTimestamp !== 0){
+      smallestNumbers.push(workitem.offeredTimestamp);
+    }
+    if(workitem.startTimestamp !== 0){
+      smallestNumbers.push(workitem.startTimestamp);
+    }
+
+    smallestNumbers = smallestNumbers.sort((a: number, b: number) => this.compare(a,b, true))
+    return (smallestNumbers.length !== 0)? smallestNumbers[0]: 0;
   }
 
   getTimestampFromDuration(start: Date, end: Date): number {
@@ -102,92 +147,154 @@ export class WorkitemsDialogComponent implements OnInit {
     return Math.abs(start - end);
   }
 
-  applyPastTimeFormatForTimestamp(timestamp: number): string {
-    // @ts-ignore
-    let hoursMs = timestamp
-    let minutesMs = hoursMs % (1000 * 60 * 60)
-
-    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    let minutes = Math.floor(minutesMs / (1000 * 60))
-
-    return hours + "h " + minutes + "m";
-  }
-
   /** Announce the change in sort state for assistive technology. */
   announceSortChange(sortState: Sort) {
-    if(sortState.active== "queueTime" && sortState.direction == "asc"){
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeQueueTime(workitemA) > this.computeQueueTime(workitemB))?-1:1)
-    }else if(sortState.active== "queueTime" && sortState.direction == "desc"){
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeQueueTime(workitemA) < this.computeQueueTime(workitemB))?-1:1)
+    if (sortState.active == "queueTime" && sortState.direction == "asc") {
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeQueueTime(workitemA) > this.computeQueueTime(workitemB)) ? -1 : 1)
+    } else if (sortState.active == "queueTime" && sortState.direction == "desc") {
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeQueueTime(workitemA) < this.computeQueueTime(workitemB)) ? -1 : 1)
     }
 
-    if(sortState.active== "age" && sortState.direction == "asc"){
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) > this.computeAge(workitemB))?-1:1)
-    }else if(sortState.active== "age" && sortState.direction == "desc"){
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) < this.computeAge(workitemB))?-1:1)
+    if (sortState.active == "age" && sortState.direction == "asc") {
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) > this.computeAge(workitemB)) ? -1 : 1)
+    } else if (sortState.active == "age" && sortState.direction == "desc") {
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) < this.computeAge(workitemB)) ? -1 : 1)
     }
 
-    if(sortState.active== "overdue" && sortState.direction == "asc"){
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) > this.isOverdue(workitemB))?-1:1)
-    }else if(sortState.active== "overdue" && sortState.direction == "desc"){
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) < this.isOverdue(workitemB))?-1:1)
+    if (sortState.active == "overdue" && sortState.direction == "asc") {
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) > this.isOverdue(workitemB)) ? -1 : 1)
+    } else if (sortState.active == "overdue" && sortState.direction == "desc") {
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) < this.isOverdue(workitemB)) ? -1 : 1)
     }
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   isInQueue(workitem: any): boolean {
-    if (workitem.resourceStatus === "Offered" || workitem.resourceStatus === "Allocated") {
+    if (workitem.status === "Offered" || workitem.status === "Allocated") {
       return true;
     }
     return false;
   }
 
-  isOverdue(workitem: any): number {
-    if (workitem === undefined || this.tasks === undefined) {
-      return -1;
-    }
-    let task: any = this.tasks.filter((task: any) => task.taskId == workitem.taskID)[0];
-    if (workitem.startTimeMs === "") {
-      if (task.maxQueueAge < this.getTimestampFromDuration(new Date(workitem.enablementTimeMs * 1), new Date(Date.now()))) {
-        return 1;
-      }
-    } else if (workitem.completionTimeMs === "") {
-      if (task.maxTaskAge < this.getTimestampFromDuration(new Date(workitem.startTimeMs * 1), new Date(Date.now()))) {
-        return 1;
-      }
-    } else {
-      if (task.maxTaskAge < this.getTimestampFromDuration(new Date(workitem.startTimeMs * 1), new Date(workitem.completionTimeMs * 1))) {
-        return 1;
+  isOverdue(workitem: TaskTiming): boolean {
+    let taskStatistics =  this.specificationStatistic.taskStatisticDTOS.filter(taskStatistic => taskStatistic.taskid === workitem.taskid);
+    let taskStatistic = (taskStatistics.length !== 0)? taskStatistics[0]: null;
+    if(taskStatistic !== null){
+      let age = this.computeAge(workitem);
+      if(workitem.startTimestamp === 0){
+        return age > taskStatistic.maxQueueAge!;
+      }else{
+        return age > taskStatistic.maxTaskAge!;
       }
     }
 
-    return 0;
+    return false;
   }
 
-  isOverdueName(workitem: any): string{
-    let overdue = this.isOverdue(workitem);
-    if(overdue === 0){
-      return "No";
-    }else if(overdue === 1){
+  computeMaxQueueTime(workitem: TaskTiming): number {
+    if (workitem === undefined) {
+      return 0;
+    }
+    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    console.log(task);
+    return task.maxQueueAge!;
+  }
+
+  computeMaxTaskTime(workitem: TaskTiming): number {
+    if (workitem === undefined) {
+      return 0;
+    }
+    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    return task.maxTaskAge!;
+  }
+
+  computeAvgQueueTime(workitem: TaskTiming): number {
+    if (workitem === undefined) {
+      return 0;
+    }
+    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    return task.avgQueueTime;
+  }
+
+  computeAvgCompletionTime(workitem: TaskTiming): number {
+    if (workitem === undefined) {
+      return 0;
+    }
+    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    return task.avgCompletionTime;
+  }
+
+  computeAvgTimeToReach(workitem: TaskTiming): number {
+    if (workitem === undefined) {
+      return 0;
+    }
+    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    return task.avgTimeToReach;
+  }
+
+  computeCommonParticipants(workitem: TaskTiming): Participant[]{
+    if(workitem === undefined){
+      return [];
+    }
+    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    return task.participants;
+  }
+
+  applyPastTimeFormatForTimestamp(timestamp: number): string {
+    // @ts-ignore
+    let hoursMs = timestamp
+    let minutesMs = timestamp % (1000 * 60 * 60)
+    let secondsMs = timestamp % (1000 * 60)
+
+    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
+    let minutes = Math.floor(minutesMs / (1000 * 60))
+    let seconds = Math.floor(secondsMs / (1000))
+
+    return hours + "h " + minutes + "m " + seconds + "s";
+  }
+
+  applyDatetimeFormat(timestamp: number): string {
+    if(timestamp === 0){
+      return ""
+    }
+    let date = new Date(timestamp);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+    return months[date.getMonth()]+ ".:" + date.getDate() + ", " + date.getFullYear() + " " + date.toLocaleTimeString()
+  }
+
+  applyParticipantsArrayFormat(participants: Participant[]): string{
+    if(participants === undefined){
+      return "";
+    }
+
+    let chain = "";
+    participants.forEach(participant => {
+      chain += ", " + participant.firstname + " " + participant.lastname
+    })
+    return chain.substring(2);
+  }
+
+  applyOccurencesFormat(occurences: number[]): string {
+    if (occurences.length != 8) {
+      return "";
+    }
+
+    return "M" + occurences[0] + " T" + occurences[1] + " W" + occurences[2] + " T" + occurences[3] + " F" + occurences[4] + " S" + occurences[5] + " S" + occurences[6] + ""
+  }
+
+  applyIsOverdueFormat(age: number, maxTime: number): string {
+    if (age > maxTime) {
       return "Yes";
-    }else{
-      return "";
+    } else {
+      return "No";
     }
   }
 
-  getMaxQueueTime(workitem: any): string {
-    if (workitem === undefined || this.tasks === undefined) {
-      return "";
-    }
-    let task: any = this.tasks.filter((task: any) => task.taskId == workitem.taskID)[0];
-    return this.applyPastTimeFormatForTimestamp(task.maxQueueAge);
-  }
-
-  getMaxTaskTime(workitem: any): string {
-    if (workitem === undefined || this.tasks === undefined) {
-      return "";
-    }
-    let task: any = this.tasks.filter((task: any) => task.taskId == workitem.taskID)[0];
-    return this.applyPastTimeFormatForTimestamp(task.maxTaskAge);
+  applyBooleanFormat(bool: boolean){
+    return (bool)? "Yes": "No";
   }
 
 }

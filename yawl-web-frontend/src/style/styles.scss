@@ -72,6 +72,45 @@ $gutter-width: 80%;
   opacity: 1;
 }
 
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #12376a;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  color: #12376a;
+  background-color: #12376a;
+}
+
+.ng-fa-icon {
+  color: #12376a;
+}
+
+.logout-button .ng-fa-icon {
+  color: white;
+}
+
+a mat-toolbar.mat-toolbar.mat-toolbar-single-row {
+  background-color: rgba(0, 0, 100, 0.08);
+}
+
+mat-toolbar .ng-fa-icon {
+  font-size: 25px;
+  vertical-align: text-bottom;
+  color: white;
+}
+
+.mat-checked span.mat-slide-toggle-bar.mat-slide-toggle-bar-no-side-margin {
+  background-color: rgba(18, 55, 106, 0.54);
+}
+
+.mat-checked .mat-slide-toggle-thumb-container span.mat-slide-toggle-thumb {
+  color: #12376a;
+  background-color: #12376a;
+}
+
+.bottom-page-margin{
+  height:100px;
+}
 
 /* ***********************************************************
  * Globals
@@ -466,7 +505,7 @@ li.toggled > .main-sub-menu {
 
 .page-header {
   position: relative;
-  display:inline-block;
+  display: inline-block;
   width: 100%;
   margin: 0;
   padding: 20px 0;
@@ -480,7 +519,7 @@ li.toggled > .main-sub-menu {
 .page-header-actions {
   padding: 0;
   margin: 0;
-  float:left;
+  float: left;
   list-style: none;
 }
 
@@ -1005,7 +1044,7 @@ mat-card.without-padding {
   padding: 26px;
 }
 
-.card-content button{
+.card-content button {
   margin-right: 5px;
 }
 

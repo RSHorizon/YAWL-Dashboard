@@ -1,9 +1,9 @@
 <div class="dialog">
   <mat-toolbar (click)="close()">
-    <fa-icon [fixedWidth]="true" [icon]="faArrowLeft"></fa-icon>
+    <fa-icon [fixedWidth]="true" [icon]="faArrowLeftLong"></fa-icon>
     <span>Back</span>
     <span class="spacer"></span>
-    <span>Case Id: {{this.caseId}}</span>
+    <span>Case Id: {{this.caseid}}</span>
   </mat-toolbar>
 
   <table mat-table [dataSource]="dataSource" multiTemplateDataRows matSort
@@ -11,27 +11,43 @@
          class="mat-elevation-z8">
 
     <!-- Workitem-->
-    <ng-container matColumnDef="taskName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification workitem name">
+    <ng-container matColumnDef="taskid">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by workitem name">
         Workitem
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.taskName}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.taskid}} </td>
+    </ng-container>
+
+    <!-- Decomposition-->
+    <ng-container matColumnDef="decompositionOrder">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by decomposition order">
+        Order
+      </th>
+      <td mat-cell *matCellDef="let element"> {{element.decompositionOrder}} </td>
     </ng-container>
 
     <!-- Status Column -->
-    <ng-container matColumnDef="resourceStatus">
+    <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by status">
         Status
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.resourceStatus}}</td>
+      <td mat-cell *matCellDef="let element"> {{element.status}}</td>
     </ng-container>
 
     <!-- Created Column -->
-    <ng-container matColumnDef="enablementTime">
+    <ng-container matColumnDef="created">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by created">
         Created
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.enablementTime}}</td>
+      <td mat-cell *matCellDef="let element"> {{applyDatetimeFormat(computeCreationTimestamp(element))}}</td>
+    </ng-container>
+
+    <!-- Completed Column -->
+    <ng-container matColumnDef="endTimestamp">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by completed">
+        Completed
+      </th>
+      <td mat-cell *matCellDef="let element"> {{applyDatetimeFormat(element.endTimestamp)}}</td>
     </ng-container>
 
     <!-- QueueTime Column -->
@@ -39,7 +55,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queue time">
         Queue time
       </th>
-      <td mat-cell *matCellDef="let element">{{computeQueueTime(element)}}</td>
+      <td mat-cell *matCellDef="let element">{{applyPastTimeFormatForTimestamp(computeQueueTime(element))}}</td>
     </ng-container>
 
     <!-- Age Column -->
@@ -47,15 +63,15 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
         Age
       </th>
-      <td mat-cell *matCellDef="let element">{{computeAge(element)}}</td>
+      <td mat-cell *matCellDef="let element">{{applyPastTimeFormatForTimestamp(computeAge(element))}}</td>
     </ng-container>
 
     <!-- Resources Column -->
-    <ng-container matColumnDef="assignedTo">
+    <ng-container matColumnDef="participants">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by resource">
         Resource
       </th>
-      <td mat-cell *matCellDef="let element"> {{element.assignedTo}}</td>
+      <td mat-cell *matCellDef="let element"> {{applyParticipantsArrayFormat(element.participants)}}</td>
     </ng-container>
 
     <!-- Overdue Column -->
@@ -63,7 +79,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdue">
         Overdue
       </th>
-      <td mat-cell *matCellDef="let element">{{isOverdueName(element)}}</td>
+      <td mat-cell *matCellDef="let element">{{applyBooleanFormat(isOverdue(element))}}</td>
     </ng-container>
 
     <!-- Expand -->
@@ -88,23 +104,36 @@
             <mat-grid-tile>
               <mat-form-field *ngIf="isInQueue(element)" class="grid-form" appearance="fill" disabled>
                 <mat-label>Max queue time</mat-label>
-                <input matInput disabled value="{{getMaxQueueTime(element)}}">
+                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeMaxQueueTime(element))}}">
               </mat-form-field>
               <mat-form-field *ngIf="!isInQueue(element)" class="grid-form" appearance="fill" disabled>
                 <mat-label>Max task time</mat-label>
-                <input matInput disabled value="{{getMaxTaskTime(element)}}">
+                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeMaxTaskTime(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. queue time</mat-label>
-                <input matInput disabled value="15 min">
+                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeAvgQueueTime(element))}}">
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-form-field class="grid-form" appearance="fill" disabled>
+                <mat-label>Avg. completion time</mat-label>
+                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeAvgCompletionTime(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. time to reach</mat-label>
-                <input matInput disabled value="30 min">
+                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeAvgTimeToReach(element))}}">
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2">
+              <mat-form-field class="grid-form" appearance="fill" disabled>
+                <mat-label>Common resources</mat-label>
+                <input *ngIf="element.automated" matInput disabled value="Codelet">
+                <input *ngIf="!element.automated" matInput disabled value="{{applyParticipantsArrayFormat(computeCommonParticipants(element))}}">
               </mat-form-field>
             </mat-grid-tile>
           </mat-grid-list>

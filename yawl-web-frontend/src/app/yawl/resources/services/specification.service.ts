@@ -28,8 +28,7 @@ export class SpecificationService {
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
-      // @ts-ignore
-      map((res) => res.specifications),
+      map((res: any) => res.specifications),
       catchError((error) => this.handleError(error))
     )
   }

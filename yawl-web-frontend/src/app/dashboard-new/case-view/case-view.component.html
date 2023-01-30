@@ -8,7 +8,7 @@
       <a href="/dashboard">
         <mat-toolbar>
           <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-            <fa-icon [fixedWidth]="true" [icon]="faArrowLeft"></fa-icon>
+            <fa-icon [fixedWidth]="true" [icon]="faArrowLeftLong"></fa-icon>
           </button>
           <span>Back</span>
           <span class="spacer"></span>
@@ -57,15 +57,15 @@
             <input matInput disabled value="{{applyPastTimeFormatForTimestamp(specificationStatistic.avgResourceTimePerWeekSummed)}}">
           </mat-form-field>
         </mat-grid-tile>
-        <mat-grid-tile>
+        <mat-grid-tile rowspan="2">
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Resource summary</mat-label>
-            <input matInput disabled value="{{applyParticipantsArrayFormat(specificationStatistic.participants)}}">
+            <textarea style="height: 85px;resize: none;" matInput disabled>{{applyParticipantsArrayFormat(specificationStatistic.participants)}}</textarea>
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
-          <div style="display: block">
+          <div style="display: block; width: 87%; white-space: nowrap;">
             <mat-label style="color: rgba(0, 0, 0, 0.38); font-size: 8px; font-weight: 600; font-family: Roboto, 'Helvetica Neue', sans-serif">Max case time</mat-label><br>
             <app-timestampform [(timestamp)]="specificationTimeLimit" [daySelectionActive]="true" (timestampChanged)="changedSpecificationAttributes()"></app-timestampform>
           </div>
@@ -77,13 +77,13 @@
             <input matInput disabled value="{{specificationStatistic.unsuccessfulCases}}">
           </mat-form-field>
         </mat-grid-tile>
-        <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Avg. cost per week</mat-label>
             <input matInput disabled value="{{costs.toFixed(2)}}">
           </mat-form-field>
         </mat-grid-tile>
+        <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
       </mat-grid-list>
       <p>
@@ -110,7 +110,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification initiated">
           Initiated
         </th>
-        <td mat-cell *matCellDef="let element">{{datetimeFormat(element.start)}}</td>
+        <td mat-cell *matCellDef="let element">{{applyDatetimeFormat(element.start)}}</td>
       </ng-container>
 
       <!-- Completed Column -->
@@ -118,7 +118,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by completed">
           Completed
         </th>
-        <td mat-cell *matCellDef="let element">{{datetimeFormat(element.end)}}</td>
+        <td mat-cell *matCellDef="let element">{{applyDatetimeFormat(element.end)}}</td>
       </ng-container>
 
       <!-- Age Column -->
@@ -173,7 +173,7 @@
           Actions
         </th>
         <td mat-cell *matCellDef="let element">
-          <a href="javascript:" (click)="openWorkitemsDialog(element.id)">
+          <a href="javascript:" (click)="openWorkitemsDialog(element.caseid)">
             <fa-icon [fixedWidth]="true" [icon]="faArrowsToEye"></fa-icon>
           </a>
           <a [href]="casesURL" target="_blank">
@@ -189,5 +189,7 @@
   <div *ngIf="isTaskView()" >
     <app-task-view [specificationStatistic]="this.specificationStatistic"></app-task-view>
   </div>
+
+  <div class="bottom-page-margin"></div>
 
 </default-page>

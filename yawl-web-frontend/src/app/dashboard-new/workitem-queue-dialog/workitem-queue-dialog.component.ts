@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {faPencil, faArrowLeft, faArrowsToEye, faPlus, faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
+import {faPencil, faArrowLeftLong, faArrowsToEye, faPlus, faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
@@ -25,7 +25,7 @@ import {Participant} from "../../yawl/resources/entities/participant.entity";
   ],
 })
 export class WorkitemQueueDialogComponent implements OnInit {
-  faArrowLeft = faArrowLeft;
+  faArrowLeftLong = faArrowLeftLong;
   faPencil = faPencil;
   faChevronUp=faChevronUp;
   faChevronDown=faChevronDown;
@@ -58,6 +58,7 @@ export class WorkitemQueueDialogComponent implements OnInit {
         this.queueSize = workitems.length;
         this.dataSource = new MatTableDataSource(workitems);
         this.dataSource.sort = this.sort;
+
       });
 
     specificationService.findTasksById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri)
@@ -93,15 +94,17 @@ export class WorkitemQueueDialogComponent implements OnInit {
     return Math.abs(start - end);
   }
 
-  applyPastTimeFormatForTimestamp(timestamp: number): string{
+  applyPastTimeFormatForTimestamp(timestamp: number): string {
     // @ts-ignore
     let hoursMs = timestamp
-    let minutesMs = hoursMs % (1000 * 60 * 60)
+    let minutesMs = timestamp % (1000 * 60 * 60)
+    let secondsMs = timestamp % (1000 * 60)
 
     let hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    let minutes = Math.floor( minutesMs / (1000 * 60))
+    let minutes = Math.floor(minutesMs / (1000 * 60))
+    let seconds = Math.floor(secondsMs / (1000))
 
-    return hours + "h " + minutes + "m";
+    return hours + "h " + minutes + "m " + seconds + "s";
   }
 
   /** Announce the change in sort state for assistive technology. */

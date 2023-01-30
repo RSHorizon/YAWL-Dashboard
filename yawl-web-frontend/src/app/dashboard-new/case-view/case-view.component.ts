@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {faPencil, faArrowLeft, faArrowsToEye} from '@fortawesome/free-solid-svg-icons';
+import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong} from '@fortawesome/free-solid-svg-icons';
 import {ExtensionSpecificationService} from "../services/extension-specification.service";
 import {ActivatedRoute} from "@angular/router";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
@@ -19,6 +19,7 @@ import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {formatDate} from "@angular/common";
 
 @Component({
   selector: 'app-case-view',
@@ -28,6 +29,7 @@ import {Participant} from "../../yawl/resources/entities/participant.entity";
 export class CaseViewComponent implements OnInit {
   faPencil = faPencil;
   faArrowLeft = faArrowLeft;
+  faArrowLeftLong=faArrowLeftLong
   faArrowsToEye = faArrowsToEye;
   casesURL = "http://localhost:8080/resourceService/faces/caseMgt.jsp"
   specificationID: string | null = null;
@@ -123,7 +125,7 @@ export class CaseViewComponent implements OnInit {
     this.dialog.open(WorkitemQueueDialogComponent, dialogConfig);
   }
 
-  openWorkitemsDialog(caseId: string): void {
+  openWorkitemsDialog(caseid: string): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
@@ -131,7 +133,7 @@ export class CaseViewComponent implements OnInit {
 
     dialogConfig.data = {
       specificationStatistic: this.specificationStatistic,
-      caseId: caseId
+      caseid: caseid
     };
 
     this.dialog.open(WorkitemsDialogComponent, dialogConfig);
@@ -188,12 +190,13 @@ export class CaseViewComponent implements OnInit {
     return hours + "h " + minutes + "m " + seconds + "s";
   }
 
-  datetimeFormat(timestamp: number): string {
+  applyDatetimeFormat(timestamp: number): string {
     if(timestamp === 0){
       return ""
     }
     let date = new Date(timestamp);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString()
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+    return months[date.getMonth()]+ ".:" + date.getDate() + ", " + date.getFullYear() + " " + date.toLocaleTimeString()
   }
 
   applyOccurencesFormat(occurences: number[]): string {

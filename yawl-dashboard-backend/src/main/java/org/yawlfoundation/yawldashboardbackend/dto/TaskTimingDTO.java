@@ -1,22 +1,27 @@
 package org.yawlfoundation.yawldashboardbackend.dto;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+
+import java.util.*;
 
 public class TaskTimingDTO {
     private String taskid;
     private String caseid;
-    private Set<String> participantsIds = new HashSet<>();
+    private String decompositionOrder;
+    private List<Participant> participants = new ArrayList<>();
     private boolean automated = false;
     private boolean cancelled = false;
+    private String status;
+    private long latestEventTimestamp = 0L;
     private long offeredTimestamp = 0L;
     private long allocatedTimestamp = 0L;
     private long startTimestamp = 0L;
     private long endTimestamp = 0L;
 
-    public TaskTimingDTO(String taskid, String caseid) {
+    public TaskTimingDTO(String taskid, String caseid, String decompositionOrder) {
         this.taskid = taskid;
         this.caseid = caseid;
+        this.decompositionOrder = decompositionOrder;
     }
 
     public String getCaseid() {
@@ -83,11 +88,35 @@ public class TaskTimingDTO {
         this.automated = automated;
     }
 
-    public Set<String> getParticipantsIds() {
-        return participantsIds;
+    public String getDecompositionOrder() {
+        return decompositionOrder;
     }
 
-    public void setParticipantsIds(Set<String> participantsIds) {
-        this.participantsIds = participantsIds;
+    public void setDecompositionOrder(String decompositionOrder) {
+        this.decompositionOrder = decompositionOrder;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public long getLatestEventTimestamp() {
+        return latestEventTimestamp;
+    }
+
+    public void setLatestEventTimestamp(long latestEventTimestamp) {
+        this.latestEventTimestamp = latestEventTimestamp;
+    }
+
+    public List<Participant> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<Participant> participants) {
+        this.participants = participants;
     }
 }

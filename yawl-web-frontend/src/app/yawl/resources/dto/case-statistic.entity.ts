@@ -1,5 +1,7 @@
+import {TaskTiming} from "./task-timing.entity";
 
 export interface CaseStatistic {
+  taskTimingDTOS: TaskTiming;
   caseid : string;
   cancelled : boolean;
   start : number;

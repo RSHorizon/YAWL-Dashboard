@@ -1,10 +1,13 @@
 package org.yawlfoundation.yawldashboardbackend.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CaseStatisticDTO implements Serializable {
     private String caseid;
     private boolean cancelled;
+    private List<TaskTimingDTO> taskTimingDTOS = new ArrayList<>();
     private long start = 0;
     private long end = 0;
     private long age = 0;
@@ -85,5 +88,13 @@ public class CaseStatisticDTO implements Serializable {
 
     public void setCaseid(String caseid) {
         this.caseid = caseid;
+    }
+
+    public List<TaskTimingDTO> getTaskTimingDTOS() {
+        return taskTimingDTOS;
+    }
+
+    public void setTaskTimingDTOS(List<TaskTimingDTO> taskTimingDTOS) {
+        this.taskTimingDTOS = taskTimingDTOS;
     }
 }
