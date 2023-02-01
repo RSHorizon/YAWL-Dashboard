@@ -1,5 +1,11 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
+/**
+ * The dto for specification.
+ * @author Philipp Thomas
+ * @editedBy Robin Steinwarz
+ */
+
 public class Task {
     String id;
     String order;

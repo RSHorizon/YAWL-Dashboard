@@ -40,6 +40,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.SpecificationSta
 /**
  * ConsoleApplication.
  * @author Philipp Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
  */
 public abstract class SpecificationMarshaller {
 

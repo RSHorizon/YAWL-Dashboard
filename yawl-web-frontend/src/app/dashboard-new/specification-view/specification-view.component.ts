@@ -8,7 +8,9 @@ import {MatTableDataSource} from "@angular/material/table";
 import {ExtensionSpecificationService} from "../services/extension-specification.service";
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-specification-view',
   templateUrl: './specification-view.component.html',

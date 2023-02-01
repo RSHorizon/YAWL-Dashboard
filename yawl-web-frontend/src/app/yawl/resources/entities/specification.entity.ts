@@ -1,4 +1,7 @@
-
+/**
+ * @author Philipp R. Thomas
+ * @editedBy Robin Steinwarz
+ */
 export interface Specification {
 	id : string;
 	version : string;

@@ -50,8 +50,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 
 /**
- * The security configuration.
- * @author Philipp R. Thomas <philipp.thomas@floaz.de>
+ * @author Robin Steinwarz
  */
 
 @Configuration

@@ -11,7 +11,9 @@ import {WorkItemService} from "../../yawl/resources/services/work-item.service";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
 import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-workitem-queue-dialog',
   templateUrl: './workitem-queue-dialog.component.html',

@@ -1,3 +1,6 @@
+/**
+ * @author Robin Steinwarz
+ */
 
 import { Specification } from './specification.entity';
 

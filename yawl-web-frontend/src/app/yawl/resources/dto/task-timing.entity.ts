@@ -1,3 +1,6 @@
+/**
+ * @author Robin Steinwarz
+ */
 import {Participant} from "../entities/participant.entity";
 
 export interface TaskTiming {

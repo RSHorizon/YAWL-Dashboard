@@ -39,6 +39,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * @author Robin Steinwarz
+ */
 
 @RestController
 @Secured("ROLE_ADMIN")
@@ -117,18 +120,94 @@ class SpecificationController {
                 associatedCaseDTO.getTaskEvents().add(event);
             }
         });
-
+        Map<String, String> smallestDecompositionOrders = new HashMap<>();
         Map<String, CaseStatisticDTO> caseStatisticMap = new HashMap<>();
         Map<String, Map<String, TaskTimingDTO>> taskTimings = new HashMap<>();
-        Map<String, String> smallestCaseDecompositionOrder = new HashMap<>();
         for (CaseDTO caseDTOInstance : caseDTOS) {
             // Initiate case statistic per case and get it
             caseStatisticMap.put(caseDTOInstance.getId(), new CaseStatisticDTO(caseDTOInstance.getId()));
             CaseStatisticDTO caseStatisticDTO = caseStatisticMap.get(caseDTOInstance.getId());
 
+
             // Repair case data for first offer/allocation/cancelled_by_case events
+            Map<String,String> baseline = new HashMap<>();
+            Map<String,List<Event>> baselineEvents = new HashMap<>();
+            Map<String,Set<String>> excluded = new HashMap<>();
+            for (Event event : caseDTOInstance.getTaskEvents()) {
+                String eventDecompositionOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
+
+                if(!event.getEventtype().equals("offer")
+                        && !event.getEventtype().equals("allocate")
+                        && !event.getEventtype().equals("cancelled_by_case")
+                        && !event.getEventtype().equals("cancel")
+                        && !event.getEventtype().equals("suspend")
+                        && !event.getEventtype().equals("resume")){
+                    if(!smallestDecompositionOrders.containsKey(event.getTaskid())){
+                        smallestDecompositionOrders.put(event.getTaskid(), "");
+                    }
+                    if(decompositionOrderIsSmaller(smallestDecompositionOrders.get(event.getTaskid()), eventDecompositionOrder)){
+                        smallestDecompositionOrders.replace(event.getTaskid(),eventDecompositionOrder);
+                    }
+                }
+
+                if(!baseline.containsKey(event.getTaskid())){
+                    baseline.put(event.getTaskid(), null);
+                    baselineEvents.put(event.getTaskid(), new ArrayList<>());
+                    excluded.put(event.getTaskid(), new HashSet<>());
+                }
+
+                List<Event> localBaselineEvents = baselineEvents.get(event.getTaskid());
+                Set<String> localExcluded = excluded.get(event.getTaskid());
+                switch (event.getEventtype()) {
+                    case "offer":
+                    case "allocate":
+                        if(baseline.get(event.getTaskid()) == null && !localExcluded.contains(eventDecompositionOrder)){
+                            baseline.replace(event.getTaskid(), eventDecompositionOrder);
+                            localBaselineEvents.add(event);
+                            break;
+                        }
+                        if(eventDecompositionOrder.equals(baseline.get(event.getTaskid()))){
+                            localBaselineEvents.add(event);
+                        }else{
+                            localExcluded.add(eventDecompositionOrder);
+                        }
+                        break;
+                    case "start":
+                        if(!localExcluded.contains(eventDecompositionOrder)){
+                            localBaselineEvents.forEach(baseLineEvent -> {
+                                baseLineEvent.setCaseid(event.getCaseid());
+                            });
+                        }
+                    case "complete":
+                        if(!localExcluded.contains(eventDecompositionOrder)){
+                            localBaselineEvents.forEach(baseLineEvent -> {
+                                baseLineEvent.setCaseid(event.getCaseid());
+                            });
+                            baseline.replace(event.getTaskid(), null);
+                            localBaselineEvents.clear();
+                        }
+                        break;
+                    case "autotask_start":
+                    case "autotask_complete":
+                        break;
+                    case "cancelled_by_case":
+                    case "cancel":
+                        if(!localExcluded.contains(eventDecompositionOrder)){
+                            baseline.replace(event.getTaskid(), null);
+                            localBaselineEvents.clear();
+                        }
+                        break;
+                }
+            }
+
+            /*
             // as they don't have the decompositionOrder in their caseid
             // Search for smallest progress of an event
+            // Smallest progress in terms of last
+
+            // offer/allocate without decomposition
+            // several events
+            // end event
             for (Event event : caseDTOInstance.getTaskEvents()) {
                 if (!smallestCaseDecompositionOrder.containsKey(event.getTaskid())) {
                     smallestCaseDecompositionOrder.put(event.getTaskid(), "");
@@ -145,7 +224,7 @@ class SpecificationController {
                         && event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "").equals("")) {
                     event.setCaseid(event.getCaseid() + "." + smallestCaseDecompositionOrder.get(event.getTaskid()));
                 }
-            }
+            }*/
 
             // Fill timings, where one timing is identified by its taskid and caseId
             // and set initial start and end dates for cases
@@ -178,8 +257,7 @@ class SpecificationController {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
                             taskTimingDTO.setStatus("Offered");
                         }
-                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                decompositionOrder)) {
+                        if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
@@ -189,8 +267,7 @@ class SpecificationController {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
                             taskTimingDTO.setStatus("Allocated");
                         }
-                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                decompositionOrder)) {
+                        if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
@@ -200,8 +277,7 @@ class SpecificationController {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
                             taskTimingDTO.setStatus("Started");
                         }
-                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                decompositionOrder)) {
+                        if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
@@ -212,8 +288,7 @@ class SpecificationController {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
                             taskTimingDTO.setStatus("Running");
                         }
-                        if (caseStatisticDTO.getStart() == 0 && isSmallestDecompositionOrder(smallestCaseDecompositionOrder,
-                                decompositionOrder)) {
+                        if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
                         break;
@@ -231,11 +306,9 @@ class SpecificationController {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
                             taskTimingDTO.setStatus("Completed");
                         }
-                        if (isHighestDecompositionOrder(smallestCaseDecompositionOrder,
-                                decompositionOrder)) {
-                            caseStatisticDTO.setEnd(eventTimestamp);
-                        }
+                        caseStatisticDTO.setEnd(eventTimestamp);
                         break;
+                    case "cancel":
                     case "cancelled_by_case":
                         taskTimingDTO.setCancelled(true);
                         if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
@@ -386,7 +459,7 @@ class SpecificationController {
         long avgResourceTimePerWeekSummed = 0;
         for (TaskStatisticDTO taskStatisticDTO : taskStatisticDTOS) {
             // Save decompositionOrder
-            taskStatisticDTO.setDecompositionOrder(smallestCaseDecompositionOrder.get(taskStatisticDTO.getTaskid()));
+            taskStatisticDTO.setDecompositionOrder(smallestDecompositionOrders.get(taskStatisticDTO.getTaskid()));
 
             // Avg. Capacity needed
             avgResourceTimePerWeekSummed += taskStatisticDTO.getAvgCompletionTime() * taskStatisticDTO.getAvgOccurrencesPerWeek()[7];
@@ -399,6 +472,9 @@ class SpecificationController {
         long additiveAvgTimeToReachStep = 0;
         int additiveAvgTimeToReachStepCounter = 0;
         for (TaskStatisticDTO taskStatisticDTO : taskStatisticDTOS) {
+            if(currentDecomposition == null || taskStatisticDTO == null){
+                int i = 0;
+            }
             // TimeToReach
             if (!currentDecomposition.equals(taskStatisticDTO.getDecompositionOrder())) {
                 if (additiveAvgTimeToReachStepCounter != 0) {

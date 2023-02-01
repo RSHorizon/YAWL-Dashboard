@@ -33,6 +33,7 @@ import org.yawlfoundation.yawl.resourcing.rsInterface.WorkQueueGatewayClient;
 /**
  * The security configuration.
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
  */
 @Configuration
 class YawlClientConfig {

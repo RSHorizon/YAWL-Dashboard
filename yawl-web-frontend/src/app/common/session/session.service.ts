@@ -9,6 +9,7 @@ import {catchError, map} from "rxjs/operators";
  * The service for session management.
  *
  * @author Philipp Thomas
+ * @editedBy Robin Steinwarz
  */
 @Injectable()
 export class SessionService {

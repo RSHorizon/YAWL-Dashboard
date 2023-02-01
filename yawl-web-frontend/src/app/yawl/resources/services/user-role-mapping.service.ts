@@ -9,6 +9,9 @@ import { Role }		from '../entities/role.entity';
 import {catchError, map} from "rxjs/operators";
 import { env } from '../../../../environments/environment';
 
+/**
+ * @author Philipp R. Thomas
+ */
 
 @Injectable()
 export class UserRoleMappingService {

@@ -11,6 +11,9 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Robin Steinwarz
+ */
 @RestController
 @Secured("ROLE_ADMIN")
 public class CasesController {

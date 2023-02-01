@@ -35,9 +35,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 /**
- * The security configuration.
- *
- * @author Philipp R. Thomas <philipp.thomas@floaz.de>
+ * @author Robin Steinwarz
  */
 @Configuration
 @EnableWebMvc

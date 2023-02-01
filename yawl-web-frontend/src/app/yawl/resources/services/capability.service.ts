@@ -7,6 +7,10 @@ import { AbstractResourceService } from './abstract-resource.service';
 
 import { env } from '../../../../environments/environment';
 
+/**
+ * @author Philipp R. Thomas
+ */
+
 @Injectable()
 export class CapabilityService extends AbstractResourceService<Capability> {
 

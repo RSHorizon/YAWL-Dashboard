@@ -7,7 +7,9 @@ import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
 import org.yawlfoundation.yawldashboardbackend.model.ExtensionTask;
 
 import java.util.List;
-
+/**
+ * @author Robin Steinwarz
+ */
 public interface ExtensionTaskDao extends JpaRepository<ExtensionTask, String> {
 
     @Query(value = "SELECT * FROM extension_tasks e WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3", nativeQuery = true)

@@ -1,4 +1,6 @@
-
+/**
+ * @author Robin Steinwarz
+ */
 export interface ExtensionSpecification {
   specificationId : string;
   specversion: string;

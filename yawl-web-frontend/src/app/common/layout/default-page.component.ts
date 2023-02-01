@@ -7,6 +7,11 @@ import { SessionService } from '../session/session.service';
 import {subscribeOn, Subscription} from "rxjs";
 import { faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell, faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight} from '@fortawesome/free-solid-svg-icons';
 
+/**
+ * @author Philipp R. Thomas
+ * @editedBy Robin Steinwarz
+ */
+
 @Component({
     selector: 'default-page',
     templateUrl: 'default-page.component.html',

@@ -2,6 +2,11 @@ import { Component, ContentChildren, QueryList } from '@angular/core';
 
 import { SidebarComponent } from './sidebar.component';
 
+/**
+ * @author Philipp R. Thomas
+ */
+
+
 @Component({
     selector: 'sidebar-layout',
     template: `

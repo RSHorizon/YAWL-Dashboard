@@ -11,6 +11,9 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author Robin Steinwarz
+ */
 @RestController
 @Secured("ROLE_ADMIN")
 public class WorkItemController {

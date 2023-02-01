@@ -1,4 +1,4 @@
-<div class="dialog">
+<div class="dialog" style="height: 60vh; overflow-y: auto;">
   <mat-toolbar (click)="close()">
     <fa-icon [fixedWidth]="true" [icon]="faArrowLeftLong"></fa-icon>
     <span>Back</span>
@@ -32,22 +32,6 @@
         Status
       </th>
       <td mat-cell *matCellDef="let element"> {{element.status}}</td>
-    </ng-container>
-
-    <!-- Created Column -->
-    <ng-container matColumnDef="created">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by created">
-        Created
-      </th>
-      <td mat-cell *matCellDef="let element"> {{applyDatetimeFormat(computeCreationTimestamp(element))}}</td>
-    </ng-container>
-
-    <!-- Completed Column -->
-    <ng-container matColumnDef="endTimestamp">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by completed">
-        Completed
-      </th>
-      <td mat-cell *matCellDef="let element"> {{applyDatetimeFormat(element.endTimestamp)}}</td>
     </ng-container>
 
     <!-- QueueTime Column -->
@@ -134,6 +118,18 @@
                 <mat-label>Common resources</mat-label>
                 <input *ngIf="element.automated" matInput disabled value="Codelet">
                 <input *ngIf="!element.automated" matInput disabled value="{{applyParticipantsArrayFormat(computeCommonParticipants(element))}}">
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2">
+              <mat-form-field class="grid-form" appearance="fill" disabled>
+                <mat-label>Created</mat-label>
+                <input matInput disabled value="{{applyDatetimeFormat(computeCreationTimestamp(element))}}">
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2">
+              <mat-form-field class="grid-form" appearance="fill" disabled>
+                <mat-label>Completed</mat-label>
+                <input matInput disabled value="{{applyDatetimeFormat(element.endTimestamp)}}">
               </mat-form-field>
             </mat-grid-tile>
           </mat-grid-list>

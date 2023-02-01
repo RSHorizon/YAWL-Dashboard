@@ -3,6 +3,10 @@ import {NativeDateAdapter} from '@angular/material/core';
 
 const SUPPORTS_INTL_API = typeof Intl !== 'undefined';
 
+/**
+ * @author Philipp R. Thomas
+ */
+
 
 export class MyDateAdapter extends NativeDateAdapter {
 

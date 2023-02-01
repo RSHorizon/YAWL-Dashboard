@@ -1,5 +1,10 @@
 import { Component, ElementRef, Renderer2 } from '@angular/core';
 
+/**
+ * @author Philipp R. Thomas
+ */
+
+
 @Component({
     selector: 'sidebar',
     template: `<ng-content></ng-content>`

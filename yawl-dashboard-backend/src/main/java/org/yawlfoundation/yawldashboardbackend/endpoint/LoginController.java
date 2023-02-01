@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
 
+/**
+ * @author Robin Steinwarz
+ */
 @RestController
 public class LoginController {
     @RequestMapping(value="/login", method= RequestMethod.POST)

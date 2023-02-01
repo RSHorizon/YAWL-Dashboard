@@ -10,6 +10,11 @@ import {catchError, map} from "rxjs/operators";
 
 import { env } from '../../../../environments/environment';
 
+/**
+ * @author Philipp R. Thomas
+ * @editedBy Robin Steinwarz
+ */
+
 @Injectable()
 export class WorkItemService {
 

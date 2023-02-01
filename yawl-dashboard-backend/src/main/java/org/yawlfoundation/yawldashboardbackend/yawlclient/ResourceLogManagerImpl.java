@@ -19,6 +19,10 @@ import java.util.List;
 
 import static org.apache.commons.lang3.time.DateUtils.parseDate;
 
+/**
+ * @author Robin Steinwarz
+ */
+
 public class ResourceLogManagerImpl implements ResourceLogManager {
 
     private final ResourceServiceSessionPool resourceManagerSessionPool;

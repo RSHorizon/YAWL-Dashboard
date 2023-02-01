@@ -4,6 +4,11 @@ import {Router} from '@angular/router';
 import {SessionService} from './session.service';
 import {NotifierService} from "angular-notifier";
 
+/**
+ * @author Philipp R. Thomas
+ */
+
+
 @Component({
   selector: 'login-form',
   templateUrl: 'login-form.page.html',

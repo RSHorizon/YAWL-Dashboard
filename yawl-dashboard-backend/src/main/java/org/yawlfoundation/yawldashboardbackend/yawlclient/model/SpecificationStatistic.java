@@ -1,5 +1,9 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
+/**
+ * The dto for specification statistics.
+ * @author Robin Steinwarz
+ */
 public class SpecificationStatistic {
     String mergedId;
     String speckey;

@@ -1,4 +1,6 @@
-
+/**
+ * @author Philipp R. Thomas
+ */
 import { Specification } from './specification.entity';
 
 export interface Case {

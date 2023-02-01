@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faFilePen} from '@fortawesome/free-solid-svg-icons';
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-dashboard-new',
   templateUrl: './dashboard-new.component.html',

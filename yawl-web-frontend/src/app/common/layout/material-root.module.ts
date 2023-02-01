@@ -8,6 +8,10 @@ import { DateAdapter } from '@angular/material/core';
 
 import { MyDateAdapter } from './material-datetime-adapter';
 
+/**
+ * @author Philipp R. Thomas
+ */
+
 
 @NgModule({
 	imports: [

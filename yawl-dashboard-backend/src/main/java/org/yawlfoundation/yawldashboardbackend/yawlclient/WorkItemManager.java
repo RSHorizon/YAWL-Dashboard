@@ -32,6 +32,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 /**
  * The service to manage work items.
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
  */
 public interface WorkItemManager {
 

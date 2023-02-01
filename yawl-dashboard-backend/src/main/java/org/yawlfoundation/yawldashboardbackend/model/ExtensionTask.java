@@ -2,6 +2,10 @@ package org.yawlfoundation.yawldashboardbackend.model;
 
 import javax.persistence.*;
 
+/**
+ * @author Robin Steinwarz
+ */
+
 @Entity
 @IdClass(ExtensionTaskId.class)
 @Table(name = "extensionTasks")

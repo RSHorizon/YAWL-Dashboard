@@ -1,4 +1,6 @@
-
+/**
+ * @author Philipp R. Thomas
+ */
 export interface OrgGroup {
 
 	id : string;

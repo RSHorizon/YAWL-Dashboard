@@ -12,6 +12,9 @@ import { SidebarComponent } from './sidebar.component';
 import { SidebarLayoutComponent } from './sidebar-layout.component';
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 
+/**
+ * @author Philipp R. Thomas
+ */
 
 
 @NgModule({

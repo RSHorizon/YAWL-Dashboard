@@ -1,4 +1,6 @@
-
+/**
+ * @author Robin Steinwarz
+ */
 export interface ExtensionTask {
   specificationId : string;
   specversion: string;

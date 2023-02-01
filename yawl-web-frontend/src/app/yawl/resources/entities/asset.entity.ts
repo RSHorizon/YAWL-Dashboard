@@ -1,3 +1,7 @@
+/**
+ * @author Philipp R. Thomas
+ */
+
 export interface Asset {
 
   id: string;

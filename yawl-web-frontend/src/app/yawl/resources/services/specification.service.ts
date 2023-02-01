@@ -12,6 +12,10 @@ import { env } from '../../../../environments/environment';
 import {SpecificationStatistic} from "../dto/specification-statistic.entity";
 import {ExtensionTask} from "../dto/extension-task.entity";
 
+/**
+ * @author Philipp R. Thomas
+ * @editedBy Robin Steinwarz
+ */
 
 @Injectable()
 export class SpecificationService {

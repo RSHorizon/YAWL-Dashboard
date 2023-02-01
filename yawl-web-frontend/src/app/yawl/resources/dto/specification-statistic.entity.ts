@@ -1,3 +1,6 @@
+/**
+ * @author Robin Steinwarz
+ */
 import {CaseStatistic} from "./case-statistic.entity";
 import {TaskStatistic} from "./task-statistic.entity";
 import {Participant} from "../entities/participant.entity";

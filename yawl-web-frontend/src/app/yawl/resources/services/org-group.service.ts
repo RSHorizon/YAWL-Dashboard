@@ -6,7 +6,9 @@ import { OrgGroup } from '../entities/org-group.entity';
 
 import { AbstractResourceService } from './abstract-resource.service';
 
-
+/**
+ * @author Philipp R. Thomas
+ */
 
 
 @Injectable()

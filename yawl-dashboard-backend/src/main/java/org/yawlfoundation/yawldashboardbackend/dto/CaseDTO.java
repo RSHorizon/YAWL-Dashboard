@@ -5,7 +5,9 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author Robin Steinwarz
+ */
 public class CaseDTO implements Serializable {
     private String id;
     private List<Event> taskEvents = new ArrayList<>();

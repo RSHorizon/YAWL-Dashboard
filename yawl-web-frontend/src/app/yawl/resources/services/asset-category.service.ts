@@ -11,6 +11,10 @@ import {catchError, map} from "rxjs/operators";
 
 import { env } from '../../../../environments/environment';
 
+/**
+ * @author Philipp R. Thomas
+ */
+
 @Injectable()
 export class AssetCategoryService {
 

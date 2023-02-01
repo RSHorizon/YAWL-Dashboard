@@ -1,5 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-timestampform',
   templateUrl: './timestampform.component.html',

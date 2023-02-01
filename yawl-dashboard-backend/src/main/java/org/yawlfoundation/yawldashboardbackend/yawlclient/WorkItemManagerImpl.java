@@ -54,6 +54,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
  * CreateUserScript.
  *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
  */
 
 public class WorkItemManagerImpl implements WorkItemManager {

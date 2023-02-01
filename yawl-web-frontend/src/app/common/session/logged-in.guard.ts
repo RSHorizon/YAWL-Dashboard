@@ -3,6 +3,12 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 
 import { SessionService } from './session.service';
 
+/**
+ * @author Philipp R. Thomas
+ * @editedBy Robin Steinwarz
+ */
+
+
 @Injectable()
 export class LoggedInGuard implements CanActivate {
 

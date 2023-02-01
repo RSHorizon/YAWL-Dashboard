@@ -6,7 +6,9 @@ import {Specification} from "../../yawl/resources/entities/specification.entity"
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {env} from "../../../environments/environment";
-
+/**
+ * @author Robin Steinwarz
+ */
 @Injectable({
   providedIn: 'root'
 })

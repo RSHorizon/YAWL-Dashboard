@@ -3,7 +3,9 @@ package org.yawlfoundation.yawldashboardbackend.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author Robin Steinwarz
+ */
 public class CaseStatisticDTO implements Serializable {
     private String caseid;
     private boolean cancelled;

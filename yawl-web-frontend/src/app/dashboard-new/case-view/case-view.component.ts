@@ -20,7 +20,9 @@ import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {formatDate} from "@angular/common";
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-case-view',
   templateUrl: './case-view.component.html',
@@ -87,6 +89,8 @@ export class CaseViewComponent implements OnInit {
         this.extensionSpecificationService.getSpecificationExtensionTasks(this.specificationID!, this.specversion!, this.uri!)
           .subscribe(extensionTasks => {
             this.extensionTasks = extensionTasks;
+            console.log(this.specificationStatistic);
+            console.log(extensionTasks);
             this.specificationStatistic!.taskStatisticDTOS.forEach((taskStatistic: TaskStatistic) => {
               this.extensionTasks?.forEach(extensionTask => {
                 if (taskStatistic.taskid === extensionTask.taskid) {

@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @author Robin Steinwarz
+ */
 @Entity
 @IdClass(ExtensionSpecificationId.class)
 @Table(name = "extensionSpecifications")

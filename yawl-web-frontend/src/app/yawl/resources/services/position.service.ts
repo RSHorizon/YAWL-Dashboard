@@ -5,7 +5,9 @@ import { Position } from '../entities/position.entity';
 
 import { AbstractResourceService } from './abstract-resource.service';
 
-
+/**
+ * @author Philipp R. Thomas
+ */
 
 @Injectable()
 export class PositionService extends AbstractResourceService<Position> {

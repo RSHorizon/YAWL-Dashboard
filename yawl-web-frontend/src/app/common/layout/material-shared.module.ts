@@ -25,6 +25,11 @@ import { CovalentLayoutModule } from '@covalent/core/layout';
 import { CovalentLoadingModule } from '@covalent/core/loading';
 
 
+/**
+ * @author Philipp R. Thomas
+ */
+
+
 @NgModule({
 	declarations: [
 	],

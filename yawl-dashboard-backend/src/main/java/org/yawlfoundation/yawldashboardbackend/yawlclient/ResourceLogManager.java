@@ -6,6 +6,9 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.SpecificationSta
 
 import java.util.List;
 
+/**
+ * @author Robin Steinwarz
+ */
 public interface ResourceLogManager {
     String getCaseEvents(String caseId);
 

@@ -5,7 +5,9 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+/**
+ * @author Robin Steinwarz
+ */
 public class TaskStatisticDTO implements Comparable<TaskStatisticDTO> {
     private String taskid;
     private Set<Participant> participants = new HashSet<>();
@@ -81,7 +83,7 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO> {
     }
 
     public static int decompositionOrderComparison(String order, String order2) {
-        if (order.equals("") || order2.equals("")) {
+        if (order == null || order2 == null || order.equals("") || order2.equals("")) {
             return 0;
         }
         String[] orderElements = order.split("\\.");

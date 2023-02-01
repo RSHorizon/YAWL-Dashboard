@@ -4,6 +4,9 @@ import { LoggedInGuard } from '../common/session/logged-in.guard';
 import {DashboardNewComponent} from "./dashboard-new/dashboard-new.component";
 import {CaseViewComponent} from "./case-view/case-view.component";
 
+/**
+ * @author Robin Steinwarz
+ */
 
 export const dashboardRoutesConfig: Routes = [
 	{

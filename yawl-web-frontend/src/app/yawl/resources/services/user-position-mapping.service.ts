@@ -8,6 +8,10 @@ import { Position }	from '../entities/position.entity';
 import {catchError, map} from "rxjs/operators";
 import { env } from '../../../../environments/environment';
 
+/**
+ * @author Philipp R. Thomas
+ */
+
 @Injectable()
 export class UserPositionMappingService {
 

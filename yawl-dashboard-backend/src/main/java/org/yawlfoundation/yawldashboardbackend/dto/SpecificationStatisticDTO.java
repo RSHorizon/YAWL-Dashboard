@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+/**
+ * @author Robin Steinwarz
+ */
 public class SpecificationStatisticDTO implements Serializable {
     String id;
     String version;

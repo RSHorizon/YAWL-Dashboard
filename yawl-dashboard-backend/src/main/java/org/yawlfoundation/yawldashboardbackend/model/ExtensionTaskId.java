@@ -2,6 +2,10 @@ package org.yawlfoundation.yawldashboardbackend.model;
 
 import java.io.Serializable;
 
+/**
+ * @author Robin Steinwarz
+ */
+
 public class ExtensionTaskId implements Serializable {
     private String specificationId;
     private String specversion;

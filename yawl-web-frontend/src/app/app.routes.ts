@@ -10,6 +10,7 @@ import { PageNotFoundPage } from './common/layout/page-not-found.page';
  * Note: Routes for other components are in other modules.
  *
  * @author Philipp Thomas
+ * @editedBy Robin Steinwarz
  */
 export const routesConfig: Routes = [
 	{

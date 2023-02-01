@@ -4,7 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
-
+/**
+ * @author Robin Steinwarz
+ */
 public interface ExtensionSpecificationDao extends JpaRepository<ExtensionSpecification, String> {
 
 

@@ -11,6 +11,9 @@ import { LoginFormPage }		from './login-form.page';
 
 import { sessionRoutesConfig } from './session.routes';
 
+/**
+ * @author Philipp R. Thomas
+ */
 
 
 @NgModule({

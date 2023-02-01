@@ -20,6 +20,10 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {MatTableModule} from "@angular/material/table";
 import {BrowserModule} from "@angular/platform-browser";
 
+/**
+ * @author Robin Steinwarz
+ */
+
 @NgModule({
   declarations: [
     DashboardNewComponent,

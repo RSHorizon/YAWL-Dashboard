@@ -22,7 +22,9 @@ import {TaskTiming} from "../../yawl/resources/dto/task-timing.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-workitems-dialog',
   templateUrl: './workitems-dialog.component.html',
@@ -48,7 +50,7 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['taskid', 'decompositionOrder', 'status', 'created', 'endTimestamp', 'queueTime', 'age', 'participants', 'overdue'];
+  displayedColumns: string[] = ['taskid', 'decompositionOrder', 'status', 'queueTime', 'age', 'participants', 'overdue'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand'];
   expandedElement: { desciption: "xxxx" } | undefined;
   // @ts-ignore
@@ -81,6 +83,9 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   }
 
   computeQueueTime(workitem: TaskTiming): number {
+    if(workitem.cancelled){
+      return 0;
+    }
     let smallestNumbers = [];
     if(workitem.allocatedTimestamp !== 0){
       smallestNumbers.push(workitem.allocatedTimestamp);
@@ -104,6 +109,9 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   }
 
   computeAge(workitem: TaskTiming): number {
+    if(workitem.cancelled){
+      return 0;
+    }
     let smallestNumbers = [];
     if(workitem.allocatedTimestamp !== 0){
       smallestNumbers.push(workitem.allocatedTimestamp);
@@ -127,6 +135,9 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   }
 
   computeCreationTimestamp(workitem: TaskTiming): number{
+    if(workitem.cancelled){
+      return 0;
+    }
     let smallestNumbers = [];
     if(workitem.allocatedTimestamp !== 0){
       smallestNumbers.push(workitem.allocatedTimestamp);
@@ -208,6 +219,9 @@ export class WorkitemsDialogComponent implements AfterViewInit {
       return 0;
     }
     let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    if(task.maxTaskAge === undefined){
+      return 0;
+    }
     return task.maxTaskAge!;
   }
 

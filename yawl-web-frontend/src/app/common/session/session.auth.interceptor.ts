@@ -3,6 +3,10 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/c
 import { Observable } from 'rxjs';
 import {SessionService} from "./session.service";
 
+/**
+ * @author Philipp R. Thomas
+ */
+
 
 @Injectable()
 export class SessionAuthInterceptor implements HttpInterceptor {

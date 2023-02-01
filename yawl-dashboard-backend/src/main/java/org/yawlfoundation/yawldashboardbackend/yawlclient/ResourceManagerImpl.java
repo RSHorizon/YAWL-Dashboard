@@ -33,6 +33,7 @@ import org.yawlfoundation.yawl.util.PasswordEncryptor;
  * CreateUserScript.
  *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
  */
 public class ResourceManagerImpl implements ResourceManager {
 

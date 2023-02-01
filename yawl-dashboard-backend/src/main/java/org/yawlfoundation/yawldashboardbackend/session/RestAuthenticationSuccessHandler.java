@@ -33,6 +33,7 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 /**
  * SessionDataController.
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
  */
 public class RestAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

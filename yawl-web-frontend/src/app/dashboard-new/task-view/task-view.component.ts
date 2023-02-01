@@ -10,7 +10,9 @@ import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specifi
 import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-task-view',
   templateUrl: './task-view.component.html',

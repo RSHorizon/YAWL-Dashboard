@@ -3,7 +3,9 @@ package org.yawlfoundation.yawldashboardbackend.dto;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 
 import java.util.*;
-
+/**
+ * @author Robin Steinwarz
+ */
 public class TaskTimingDTO {
     private String taskid;
     private String caseid;
