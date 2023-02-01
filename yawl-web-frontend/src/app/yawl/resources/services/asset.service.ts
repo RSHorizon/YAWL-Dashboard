@@ -4,11 +4,10 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 
-
 import {Asset} from '../entities/asset.entity';
 import {catchError, map} from "rxjs/operators";
 
-import { env } from '../../../../environments/environment';
+import {env} from '../../../../environments/environment';
 
 /**
  * @author Philipp R. Thomas

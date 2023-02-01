@@ -1,3 +1,4 @@
+/* @author Robin Steinwarz */
 mat-dialog-container{
   display: block !important; /* I added this to see the modal, you don't need this */
 }

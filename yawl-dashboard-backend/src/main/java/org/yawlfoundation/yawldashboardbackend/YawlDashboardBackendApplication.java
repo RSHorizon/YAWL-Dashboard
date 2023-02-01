@@ -26,6 +26,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * The security configuration.
+ * @author Philipp R. Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
+ */
+
 @SpringBootApplication
 public class YawlDashboardBackendApplication extends SpringBootServletInitializer {
 

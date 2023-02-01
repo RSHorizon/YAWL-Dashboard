@@ -20,7 +20,6 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 import java.time.LocalDateTime;
 
 /**
- * Role.
  * @author Philipp Thomas
  */
 public class Case {

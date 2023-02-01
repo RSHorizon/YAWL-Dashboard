@@ -8,6 +8,8 @@ import {MatTableDataSource} from "@angular/material/table";
 import {ExtensionSpecificationService} from "../services/extension-specification.service";
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
+import {FormatUtils} from "../../util/format-util";
+
 /**
  * @author Robin Steinwarz
  */
@@ -111,7 +113,6 @@ export class SpecificationViewComponent implements OnInit {
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-
 
 
 }

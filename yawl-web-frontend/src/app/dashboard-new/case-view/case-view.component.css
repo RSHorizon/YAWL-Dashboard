@@ -1,3 +1,4 @@
+/* @author Robin Steinwarz */
 table {
   width: 100%;
   margin-top: 5em;
@@ -7,30 +8,30 @@ table {
   flex: 1 1 auto;
 }
 
-span{
+span {
   font-size: 15px;
   font-weight: normal;
   font-family: Roboto, Helvetica, sans-serif;
   color: #5e5e5e;
 }
 
-a{
+a {
   text-decoration: none;
 }
 
-mat-toolbar{
+mat-toolbar {
   height: 40px;
 }
 
-.statistics{
+.statistics {
   width: 100%;
   margin-top: 20px;
 }
 
-.grid-form{
+.grid-form {
   width: 98%;
 }
 
-.mat-radio-button{
+.mat-radio-button {
   margin-left: 10px;
 }

@@ -10,6 +10,7 @@ import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specifi
 import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {FormatUtils} from "../../util/format-util";
 /**
  * @author Robin Steinwarz
  */
@@ -27,6 +28,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['taskid', 'decompositionOrder', 'avgQueueTime', 'avgCompletionTime', 'avgTimeToReach', 'avgOccurrencesPerWeek', 'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
+  formatUtils: FormatUtils = new FormatUtils();
 
   constructor(private specificationService: SpecificationService) {
   }
@@ -46,32 +48,6 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
     this.specificationService.storeTaskAttributesById(
       this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri,
       task.taskid, task.costResourceHour, task.maxTaskAge, task.maxQueueAge).subscribe();
-  }
-
-  applyPastTimeFormatForTimestamp(timestamp: number): string {
-    // @ts-ignore
-    let hoursMs = timestamp
-    let minutesMs = timestamp % (1000 * 60 * 60)
-    let secondsMs = timestamp % (1000 * 60)
-
-    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    let minutes = Math.floor(minutesMs / (1000 * 60))
-    let seconds = Math.floor(secondsMs / (1000))
-
-    return hours + "h " + minutes + "m " + seconds + "s";
-  }
-
-  datetimeFormat(timestamp: number): string {
-    let date = new Date(timestamp);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString()
-  }
-
-  applyOccurencesFormat(occurences: number[]): string {
-    if (occurences.length != 8) {
-      return "";
-    }
-
-    return "M" + occurences[0] + " T" + occurences[1] + " W" + occurences[2] + " T" + occurences[3] + " F" + occurences[4] + " S" + occurences[5] + " S" + occurences[6] + ""
   }
 
   announceSortChange(sort: Sort) {
@@ -94,18 +70,6 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
 
   compareOccasions(a: number[], b: number[], isAsc: boolean) {
     return (a[7] < b[7] ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-
-  applyParticipantsArrayFormat(participants: Participant[]): string{
-    if(participants === undefined){
-      return "";
-    }
-
-    let chain = "";
-    participants.forEach(participant => {
-      chain += ", " + participant.firstname + " " + participant.lastname
-    })
-    return chain.substring(2);
   }
 }
 

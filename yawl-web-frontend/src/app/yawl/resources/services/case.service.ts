@@ -4,11 +4,10 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 
-
 import {Case} from '../entities/case.entity';
 import {catchError, map} from "rxjs/operators";
 
-import { env } from '../../../../environments/environment';
+import {env} from '../../../../environments/environment';
 
 /**
  * @author Philipp R. Thomas
@@ -53,7 +52,7 @@ export class CaseService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = env.apiUrl + "case/" + encodeURIComponent(caseId)+ "/events";
+    let url = env.apiUrl + "case/" + encodeURIComponent(caseId) + "/events";
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),

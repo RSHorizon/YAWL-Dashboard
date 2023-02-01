@@ -4,13 +4,11 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 
-
 import {Specification} from '../entities/specification.entity';
 import {catchError, map} from "rxjs/operators";
 
-import { env } from '../../../../environments/environment';
+import {env} from '../../../../environments/environment';
 import {SpecificationStatistic} from "../dto/specification-statistic.entity";
-import {ExtensionTask} from "../dto/extension-task.entity";
 
 /**
  * @author Philipp R. Thomas

@@ -1,9 +1,11 @@
+/* @author Philipp R. Thomas */
+/* @editedBy Robin Steinwarz */
+
 @charset "UTF-8";
 
 @use '@angular/material' as mat;
 @import '@angular/material/theming';
 @import '@covalent/core/theming/all-theme';
-
 @include mat.core();
 
 $yawl-blue: (

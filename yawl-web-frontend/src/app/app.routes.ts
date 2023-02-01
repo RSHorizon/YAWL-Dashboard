@@ -1,7 +1,6 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
-import { PageNotFoundPage } from './common/layout/page-not-found.page';
-
+import {PageNotFoundPage} from './common/layout/page-not-found.page';
 
 
 /**
@@ -13,14 +12,14 @@ import { PageNotFoundPage } from './common/layout/page-not-found.page';
  * @editedBy Robin Steinwarz
  */
 export const routesConfig: Routes = [
-	{
-        path: '',
-		pathMatch: 'full',
-        redirectTo: 'dashboard'
-    },
-    {
-        path: '**',
-		pathMatch: 'full',
-        component: PageNotFoundPage
-    }
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'dashboard'
+  },
+  {
+    path: '**',
+    pathMatch: 'full',
+    component: PageNotFoundPage
+  }
 ];

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 /**
  * This is the root component.
@@ -8,8 +8,9 @@ import { Component } from '@angular/core';
  */
 @Component({
   selector: 'app-root',
-  template: `<router-outlet></router-outlet>\n\
-        <notifier-container></notifier-container>`,
+  template: `
+    <router-outlet></router-outlet>
+    <notifier-container></notifier-container>`,
   styleUrls: ['app.component.css']
 })
 export class AppComponent {

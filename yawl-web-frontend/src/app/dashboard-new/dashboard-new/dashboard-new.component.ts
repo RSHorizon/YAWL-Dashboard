@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { faFilePen} from '@fortawesome/free-solid-svg-icons';
+import {Component, OnInit} from '@angular/core';
+import {faFilePen} from '@fortawesome/free-solid-svg-icons';
+
 /**
  * @author Robin Steinwarz
  */
@@ -10,20 +11,22 @@ import { faFilePen} from '@fortawesome/free-solid-svg-icons';
 })
 export class DashboardNewComponent implements OnInit {
 
-  faFilePen=faFilePen
+  faFilePen = faFilePen
 
-  constructor() { }
+  constructor() {
+  }
+
   // @ts-ignore
   viewType: number = '0';
 
   ngOnInit(): void {
   }
 
-  isOperationalView(): boolean{
+  isOperationalView(): boolean {
     return this.viewType == ViewType.operational;
   }
 
-  isStrategicalView(): boolean{
+  isStrategicalView(): boolean {
     return this.viewType == ViewType.strategical;
   }
 }

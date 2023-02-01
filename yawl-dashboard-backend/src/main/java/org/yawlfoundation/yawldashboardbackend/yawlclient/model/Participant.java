@@ -18,7 +18,6 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
 /**
- * Role.
  * @author Philipp Thomas
  */
 public class Participant {

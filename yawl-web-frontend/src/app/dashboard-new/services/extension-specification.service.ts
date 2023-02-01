@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {catchError, map} from "rxjs/operators";
-import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {env} from "../../../environments/environment";
+
 /**
  * @author Robin Steinwarz
  */
@@ -14,7 +14,8 @@ import {env} from "../../../environments/environment";
 })
 export class ExtensionSpecificationService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   private baseURL: string = "http://localhost:8082/api/";
 
@@ -25,7 +26,7 @@ export class ExtensionSpecificationService {
     )
   }
 
-  getExtensionSpecification(specificationId: string, version: string, uri: string): Observable<ExtensionSpecification>{
+  getExtensionSpecification(specificationId: string, version: string, uri: string): Observable<ExtensionSpecification> {
     return this.http.get<HttpResponse<any>>(this.baseURL + "specification/extension/" + uri + "/" + specificationId + "/" + version, {withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
       catchError((error: any) => this.handleError(error))
@@ -47,51 +48,66 @@ export class ExtensionSpecificationService {
     )
   }
 
-  setCoreAttribute(specificationId: string, version: string, uri: string, core: string){
+  setCoreAttribute(specificationId: string, version: string, uri: string, core: string) {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
     let payload = 'core=' + encodeURIComponent(core);
 
-    return this.http.post(this.baseURL + "specification/extension/" + uri + "/"  + specificationId + "/" + version +"/core",payload, {headers, withCredentials: true}).pipe(
+    return this.http.post(this.baseURL + "specification/extension/" + uri + "/" + specificationId + "/" + version + "/core", payload, {
+      headers,
+      withCredentials: true
+    }).pipe(
       map((res: any) => res),
       catchError((error: any) => this.handleError(error))
     )
   }
 
-  setSpecificationTimeLimitAttribute(specificationId: string, version: string, uri: string, specificationTimeLimit: string){
+  setSpecificationTimeLimitAttribute(specificationId: string, version: string, uri: string, specificationTimeLimit: string) {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
     let payload = 'specificationTimeLimit=' + encodeURIComponent(specificationTimeLimit);
 
-    return this.http.post(this.baseURL + "specification/extension/" + uri + "/"  + specificationId + "/" + version +"/specificationTimeLimit",payload, {headers, withCredentials: true}).pipe(
+    return this.http.post(this.baseURL + "specification/extension/" + uri + "/" + specificationId + "/" + version + "/specificationTimeLimit", payload, {
+      headers,
+      withCredentials: true
+    }).pipe(
       map((res: any) => res),
       catchError((error: any) => this.handleError(error))
     )
   }
 
-  setCostResourceHourAttribute(specificationId: string, version: string, uri: string, costResourceHour: string){
+  setCostResourceHourAttribute(specificationId: string, version: string, uri: string, costResourceHour: string) {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
     let payload = 'costResourceHour=' + encodeURIComponent(costResourceHour);
 
-    return this.http.post(this.baseURL + "specification/extension/" + uri + "/"  + specificationId + "/" + version +"/costResourceHour",payload, {headers, withCredentials: true}).pipe(
+    return this.http.post(this.baseURL + "specification/extension/" + uri + "/" + specificationId + "/" + version + "/costResourceHour", payload, {
+      headers,
+      withCredentials: true
+    }).pipe(
       map((res: any) => res),
       catchError((error: any) => this.handleError(error))
     )
   }
 
-  setMaxTaskAgeAttribute(specificationId: string, version: string, uri: string, maxTaskAge: string){
+  setMaxTaskAgeAttribute(specificationId: string, version: string, uri: string, maxTaskAge: string) {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
     let payload = 'maxTaskAge=' + encodeURIComponent(maxTaskAge);
 
-    return this.http.post(this.baseURL + "specification/extension/" + uri + "/"  + specificationId + "/" + version +"/maxTaskAge",payload, {headers, withCredentials: true}).pipe(
+    return this.http.post(this.baseURL + "specification/extension/" + uri + "/" + specificationId + "/" + version + "/maxTaskAge", payload, {
+      headers,
+      withCredentials: true
+    }).pipe(
       map((res: any) => res),
       catchError((error: any) => this.handleError(error))
     )
   }
 
-  setMaxQueueAgeAttribute(specificationId: string, version: string, uri: string, maxQueueAge: string){
+  setMaxQueueAgeAttribute(specificationId: string, version: string, uri: string, maxQueueAge: string) {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
     let payload = 'maxQueueAge=' + encodeURIComponent(maxQueueAge);
 
-    return this.http.post(this.baseURL + "specification/extension/" + uri + "/"  + specificationId + "/" + version +"/maxQueueAge",payload, {headers, withCredentials: true}).pipe(
+    return this.http.post(this.baseURL + "specification/extension/" + uri + "/" + specificationId + "/" + version + "/maxQueueAge", payload, {
+      headers,
+      withCredentials: true
+    }).pipe(
       map((res: any) => res),
       catchError((error: any) => this.handleError(error))
     )

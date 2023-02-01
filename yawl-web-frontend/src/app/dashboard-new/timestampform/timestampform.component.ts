@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {FormatUtils} from "../../util/format-util";
 /**
  * @author Robin Steinwarz
  */
@@ -15,7 +16,6 @@ export class TimestampformComponent implements OnInit, OnChanges {
   @Output() timestampChange = new EventEmitter<number>();
 
   @Output() timestampChanged = new EventEmitter<number>();
-
   days: number= 0;
   hours: number= 0;
   minutes: number= 0;

@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
-import { Capability } from '../entities/capability.entity';
+import {Capability} from '../entities/capability.entity';
 
-import { AbstractResourceService } from './abstract-resource.service';
-
-import { env } from '../../../../environments/environment';
+import {AbstractResourceService} from './abstract-resource.service';
 
 /**
  * @author Philipp R. Thomas
@@ -14,10 +12,10 @@ import { env } from '../../../../environments/environment';
 @Injectable()
 export class CapabilityService extends AbstractResourceService<Capability> {
 
-	constructor(private _http: HttpClient) {
-		super( _http);
-		this.resourceUrlPath = "capability";
-		this.getAllAttribute = "capabilities";
-	}
+  constructor(private _http: HttpClient) {
+    super(_http);
+    this.resourceUrlPath = "capability";
+    this.getAllAttribute = "capabilities";
+  }
 
 }

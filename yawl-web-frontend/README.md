@@ -1,27 +1,37 @@
-# YawlWebFrontend
+# YAWL Web Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.4.
+## Start Requirements
 
-## Development server
+YAWL Web Admin is based on the Angular framework and Typescript and some other libraries.
+The most libraries are downloaded automatically by the package manager npm. But for this to work, you have to install nodejs and angular-cli.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+1. Download the current version of [nodejs](https://nodejs.org/en/).
+2. Unzip the downloaded archive file and move the extracted files to a path of your choice. E.g. `/usr/local/nodejs/`.
+3. Add the bin-directory of nodejs (e.g. `/usr/local/nodejs/bin`) to your PATH environment variable, so that you can use the tools of nodejs in a shell directly without specifying the absolute path.
+4. Install angular-cli with `npm -g @angular/cli`. Now you can use the tool `ng`.
+5. Install yarn with `npm install -g yarn`.
 
-## Code scaffolding
+## Deployment for production
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Goto root path of YAWL-Dashboard-Frontend. (E.g. `cd ~/yawl-web-frontend`)
+2. Install all dependencies automatically under node_modules with `yarn install`.
+3. Start build process with `ng build --prod` and wait.
+4. All result files are in the directory `dist`.
+5. Copy all files from dist to a webspace.
+6. Configure the webspace, that it delivers the index.html file for GET-Path `/` and all 404 errors. This is due to the routing mechanism in YAWL Web Admin. [More about this routing mechanism called HTML5 History PushState](https://angular.io/guide/router#appendix-locationstrategy-and-browser-url-styles).
+7. Customize your configuration by editing `config.json`.
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Development version
 
-## Running unit tests
+1. Goto root path of YAWL Web Admin. (E.g. `cd ~/yawl-web-frontend`)
+2. Install all dependencies automatically under node_modules with `yarn install`.
+3. Start serve process with `ng serve` and wait.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+`ng serve` builds the application and starts a web server. It runs in the background and watches for changes. If any change is made on the source files, it builds the application again and reloads the browser page.
 
-## Running end-to-end tests
+The dev server can be accessed by visiting [http://localhost:4200](http://localhost:4200).
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+<sub><sub><sup>Documentation by Philipp R. Thomas, edited by Robin Steinwarz</sup></sub></sub>

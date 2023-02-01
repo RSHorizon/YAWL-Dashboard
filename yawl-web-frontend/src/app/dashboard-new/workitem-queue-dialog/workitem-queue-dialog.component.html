@@ -1,3 +1,4 @@
+<!-- @author Robin Steinwarz--->
 <div class="dialog">
   <mat-toolbar (click)="close()">
     <fa-icon [fixedWidth]="true" [icon]="faArrowLeftLong"></fa-icon>
@@ -17,7 +18,7 @@
       <mat-grid-tile>
         <mat-form-field class="grid-form" appearance="fill" disabled>
           <mat-label>Avg. queue time</mat-label>
-          <input matInput disabled value="{{getAvgQueueTimeForAllTasks()}}">
+          <input matInput disabled value="{{computeAvgQueueTimeForAllTasks()}}">
         </mat-form-field>
       </mat-grid-tile>
     </mat-grid-list>
@@ -91,7 +92,8 @@
         <a [href]="workitemURL" target="_blank">
           <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
         </a>
-        <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+        <button mat-icon-button aria-label="expand row"
+                (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
           <fa-icon *ngIf="expandedElement !== element" [fixedWidth]="true" [icon]="faChevronDown"></fa-icon>
           <fa-icon *ngIf="expandedElement === element" [fixedWidth]="true" [icon]="faChevronUp"></fa-icon>
         </button>
@@ -106,25 +108,26 @@
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Queue time limit</mat-label>
-                <input matInput disabled value="{{getMaxQueueTime(element)}}">
+                <input matInput disabled value="{{computeMaxQueueTime(element)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. queue time for task</mat-label>
-                <input matInput disabled value="{{getAvgQueueTime(element)}}">
+                <input matInput disabled value="{{computeAvgQueueTime(element)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. time to reach</mat-label>
-                <input matInput disabled value="{{getAvgTimeToReach(element)}}">
+                <input matInput disabled value="{{computeAvgTimeToReach(element)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile colspan="2">
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Common resources</mat-label>
-                <input matInput disabled value="{{applyParticipantsArrayFormat(getCommonParticipants(element))}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyParticipantsArrayFormat(computeCommonParticipants(element))}}">
               </mat-form-field>
             </mat-grid-tile>
           </mat-grid-list>

@@ -1,3 +1,4 @@
+<!-- @author Robin Steinwarz--->
 <div class="dialog" style="height: 60vh; overflow-y: auto;">
   <mat-toolbar (click)="close()">
     <fa-icon [fixedWidth]="true" [icon]="faArrowLeftLong"></fa-icon>
@@ -39,7 +40,8 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queue time">
         Queue time
       </th>
-      <td mat-cell *matCellDef="let element">{{applyPastTimeFormatForTimestamp(computeQueueTime(element))}}</td>
+      <td mat-cell
+          *matCellDef="let element">{{formatUtils.applyPastTimeFormatForTimestamp(computeQueueTime(element))}}</td>
     </ng-container>
 
     <!-- Age Column -->
@@ -47,7 +49,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
         Age
       </th>
-      <td mat-cell *matCellDef="let element">{{applyPastTimeFormatForTimestamp(computeAge(element))}}</td>
+      <td mat-cell *matCellDef="let element">{{formatUtils.applyPastTimeFormatForTimestamp(computeAge(element))}}</td>
     </ng-container>
 
     <!-- Resources Column -->
@@ -55,7 +57,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by resource">
         Resource
       </th>
-      <td mat-cell *matCellDef="let element"> {{applyParticipantsArrayFormat(element.participants)}}</td>
+      <td mat-cell *matCellDef="let element"> {{formatUtils.applyParticipantsArrayFormat(element.participants)}}</td>
     </ng-container>
 
     <!-- Overdue Column -->
@@ -63,7 +65,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdue">
         Overdue
       </th>
-      <td mat-cell *matCellDef="let element">{{applyBooleanFormat(isOverdue(element))}}</td>
+      <td mat-cell *matCellDef="let element">{{formatUtils.applyBooleanFormat(isOverdue(element))}}</td>
     </ng-container>
 
     <!-- Expand -->
@@ -73,7 +75,8 @@
         <a [href]="workitemURL" target="_blank">
           <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
         </a>
-        <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+        <button mat-icon-button aria-label="expand row"
+                (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
           <fa-icon *ngIf="expandedElement !== element" [fixedWidth]="true" [icon]="faChevronDown"></fa-icon>
           <fa-icon *ngIf="expandedElement === element" [fixedWidth]="true" [icon]="faChevronUp"></fa-icon>
         </button>
@@ -88,48 +91,54 @@
             <mat-grid-tile>
               <mat-form-field *ngIf="isInQueue(element)" class="grid-form" appearance="fill" disabled>
                 <mat-label>Max queue time</mat-label>
-                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeMaxQueueTime(element))}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestamp(computeMaxQueueTime(element))}}">
               </mat-form-field>
               <mat-form-field *ngIf="!isInQueue(element)" class="grid-form" appearance="fill" disabled>
                 <mat-label>Max task time</mat-label>
-                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeMaxTaskTime(element))}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestamp(computeMaxTaskTime(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. queue time</mat-label>
-                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeAvgQueueTime(element))}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestamp(computeAvgQueueTime(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. completion time</mat-label>
-                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeAvgCompletionTime(element))}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestamp(computeAvgCompletionTime(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. time to reach</mat-label>
-                <input matInput disabled value="{{applyPastTimeFormatForTimestamp(computeAvgTimeToReach(element))}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestamp(computeAvgTimeToReach(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile colspan="2">
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Common resources</mat-label>
                 <input *ngIf="element.automated" matInput disabled value="Codelet">
-                <input *ngIf="!element.automated" matInput disabled value="{{applyParticipantsArrayFormat(computeCommonParticipants(element))}}">
+                <input *ngIf="!element.automated" matInput disabled
+                       value="{{formatUtils.applyParticipantsArrayFormat(computeCommonParticipants(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile colspan="2">
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Created</mat-label>
-                <input matInput disabled value="{{applyDatetimeFormat(computeCreationTimestamp(element))}}">
+                <input matInput disabled value="{{formatUtils.applyDatetimeFormat(computeCreationTimestamp(element))}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile colspan="2">
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Completed</mat-label>
-                <input matInput disabled value="{{applyDatetimeFormat(element.endTimestamp)}}">
+                <input matInput disabled value="{{formatUtils.applyDatetimeFormat(element.endTimestamp)}}">
               </mat-form-field>
             </mat-grid-tile>
           </mat-grid-list>

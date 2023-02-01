@@ -1,25 +1,21 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong} from '@fortawesome/free-solid-svg-icons';
 import {ExtensionSpecificationService} from "../services/extension-specification.service";
 import {ActivatedRoute} from "@angular/router";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
-import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {CaseService} from "../../yawl/resources/services/case.service";
-import {Case} from "../../yawl/resources/entities/case.entity";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
-import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {WorkitemQueueDialogComponent} from "../workitem-queue-dialog/workitem-queue-dialog.component";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {WorkitemsDialogComponent} from "../workitems-dialog/workitems-dialog.component";
-import {TaskViewComponent} from "../task-view/task-view.component";
 import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
 import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
-import {Participant} from "../../yawl/resources/entities/participant.entity";
-import {formatDate} from "@angular/common";
+import {FormatUtils} from "../../util/format-util";
+
 /**
  * @author Robin Steinwarz
  */
@@ -31,7 +27,7 @@ import {formatDate} from "@angular/common";
 export class CaseViewComponent implements OnInit {
   faPencil = faPencil;
   faArrowLeft = faArrowLeft;
-  faArrowLeftLong=faArrowLeftLong
+  faArrowLeftLong = faArrowLeftLong
   faArrowsToEye = faArrowsToEye;
   casesURL = "http://localhost:8080/resourceService/faces/caseMgt.jsp"
   specificationID: string | null = null;
@@ -46,6 +42,7 @@ export class CaseViewComponent implements OnInit {
   viewType: number = '0';
   specificationTimeLimit: number = 0;
   costs: number = 0;
+  formatUtils: FormatUtils = new FormatUtils();
 
   // @ts-ignore
   sort: MatSort;
@@ -58,7 +55,7 @@ export class CaseViewComponent implements OnInit {
   }
 
 
-  displayedColumns: string[] = ['caseid', 'start', 'end', 'age', 'running', 'queue', 'overdue', 'cancelled','actions'];
+  displayedColumns: string[] = ['caseid', 'start', 'end', 'age', 'running', 'queue', 'overdue', 'cancelled', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
 
@@ -102,7 +99,7 @@ export class CaseViewComponent implements OnInit {
             });
             this.costs = 0;
             this.specificationStatistic?.taskStatisticDTOS.forEach((taskStatistic: TaskStatistic) => {
-              this.costs += (taskStatistic.avgCompletionTime/(1000 * 60 * 60)) * taskStatistic.avgOccurrencesPerWeek[7] * taskStatistic.costResourceHour!;
+              this.costs += (taskStatistic.avgCompletionTime / (1000 * 60 * 60)) * taskStatistic.avgOccurrencesPerWeek[7] * taskStatistic.costResourceHour!;
             });
           });
       });
@@ -143,6 +140,22 @@ export class CaseViewComponent implements OnInit {
     this.dialog.open(WorkitemsDialogComponent, dialogConfig);
   }
 
+  isCaseView(): boolean {
+    return this.viewType == ViewType.Case;
+  }
+
+  isTaskView(): boolean {
+    return this.viewType == ViewType.Task;
+  }
+
+  changedSpecificationAttributes(): void {
+    if (this.specificationStatistic === undefined) {
+      return;
+    }
+    this.specificationService.storeSpecificationAttributesById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri, "" + this.specificationTimeLimit)
+      .subscribe()
+  }
+
   /** Announce the change in sort state for assistive technology. */
   announceSortChange(sort: Sort) {
     const isAsc = sort.direction === 'asc';
@@ -163,76 +176,6 @@ export class CaseViewComponent implements OnInit {
 
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-
-  isCaseView(): boolean {
-    return this.viewType == ViewType.Case;
-  }
-
-  isTaskView(): boolean {
-    return this.viewType == ViewType.Task;
-  }
-
-  changedSpecificationAttributes(): void {
-    if (this.specificationStatistic === undefined) {
-      return;
-    }
-    this.specificationService.storeSpecificationAttributesById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri, "" + this.specificationTimeLimit)
-      .subscribe()
-  }
-
-  applyPastTimeFormatForTimestamp(timestamp: number): string {
-    // @ts-ignore
-    let hoursMs = timestamp
-    let minutesMs = timestamp % (1000 * 60 * 60)
-    let secondsMs = timestamp % (1000 * 60)
-
-    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    let minutes = Math.floor(minutesMs / (1000 * 60))
-    let seconds = Math.floor(secondsMs / (1000))
-
-    return hours + "h " + minutes + "m " + seconds + "s";
-  }
-
-  applyDatetimeFormat(timestamp: number): string {
-    if(timestamp === 0){
-      return ""
-    }
-    let date = new Date(timestamp);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
-    return months[date.getMonth()]+ ".:" + date.getDate() + ", " + date.getFullYear() + " " + date.toLocaleTimeString()
-  }
-
-  applyOccurencesFormat(occurences: number[]): string {
-    if (occurences.length != 8) {
-      return "";
-    }
-
-    return "M" + occurences[0] + " T" + occurences[1] + " W" + occurences[2] + " T" + occurences[3] + " F" + occurences[4] + " S" + occurences[5] + " S" + occurences[6] + ""
-  }
-
-  applyIsOverdueFormat(age: number, maxTime: number): string {
-    if (age > maxTime) {
-      return "Yes";
-    } else {
-      return "No";
-    }
-  }
-
-  applyBooleanFormat(bool: boolean){
-    return (bool)? "Yes": "No";
-  }
-
-  applyParticipantsArrayFormat(participants: Participant[]): string{
-    if(participants === undefined){
-      return "";
-    }
-
-    let chain = "";
-    participants.forEach(participant => {
-      chain += ", " + participant.firstname + " " + participant.lastname
-    })
-    return chain.substring(2);
   }
 }
 

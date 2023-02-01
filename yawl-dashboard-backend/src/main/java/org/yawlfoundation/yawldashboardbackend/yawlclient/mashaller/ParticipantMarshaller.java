@@ -31,6 +31,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 /**
  * ConsoleApplication.
  * @author Philipp Thomas <philipp.thomas@floaz.de>
+ * @editedBy Robin Steinwarz
  */
 public abstract class ParticipantMarshaller {
 

@@ -1,5 +1,7 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
-
+/**
+ * @author Robin Steinwarz
+ */
 public class Event {
     String speckey;
     String caseid;
