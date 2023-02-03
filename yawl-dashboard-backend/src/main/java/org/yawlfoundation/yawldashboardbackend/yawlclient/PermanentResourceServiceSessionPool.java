@@ -20,8 +20,6 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
 
@@ -30,8 +28,6 @@ import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public class PermanentResourceServiceSessionPool implements ResourceServiceSessionPool {
-
-	private static Logger logger = LogManager.getLogger(PermanentResourceServiceSessionPool.class);
 
 	private final ResourceGatewayClient	connection;
 	private final String				username;
@@ -53,7 +49,7 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 			connect();
 		}
 		catch(Exception e) {
-			logger.error("Could not connect to YAWL-Resource-Service.");
+			System.out.println("Could not connect to YAWL-Resource-Service.");
 		}
 	}
 

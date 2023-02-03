@@ -4,6 +4,7 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 // @ts-ignore
 import {Observable, Observer, Subscriber, of} from 'rxjs';
 import {catchError, map} from "rxjs/operators";
+import {env} from "../../../environments/environment";
 
 /**
  * The service for session management.
@@ -14,9 +15,9 @@ import {catchError, map} from "rxjs/operators";
 @Injectable()
 export class SessionService {
 
-  private userUrl = 'http://localhost:8082/api/user';
-  private loginUrl = 'http://localhost:8082/login';
-  private logoutUrl = 'http://localhost:8082/logout';
+  private userUrl = env.apiUrl + 'user';
+  private loginUrl = env.url + 'login';
+  private logoutUrl = env.url + 'logout';
 
   private loggedIn = false;
   private username = "";

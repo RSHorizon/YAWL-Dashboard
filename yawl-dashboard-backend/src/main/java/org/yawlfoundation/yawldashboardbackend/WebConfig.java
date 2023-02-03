@@ -18,6 +18,7 @@
 package org.yawlfoundation.yawldashboardbackend;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,14 +39,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Robin Steinwarz
  */
 @Configuration
-@EnableWebMvc
 class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowCredentials(true)
-                .allowedOrigins("http://localhost:4200")
+                .allowedOrigins("http://localhost:4200","http://localhost:8080")
                 .allowedOriginPatterns("*")
                 .allowedMethods("*")
                 .allowedHeaders("*");

@@ -5,5 +5,6 @@
  */
 export const env = {
   production: true,
-  apiUrl: "http://localhost:8082/api/"
+  apiUrl: "http://localhost:8080/api/",
+  url: "http://localhost:8080/"
 };

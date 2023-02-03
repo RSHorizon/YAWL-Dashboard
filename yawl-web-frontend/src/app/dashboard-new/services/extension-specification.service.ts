@@ -17,7 +17,7 @@ export class ExtensionSpecificationService {
   constructor(private http: HttpClient) {
   }
 
-  private baseURL: string = "http://localhost:8082/api/";
+  private baseURL: string = env.apiUrl;
 
   getExtensionSpecifications(): Observable<ExtensionSpecification[]> {
     return this.http.get<HttpResponse<any>>(this.baseURL + "specification/extension", {withCredentials: true}).pipe(

@@ -44,4 +44,36 @@ public class ExtensionSpecificationId implements Serializable {
         this.uri = uri;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final ExtensionSpecificationId other = (ExtensionSpecificationId) obj;
+        if (this.specificationId != null && other.specificationId != null
+                && this.specversion != null && other.specversion != null
+                && this.uri != null && other.uri != null
+                && this.specificationId.equals(other.specificationId)
+                && this.specversion.equals(other.specversion)
+                && this.uri.equals(other.uri)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + (this.specificationId != null ? this.specificationId.hashCode() : 0);
+        hash = 53 * hash + (this.specversion != null ? this.specversion.hashCode() : 0);
+        hash = 53 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+        return hash;
+    }
+
 }

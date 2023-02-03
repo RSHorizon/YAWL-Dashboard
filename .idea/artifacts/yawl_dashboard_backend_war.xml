@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="yawl-dashboard-backend-0.0.1-SNAPSHOT.war">
+    <root id="archive" name="dashboard.war">
       <element id="artifact" artifact-name="yawl-dashboard-backend:war exploded" />
     </root>
   </artifact>
