@@ -1,4 +1,3 @@
-# YAWL-Dashboard
 
 This project is a dashboard component for the YAWL-BPM System. It is based on Angular and Spring.
 
