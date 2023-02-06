@@ -13,6 +13,10 @@ export class FormatUtils {
 
   applyPastTimeFormatForTimestamp(timestamp: number): string {
     // @ts-ignore
+    if(timestamp === undefined || timestamp === ''){
+      timestamp = 0;
+    }
+    // @ts-ignore
     let hoursMs = timestamp
     let minutesMs = timestamp % (1000 * 60 * 60)
     let secondsMs = timestamp % (1000 * 60)

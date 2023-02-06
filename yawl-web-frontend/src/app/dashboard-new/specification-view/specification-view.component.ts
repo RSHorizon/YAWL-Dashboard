@@ -9,6 +9,7 @@ import {ExtensionSpecificationService} from "../services/extension-specification
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
+import {env} from "../../../environments/environment";
 
 /**
  * @author Robin Steinwarz
@@ -21,7 +22,7 @@ import {FormatUtils} from "../../util/format-util";
 export class SpecificationViewComponent implements OnInit {
   faPencil = faPencil
   faArrowsToEye = faArrowsToEye
-  specificationsURL = "http://localhost:8080/resourceService/faces/caseMgt.jsp"
+  specificationsURL = env.remoteUIUrl;
 
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
@@ -99,6 +100,11 @@ export class SpecificationViewComponent implements OnInit {
     ext.core = <number>willBeCoreSpecification;
     // @ts-ignore
     this.extensionSpecificationService.setCoreAttribute(specification.id, specification.specversion, specification.uri, <number>willBeCoreSpecification).subscribe();
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   /** Announce the change in sort state for assistive technology. */

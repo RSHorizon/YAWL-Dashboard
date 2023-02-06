@@ -15,6 +15,8 @@ import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
+import {env} from "../../../environments/environment";
+import {NotifierService} from "angular-notifier";
 
 /**
  * @author Robin Steinwarz
@@ -29,7 +31,7 @@ export class CaseViewComponent implements OnInit {
   faArrowLeft = faArrowLeft;
   faArrowLeftLong = faArrowLeftLong
   faArrowsToEye = faArrowsToEye;
-  casesURL = "http://localhost:8080/resourceService/faces/caseMgt.jsp"
+  casesURL = env.remoteUIUrl;
   specificationID: string | null = null;
   specversion: string | null = null;
   uri: string | null = null;
@@ -64,7 +66,8 @@ export class CaseViewComponent implements OnInit {
               private extensionSpecificationService: ExtensionSpecificationService,
               private specificationService: SpecificationService,
               private caseService: CaseService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private notifierService: NotifierService) {
   }
 
   ngOnInit(): void {
@@ -86,8 +89,6 @@ export class CaseViewComponent implements OnInit {
         this.extensionSpecificationService.getSpecificationExtensionTasks(this.specificationID!, this.specversion!, this.uri!)
           .subscribe(extensionTasks => {
             this.extensionTasks = extensionTasks;
-            console.log(this.specificationStatistic);
-            console.log(extensionTasks);
             this.specificationStatistic!.taskStatisticDTOS.forEach((taskStatistic: TaskStatistic) => {
               this.extensionTasks?.forEach(extensionTask => {
                 if (taskStatistic.taskid === extensionTask.taskid) {
@@ -153,7 +154,14 @@ export class CaseViewComponent implements OnInit {
       return;
     }
     this.specificationService.storeSpecificationAttributesById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri, "" + this.specificationTimeLimit)
-      .subscribe()
+      .subscribe(result => {
+        this.notifierService.notify("success", "Specification time limit saved");
+      })
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   /** Announce the change in sort state for assistive technology. */

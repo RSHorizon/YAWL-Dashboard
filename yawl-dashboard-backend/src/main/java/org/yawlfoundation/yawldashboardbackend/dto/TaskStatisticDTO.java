@@ -13,7 +13,7 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO> {
     private Set<Participant> participants = new HashSet<>();
     private String decompositionOrder = "";
     private long avgCompletionTime = 0;
-    private Integer[] avgOccurrencesPerWeek;
+    private Integer[] avgOccurrencesPerWeek = {0,0,0,0,0,0,0,0};
     private long avgQueueTime = 0;
     private long avgTimeToReach = 0;
 

@@ -66,6 +66,8 @@ class SpecificationController {
         //resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
         //resourceLogManager.getSpecificationEvents(specId);
         //workItemManager.getSpecificationList();
+
+        workItemManager.getSpecificationDefinitionById(specId);
     }
 
     @RequestMapping(value = "/api/specification/{uri}/{specificationID}/{specversion}/statistic", method = RequestMethod.GET)
@@ -135,16 +137,15 @@ class SpecificationController {
             Map<String,Set<String>> excluded = new HashMap<>();
             for (Event event : caseDTOInstance.getTaskEvents()) {
                 String eventDecompositionOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
-
+                if(!smallestDecompositionOrders.containsKey(event.getTaskid())){
+                    smallestDecompositionOrders.put(event.getTaskid(), "");
+                }
                 if(!event.getEventtype().equals("offer")
                         && !event.getEventtype().equals("allocate")
                         && !event.getEventtype().equals("cancelled_by_case")
                         && !event.getEventtype().equals("cancel")
                         && !event.getEventtype().equals("suspend")
                         && !event.getEventtype().equals("resume")){
-                    if(!smallestDecompositionOrders.containsKey(event.getTaskid())){
-                        smallestDecompositionOrders.put(event.getTaskid(), "");
-                    }
                     if(decompositionOrderIsSmaller(smallestDecompositionOrders.get(event.getTaskid()), eventDecompositionOrder)){
                         smallestDecompositionOrders.replace(event.getTaskid(),eventDecompositionOrder);
                     }
@@ -199,32 +200,6 @@ class SpecificationController {
                         break;
                 }
             }
-
-            /*
-            // as they don't have the decompositionOrder in their caseid
-            // Search for smallest progress of an event
-            // Smallest progress in terms of last
-
-            // offer/allocate without decomposition
-            // several events
-            // end event
-            for (Event event : caseDTOInstance.getTaskEvents()) {
-                if (!smallestCaseDecompositionOrder.containsKey(event.getTaskid())) {
-                    smallestCaseDecompositionOrder.put(event.getTaskid(), "");
-                }
-                String currentSmallestDecompositionOrder = smallestCaseDecompositionOrder.get(event.getTaskid());
-                String eventDecompositionOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
-                if (decompositionOrderIsSmaller(currentSmallestDecompositionOrder, eventDecompositionOrder)) {
-                    smallestCaseDecompositionOrder.replace(event.getTaskid(), eventDecompositionOrder);
-                }
-            }
-            // Set smallest progress for offer/allocation/cancelled_by_case events
-            for (Event event : caseDTOInstance.getTaskEvents()) {
-                if ((event.getEventtype().equals("offer") || event.getEventtype().equals("allocate") || event.getEventtype().equals("cancelled_by_case"))
-                        && event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "").equals("")) {
-                    event.setCaseid(event.getCaseid() + "." + smallestCaseDecompositionOrder.get(event.getTaskid()));
-                }
-            }*/
 
             // Fill timings, where one timing is identified by its taskid and caseId
             // and set initial start and end dates for cases
@@ -298,6 +273,7 @@ class SpecificationController {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
                             taskTimingDTO.setStatus("Completed");
                         }
+                        caseStatisticDTO.setEnd(eventTimestamp);
                         break;
                     case "autotask_complete":
                         taskTimingDTO.setEndTimestamp(eventTimestamp);
@@ -472,8 +448,8 @@ class SpecificationController {
         long additiveAvgTimeToReachStep = 0;
         int additiveAvgTimeToReachStepCounter = 0;
         for (TaskStatisticDTO taskStatisticDTO : taskStatisticDTOS) {
-            if(currentDecomposition == null || taskStatisticDTO == null){
-                int i = 0;
+            if (currentDecomposition == null || taskStatisticDTO == null) {
+                continue;
             }
             // TimeToReach
             if (!currentDecomposition.equals(taskStatisticDTO.getDecompositionOrder())) {
@@ -490,6 +466,21 @@ class SpecificationController {
                 additiveAvgTimeToReachStep += taskStatisticDTO.getAvgQueueTime() + taskStatisticDTO.getAvgCompletionTime();
                 additiveAvgTimeToReachStepCounter++;
                 taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
+            }
+        }
+
+        // Fill tasks without statistics
+        List<Task> allExistingTasks = workItemManager.getSpecificationDefinitionById(specId);
+        for(Task existingTask: allExistingTasks) {
+            boolean exists = false;
+            for(TaskStatisticDTO taskDTO: taskStatisticDTOS){
+                if(taskDTO.getTaskid().equals(existingTask.getId())){
+                    exists = true;
+                    break;
+                }
+            }
+            if(!exists){
+                taskStatisticDTOS.add(new TaskStatisticDTO(existingTask.getId()));
             }
         }
 

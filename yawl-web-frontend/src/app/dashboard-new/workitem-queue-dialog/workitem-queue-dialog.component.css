@@ -1,4 +1,18 @@
 /* @author Robin Steinwarz */
+
+mat-dialog-container{
+  display: block !important; /* I added this to see the modal, you don't need this */
+}
+
+/* Important part */
+mat-dialog-container {
+  overflow-y: initial !important
+}
+mat-dialog-container .mat-dialog-container .cdk-dialog-container{
+  height: 80vh;
+  overflow-y: auto;
+}
+
 table {
   width: 100%;
 }

@@ -15,7 +15,6 @@ import { faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell, faSite
 @Component({
     selector: 'default-page',
     templateUrl: 'default-page.component.html',
-    styleUrls: ['../../../style/styles.scss'],
     encapsulation: ViewEncapsulation.None
 })
 export class DefaultPageComponent implements OnInit {
@@ -38,7 +37,6 @@ export class DefaultPageComponent implements OnInit {
   organisationToggledOn = false;
 
 	constructor(
-		//private dashboardService: ExtensionSpecificationService,
 		private sessionService: SessionService,
 		private router: Router,
     private notifierService: NotifierService) { }
@@ -83,7 +81,7 @@ export class DefaultPageComponent implements OnInit {
 			this.router.navigate(['/login']);
 		},
 		() => {
-      this.notifierService.notify("error", "An error occured while logging out!");
+      this.notifierService.notify("error", "An error occured while logging out");
 		});
 	}
 

@@ -1,6 +1,9 @@
 /* @author Robin Steinwarz */
 table {
   width: 100%;
+}
+
+.mat-mdc-form-field{
   margin-top: 5em;
 }
 

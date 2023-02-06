@@ -7,7 +7,7 @@
 
   <div *ngIf="!errorState">
     <p>
-      <a href="/dashboard">
+      <a href="/#/dashboard">
         <mat-toolbar>
           <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
             <fa-icon [fixedWidth]="true" [icon]="faArrowLeftLong"></fa-icon>
@@ -91,7 +91,7 @@
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Avg. cost per week</mat-label>
-            <input matInput disabled value="{{costs.toFixed(2)}}">
+            <input matInput disabled value="{{(costs)?costs.toFixed(2): 0}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
@@ -194,6 +194,11 @@
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center; color: #5e5e5e">
+          Empty table
+        </td>
+      </tr>
     </table>
   </div>
 

@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
+import {FormBuilder} from "@angular/forms";
 import {
   faPencil,
   faArrowLeftLong,
@@ -9,7 +9,6 @@ import {
   faChevronUp
 } from '@fortawesome/free-solid-svg-icons';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
@@ -22,6 +21,7 @@ import {TaskTiming} from "../../yawl/resources/dto/task-timing.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
+import {env} from "../../../environments/environment";
 
 /**
  * @author Robin Steinwarz
@@ -32,7 +32,7 @@ import {FormatUtils} from "../../util/format-util";
   styleUrls: ['./workitems-dialog.component.css'],
   animations: [
     trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('collapsed, void', style({height: '0px', minHeight: '0'})),
       state('expanded', style({height: '*'})),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
@@ -43,7 +43,7 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   faPencil = faPencil;
   faChevronUp = faChevronUp;
   faChevronDown = faChevronDown;
-  workitemURL = "http://localhost:8080/resourceService/faces/adminQueues.jsp"
+  workitemURL = env.remoteUIUrl;
   specificationStatistic: SpecificationStatistic;
   tasks: any | undefined;
   caseid: string | undefined;
@@ -77,7 +77,6 @@ export class WorkitemsDialogComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
-    console.log(this.sort);
   }
 
   close() {
@@ -160,7 +159,6 @@ export class WorkitemsDialogComponent implements AfterViewInit {
       return 0;
     }
     let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
-    console.log(task);
     return task.maxQueueAge!;
   }
 
@@ -229,6 +227,10 @@ export class WorkitemsDialogComponent implements AfterViewInit {
     return false;
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
   announceSortChange(sortState: Sort) {
     if (sortState.active == "queueTime" && sortState.direction == "asc") {
       this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeQueueTime(workitemA) > this.computeQueueTime(workitemB)) ? -1 : 1)

@@ -58,7 +58,7 @@ export class LoginFormPage {
       this.notifierService.notify("success", "You have been successfully logged in");
       this.redirect();
     } else {
-      this.notifierService.notify("error", "The username or password you have entered is invalid.");
+      this.notifierService.notify("error", "The username or password you have entered is invalid");
     }
   }
 

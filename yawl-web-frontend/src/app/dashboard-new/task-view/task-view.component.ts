@@ -11,6 +11,7 @@ import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {FormatUtils} from "../../util/format-util";
+import {NotifierService} from "angular-notifier";
 /**
  * @author Robin Steinwarz
  */
@@ -30,7 +31,8 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource | undefined;
   formatUtils: FormatUtils = new FormatUtils();
 
-  constructor(private specificationService: SpecificationService) {
+  constructor(private specificationService: SpecificationService,
+              private notifierService: NotifierService) {
   }
 
   ngAfterViewInit(): void {
@@ -39,6 +41,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource(this.specificationStatistic!.taskStatisticDTOS);
+    console.log(this.specificationStatistic!.taskStatisticDTOS);
   }
 
   saveLimits(task: any): void {
@@ -47,7 +50,14 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
     }
     this.specificationService.storeTaskAttributesById(
       this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri,
-      task.taskid, task.costResourceHour, task.maxTaskAge, task.maxQueueAge).subscribe();
+      task.taskid, task.costResourceHour, task.maxTaskAge, task.maxQueueAge).subscribe(result => {
+      this.notifierService.notify("success", "Task attributes saved");
+    });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   announceSortChange(sort: Sort) {

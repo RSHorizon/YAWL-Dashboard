@@ -10,7 +10,6 @@ import {SessionService} from './session.service';
 import {LoginFormPage} from './login-form.page';
 
 import {sessionRoutesConfig} from './session.routes';
-import {NotifierModule} from "angular-notifier";
 
 /**
  * @author Philipp R. Thomas
@@ -25,8 +24,7 @@ import {NotifierModule} from "angular-notifier";
     CommonModule,
     RouterModule.forChild(sessionRoutesConfig),
     FormsModule,
-    MaterialSharedModule,
-    NotifierModule
+    MaterialSharedModule
   ],
   providers: [
     LoggedInGuard,

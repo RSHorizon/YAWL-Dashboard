@@ -9,6 +9,7 @@ import {catchError, map} from "rxjs/operators";
 
 import {env} from '../../../../environments/environment';
 import {SpecificationStatistic} from "../dto/specification-statistic.entity";
+import {NotifierService} from "angular-notifier";
 
 /**
  * @author Philipp R. Thomas
@@ -18,7 +19,8 @@ import {SpecificationStatistic} from "../dto/specification-statistic.entity";
 @Injectable()
 export class SpecificationService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private notifierService: NotifierService) {
   }
 
 
@@ -80,7 +82,10 @@ export class SpecificationService {
 
     return this.http.post<HttpResponse<any>>(url, payload, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
-      catchError((error) => this.handleError(error))
+      catchError((error) => {
+        this.notifierService.notify("error", "Could not store task attributes");
+        return this.handleError(error);
+      })
     )
   }
 
@@ -96,7 +101,10 @@ export class SpecificationService {
 
     return this.http.post<HttpResponse<any>>(url, payload, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
-      catchError((error) => this.handleError(error))
+      catchError((error) => {
+        this.notifierService.notify("error", "Could not store specification time limit");
+        return this.handleError(error);
+      })
     )
   }
 

@@ -16,7 +16,7 @@
   <ng-container matColumnDef="decompositionOrder">
     <th mat-header-cell *matHeaderCellDef mat-sort-header="decompositionOrder"
         sortActionDescription="Sort by decomposition order">
-      Order
+      First occurrence in process
     </th>
     <td mat-cell *matCellDef="let element">{{element.decompositionOrder}}</td>
   </ng-container>
@@ -147,4 +147,11 @@
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr class="mat-row" *matNoDataRow>
+    <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center; color: #5e5e5e">
+      Empty table
+    </td>
+  </tr>
 </table>
+
+<div class="bottom-page-margin"></div>

@@ -16,6 +16,7 @@ import {SpecificationService} from "../../yawl/resources/services/specification.
 import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {FormatUtils} from "../../util/format-util";
+import {env} from "../../../environments/environment";
 
 /**
  * @author Robin Steinwarz
@@ -26,7 +27,7 @@ import {FormatUtils} from "../../util/format-util";
   styleUrls: ['./workitem-queue-dialog.component.css'],
   animations: [
     trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('collapsed, void', style({height: '0px', minHeight: '0'})),
       state('expanded', style({height: '*'})),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
@@ -37,7 +38,7 @@ export class WorkitemQueueDialogComponent implements OnInit {
   faPencil = faPencil;
   faChevronUp = faChevronUp;
   faChevronDown = faChevronDown;
-  workitemURL = "http://localhost:8080/resourceService/faces/adminQueues.jsp"
+  workitemURL = env.remoteUIUrl;
   specificationStatistic: SpecificationStatistic;
   tasks: any | undefined;
   queueSize = 0;
@@ -46,7 +47,7 @@ export class WorkitemQueueDialogComponent implements OnInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['rootCaseID', 'taskName', 'resourceStatus', 'enablementTime', 'queueTime', 'assignedTo', 'overdue'];
+  displayedColumns: string[] = ['rootCaseID', 'taskName', 'resourceStatus', 'enablementTime', 'queueTime', 'overdue'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand'];
   expandedElement: {} | null = null;
   // @ts-ignore
@@ -67,7 +68,7 @@ export class WorkitemQueueDialogComponent implements OnInit {
         this.queueSize = workitems.length;
         this.dataSource = new MatTableDataSource(workitems);
         this.dataSource.sort = this.sort;
-
+        console.log(workitems);
       });
 
     specificationService.findTasksById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri)
@@ -165,6 +166,10 @@ export class WorkitemQueueDialogComponent implements OnInit {
     }
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
   /** Announce the change in sort state for assistive technology. */
   announceSortChange(sortState: Sort) {
     if (sortState.active == "queueTime" && sortState.direction == "asc") {

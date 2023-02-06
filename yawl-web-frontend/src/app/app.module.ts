@@ -25,7 +25,7 @@ import {DashboardNewModule} from './dashboard-new/dashboard-new.module';
 // Core
 import {routesConfig} from './app.routes';
 import {AppComponent} from './app.component';
-import {CommonModule} from "@angular/common";
+import {CommonModule, HashLocationStrategy, LocationStrategy} from "@angular/common";
 import {MatMenuModule} from "@angular/material/menu";
 import {MaterialModule} from './material.module';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
@@ -56,6 +56,7 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
     MaterialModule,
     FontAwesomeModule
   ],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}]
 })
 export class AppModule {
 }

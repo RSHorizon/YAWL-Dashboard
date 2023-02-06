@@ -7,6 +7,10 @@
     <span>Case Id: {{this.caseid}}</span>
   </mat-toolbar>
 
+  <mat-form-field class="mat-mdc-form-field" >
+    <mat-label>Filter</mat-label>
+    <input matInput type="text" (keyup)="applyFilter($event)" placeholder="" #input>
+  </mat-form-field>
   <table mat-table [dataSource]="dataSource" multiTemplateDataRows matSort
          (matSortChange)="announceSortChange($event)"
          class="mat-elevation-z8">
@@ -57,7 +61,14 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by resource">
         Resource
       </th>
-      <td mat-cell *matCellDef="let element"> {{formatUtils.applyParticipantsArrayFormat(element.participants)}}</td>
+      <td *matCellDef="let element">
+        <span *ngIf="!element.automated" >
+          {{formatUtils.applyParticipantsArrayFormat(element.participants)}}
+        </span>
+        <span *ngIf="element.automated" >
+          Automated
+        </span>
+      </td>
     </ng-container>
 
     <!-- Overdue Column -->
@@ -124,7 +135,7 @@
             <mat-grid-tile colspan="2">
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Common resources</mat-label>
-                <input *ngIf="element.automated" matInput disabled value="Codelet">
+                <input *ngIf="element.automated" matInput disabled value="Automated">
                 <input *ngIf="!element.automated" matInput disabled
                        value="{{formatUtils.applyParticipantsArrayFormat(computeCommonParticipants(element))}}">
               </mat-form-field>
@@ -153,6 +164,11 @@
         (click)="expandedElement = expandedElement === element ? null : element">
     </tr>
     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumnsWithExpand.length" style="text-align: center; color: #5e5e5e">
+        Empty table
+      </td>
+    </tr>
   </table>
 </div>
 

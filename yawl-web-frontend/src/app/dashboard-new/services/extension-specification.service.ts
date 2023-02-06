@@ -5,6 +5,7 @@ import {catchError, map} from "rxjs/operators";
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {env} from "../../../environments/environment";
+import {NotifierService} from "angular-notifier";
 
 /**
  * @author Robin Steinwarz
@@ -14,7 +15,7 @@ import {env} from "../../../environments/environment";
 })
 export class ExtensionSpecificationService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private notifierService: NotifierService) {
   }
 
   private baseURL: string = env.apiUrl;
@@ -57,7 +58,10 @@ export class ExtensionSpecificationService {
       withCredentials: true
     }).pipe(
       map((res: any) => res),
-      catchError((error: any) => this.handleError(error))
+      catchError((error: any) => {
+        this.notifierService.notify("error", "Could not set core attribute");
+        return this.handleError(error);
+      })
     )
   }
 
@@ -70,7 +74,10 @@ export class ExtensionSpecificationService {
       withCredentials: true
     }).pipe(
       map((res: any) => res),
-      catchError((error: any) => this.handleError(error))
+      catchError((error: any) => {
+        this.notifierService.notify("error", "Could not set core attribute");
+        return this.handleError(error);
+      })
     )
   }
 

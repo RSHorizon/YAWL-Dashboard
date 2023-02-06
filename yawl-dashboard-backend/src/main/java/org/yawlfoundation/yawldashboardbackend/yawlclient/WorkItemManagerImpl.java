@@ -20,17 +20,14 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.elements.YDecomposition;
+import org.yawlfoundation.yawl.elements.YNet;
 import org.yawlfoundation.yawl.elements.YSpecification;
+import org.yawlfoundation.yawl.elements.YTask;
 import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawl.engine.interfce.SpecificationData;
 import org.yawlfoundation.yawl.engine.interfce.WorkItemRecord;
@@ -682,19 +679,34 @@ public class WorkItemManagerImpl implements WorkItemManager {
             try {
                 SpecificationData specificationData = SpecificationMarshaller.parseSpecificationDefinition(specData);
                 List<YSpecification> ySpecification = YMarshal.unmarshalSpecifications(specificationData.getAsXML());
-                return ySpecification.get(0).getDecompositions().stream()
-                        .filter(d -> d.getClass().getName()
-                                .equals("org.yawlfoundation.yawl.elements.YAWLServiceGateway"))
-                        .map(YDecomposition::getID)
-                        .map(d -> new Task(d, ySpecificationID.getIdentifier(), ySpecificationID.getVersionAsString(),
+
+                List<String> taskIds = getTasksFromNet(ySpecification.get(0).getRootNet());
+                return taskIds.stream()
+                        .map(taskId -> new Task(taskId, ySpecificationID.getIdentifier(), ySpecificationID.getVersionAsString(),
                                 ySpecificationID.getUri()))
                         .collect(Collectors.toList());
+
             } catch (YSyntaxException e) {
                 throw new RuntimeException(e);
             }
         } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private List<String> getTasksFromNet(YNet net){
+        List<String> taskIds = new ArrayList<>();
+        for(YTask yTask: net.getNetTasks()){
+            if(yTask.getClass().getName().equals("org.yawlfoundation.yawl.elements.YAtomicTask")){
+                taskIds.add(yTask.getID());
+            }else if(yTask.getClass().getName().equals("org.yawlfoundation.yawl.elements.YCompositeTask")){
+                if(yTask.getDecompositionPrototype().getClass().getName().equals("org.yawlfoundation.yawl.elements.YNet")){
+                    taskIds.addAll(getTasksFromNet((YNet) yTask.getDecompositionPrototype()));
+                }
+            }
+        }
+
+        return taskIds;
     }
 
 }
