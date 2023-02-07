@@ -1,0 +1,10 @@
+Improvements:
+- Fix the bug with cancelled cases and case events overall
+- Fix plural spelling of case in different views cas (Avg. occuring case -> Avg. occuring cases)
+- Include assigned resource information in workqueue
+- Include filtering for each row
+
+Further investigations:
+- Implement all user stories with a prioritization above 1
+- Investigate Camunda, Bizagi and their dashboards. Add new user stories accordingly.
+
