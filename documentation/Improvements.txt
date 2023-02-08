@@ -1,6 +1,5 @@
 Improvements:
 - Fix the bug with cancelled cases and case events overall
-- Fix plural spelling of case in different views cas (Avg. occuring case -> Avg. occuring cases)
 - Include assigned resource information in workqueue
 - Include filtering for each row
 
