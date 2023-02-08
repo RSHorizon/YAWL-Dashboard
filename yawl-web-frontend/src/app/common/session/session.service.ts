@@ -79,11 +79,13 @@ export class SessionService {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
 
     let payload = 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
-    let response: Observable<any> = this.http.post<HttpResponse<any>>(this.loginUrl, payload, {headers,  observe: "response", withCredentials: true})
-      .pipe(
-        map((res: HttpResponse<any>) => this.handleLoginResponse(res)),
-        catchError(error => this.handleLoginError(error))
-      )
+    let response: Observable<any> = this.http.post<HttpResponse<any>>(this.loginUrl, payload, {headers,  observe: "response", withCredentials: true});
+
+    response.subscribe({
+      next: this.handleLoginResponse.bind(this),
+      error: this.handleLoginError.bind(this)
+    })
+
     return response;
   }
 

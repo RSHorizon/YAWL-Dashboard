@@ -18,6 +18,7 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -59,10 +60,14 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 			disconnect();
 		}
 
-		handle = connection.connect(username, password);
-		if(!connection.successful(handle)) {
-			handle = null;
-			throw new RuntimeException("Could not connect! ");
+		try {
+			handle = connection.connect(username, password);
+			if (!connection.successful(handle)) {
+				handle = null;
+				throw new RuntimeException("Could not connect to the YAWL resource service!");
+			}
+		}catch(ConnectException exception){
+			System.out.println("Could not connect to the YAWL resource service!");
 		}
 	}
 
@@ -75,6 +80,8 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 
 		try {
 			connection.disconnect(handle);
+		}catch(ConnectException e) {
+			System.out.println("Could not disconnect from the YAWL-Resource-Service.");
 		}
 		finally {
 			handle = null;
@@ -84,9 +91,13 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 
     @Scheduled(fixedRate = 5000)
     public synchronized void refreshSessionHandle() throws IOException {
-        String result = connection.checkConnection(handle);
-		if(!connection.successful(result)) {
-			reconnect();
+		try {
+			String result = connection.checkConnection(handle);
+			if (!connection.successful(result)) {
+				reconnect();
+			}
+		} catch(ConnectException exception){
+			System.out.println("Could not connect to the YAWL resource service!");
 		}
     }
 

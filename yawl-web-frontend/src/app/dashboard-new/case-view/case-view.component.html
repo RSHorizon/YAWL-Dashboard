@@ -23,10 +23,10 @@
     <section class="example-section">
       <mat-radio-group [(ngModel)]="viewType">
         <mat-radio-button value="0">
-          Case
+          Cases
         </mat-radio-button>
         <mat-radio-button value="1">
-          Task
+          Tasks
         </mat-radio-button>
       </mat-radio-group>
     </section>
@@ -44,14 +44,14 @@
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Avg. occuring case</mat-label>
+            <mat-label>Avg. occuring cases</mat-label>
             <input matInput disabled
                    value="{{formatUtils.applyOccurencesFormat(specificationStatistic.caseOccurrencesPerDayOfWeek)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Successful case</mat-label>
+            <mat-label>Successful cases</mat-label>
             <input matInput disabled value="{{specificationStatistic.successfulCases}}">
           </mat-form-field>
         </mat-grid-tile>
@@ -84,7 +84,7 @@
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Cancelled case</mat-label>
+            <mat-label>Cancelled cases</mat-label>
             <input matInput disabled value="{{specificationStatistic.unsuccessfulCases}}">
           </mat-form-field>
         </mat-grid-tile>

@@ -18,6 +18,7 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,6 +53,9 @@ public class ResourceManagerImpl implements ResourceManager {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.validateUserCredentials(username, PasswordEncryptor.encrypt(password, password), false, handle.getRawHandle());
             return connection.successful(result);
+        } catch(ConnectException e){
+            System.out.println("Login not possible, because the connection to the resource service is unavailable.");
+            return false;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

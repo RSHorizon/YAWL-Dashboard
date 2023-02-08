@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 
 import {SessionService} from './session.service';
 import {NotifierService} from "angular-notifier";
+import {HttpErrorResponse} from "@angular/common/http";
 
 /**
  * @author Philipp R. Thomas
@@ -14,7 +15,7 @@ import {NotifierService} from "angular-notifier";
   templateUrl: 'login-form.page.html',
   styleUrls: ['login-form.page.scss']
 })
-export class LoginFormPage {
+export class LoginFormPage implements OnInit{
 
   applicationName = "YAWL Web Admin";
   username = "admin";
@@ -63,12 +64,9 @@ export class LoginFormPage {
   }
 
 
-  private handleLoginError(errorMessage: string | undefined) {
+  private handleLoginError(error: HttpErrorResponse) {
     this.isLoading = false;
-    if (errorMessage == undefined) {
-      throw new Error("Error message was undefined...");
-    }
-    this.notifierService.notify("error", errorMessage);
+    this.notifierService.notify("error", "Login was unsuccessful");
   }
 
 

@@ -122,6 +122,8 @@ class SpecificationController {
                 associatedCaseDTO.getTaskEvents().add(event);
             }
         });
+
+        // Fix the task order
         Map<String, String> smallestDecompositionOrders = new HashMap<>();
         Map<String, CaseStatisticDTO> caseStatisticMap = new HashMap<>();
         Map<String, Map<String, TaskTimingDTO>> taskTimings = new HashMap<>();
@@ -129,7 +131,6 @@ class SpecificationController {
             // Initiate case statistic per case and get it
             caseStatisticMap.put(caseDTOInstance.getId(), new CaseStatisticDTO(caseDTOInstance.getId()));
             CaseStatisticDTO caseStatisticDTO = caseStatisticMap.get(caseDTOInstance.getId());
-
 
             // Repair case data for first offer/allocation/cancelled_by_case events
             Map<String,String> baseline = new HashMap<>();
@@ -141,11 +142,13 @@ class SpecificationController {
                     smallestDecompositionOrders.put(event.getTaskid(), "");
                 }
                 if(!event.getEventtype().equals("offer")
+                        && !event.getEventtype().equals("unoffer")
                         && !event.getEventtype().equals("allocate")
                         && !event.getEventtype().equals("cancelled_by_case")
                         && !event.getEventtype().equals("cancel")
                         && !event.getEventtype().equals("suspend")
-                        && !event.getEventtype().equals("resume")){
+                        && !event.getEventtype().equals("resume")
+                        && !event.getEventtype().equals("timer_expired")){
                     if(decompositionOrderIsSmaller(smallestDecompositionOrders.get(event.getTaskid()), eventDecompositionOrder)){
                         smallestDecompositionOrders.replace(event.getTaskid(),eventDecompositionOrder);
                     }
@@ -161,6 +164,7 @@ class SpecificationController {
                 Set<String> localExcluded = excluded.get(event.getTaskid());
                 switch (event.getEventtype()) {
                     case "offer":
+                    case "unoffer":
                     case "allocate":
                         if(baseline.get(event.getTaskid()) == null && !localExcluded.contains(eventDecompositionOrder)){
                             baseline.replace(event.getTaskid(), eventDecompositionOrder);
@@ -179,6 +183,7 @@ class SpecificationController {
                                 baseLineEvent.setCaseid(event.getCaseid());
                             });
                         }
+                        break;
                     case "complete":
                         if(!localExcluded.contains(eventDecompositionOrder)){
                             localBaselineEvents.forEach(baseLineEvent -> {
@@ -221,12 +226,13 @@ class SpecificationController {
 
                 TaskTimingDTO taskTimingDTO = timingMap.get(eventIdentifier);
 
-                if (!event.getResourceid().equals("") && !event.getEventtype().equals("offer") && taskTimingDTO.getParticipants()
+                if (!event.getResourceid().equals("") && !event.getEventtype().equals("offer") && !event.getEventtype().equals("unoffer") && !event.getResourceid().equals("system") && taskTimingDTO.getParticipants()
                         .stream().noneMatch(participant -> participant.getId().equals(event.getResourceid()))) {
                     taskTimingDTO.getParticipants().add(participantsMap.get(event.getResourceid()));
                 }
                 switch (event.getEventtype()) {
                     case "offer":
+                    case "unoffer":
                         taskTimingDTO.setOfferedTimestamp(eventTimestamp);
                         if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
@@ -235,6 +241,7 @@ class SpecificationController {
                         if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
+                        caseStatisticDTO.setEnd(0);
                         break;
                     case "allocate":
                         taskTimingDTO.setAllocatedTimestamp(eventTimestamp);
@@ -245,6 +252,7 @@ class SpecificationController {
                         if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
+                        caseStatisticDTO.setEnd(0);
                         break;
                     case "start":
                         taskTimingDTO.setStartTimestamp(eventTimestamp);
@@ -255,6 +263,7 @@ class SpecificationController {
                         if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
+                        caseStatisticDTO.setEnd(0);
                         break;
                     case "autotask_start":
                         taskTimingDTO.setStartTimestamp(eventTimestamp);
@@ -266,6 +275,7 @@ class SpecificationController {
                         if (caseStatisticDTO.getStart() == 0) {
                             caseStatisticDTO.setStart(eventTimestamp);
                         }
+                        caseStatisticDTO.setEnd(0);
                         break;
                     case "complete":
                         taskTimingDTO.setEndTimestamp(eventTimestamp);
@@ -291,6 +301,15 @@ class SpecificationController {
                             taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
                             taskTimingDTO.setStatus("Cancelled");
                         }
+                        caseStatisticDTO.setEnd(eventTimestamp);
+                        break;
+                    case "timer_expired":
+                        taskTimingDTO.setCancelled(true);
+                        if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {
+                            taskTimingDTO.setLatestEventTimestamp(eventTimestamp);
+                            taskTimingDTO.setStatus("Expired");
+                        }
+                        caseStatisticDTO.setEnd(eventTimestamp);
                         break;
                     case "suspended":
                         if (eventTimestamp > taskTimingDTO.getLatestEventTimestamp()) {

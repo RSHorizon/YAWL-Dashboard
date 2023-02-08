@@ -68,6 +68,8 @@ export class WorkitemsDialogComponent implements AfterViewInit {
     this.specificationStatistic = data.specificationStatistic;
     this.caseid = data.caseid;
 
+    console.log(this.specificationStatistic);
+
     let caseStatisticDTO: CaseStatistic = this.specificationStatistic.caseStatisticDTOS
       .filter(caseInstance => caseInstance.caseid === this.caseid)[0]
 
