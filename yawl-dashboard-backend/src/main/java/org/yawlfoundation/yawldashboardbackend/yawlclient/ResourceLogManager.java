@@ -10,9 +10,9 @@ import java.util.List;
  * @author Robin Steinwarz
  */
 public interface ResourceLogManager {
-    String getCaseEvents(String caseId);
+    List<Event> getCaseEvents(String caseId);
 
-    String getSpecificationEvents(YSpecificationID specID);
+    List<Event> getSpecificationEvents(YSpecificationID specID);
 
     SpecificationStatistic getStatisticsForSpecification(YSpecificationID specID);
 

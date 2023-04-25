@@ -35,12 +35,11 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
 
 
     @Override
-    public String getSpecificationEvents(YSpecificationID specID) {
+    public List<Event> getSpecificationEvents(YSpecificationID specID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getSpecificationEvents(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), handle.getRawHandle());
-
-            return getJsonFromXML(result);
-        } catch (IOException ex) {
+            return SpecificationMarshaller.unmarshallEvents(result);
+        } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -83,12 +82,12 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
     }
 
     @Override
-    public String getCaseEvents(String caseId) {
+    public List<Event> getCaseEvents(String caseId) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getCaseEvent(caseId, false, handle.getRawHandle());
+            String result = connection.getCaseEvents(caseId, handle.getRawHandle());
 
-            return getJsonFromXML(result);
-        } catch (IOException ex) {
+            return SpecificationMarshaller.unmarshallEvents(result);
+        } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);
         }
     }

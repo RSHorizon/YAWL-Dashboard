@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.yawlfoundation.yawldashboardbackend.dto.CaseDTO;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceLogManagerImpl;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class CasesController {
     @RequestMapping(value = "/api/case/{caseId}/events", method = RequestMethod.GET)
     @ResponseBody
     @Transactional
-    public String getCases(@PathVariable("caseId") String caseId) {
+    public List<Event> getCases(@PathVariable("caseId") String caseId) {
         return resourceLogManager.getCaseEvents(caseId);
     }
 

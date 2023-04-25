@@ -66,7 +66,6 @@ class SpecificationController {
         //resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
         //resourceLogManager.getSpecificationEvents(specId);
         //workItemManager.getSpecificationList();
-
         workItemManager.getSpecificationDefinitionById(specId);
     }
 
@@ -335,7 +334,6 @@ class SpecificationController {
         int casesImpactingCompletionTimeCount = 0;
         for (CaseDTO caseDTOInstance : caseDTOS) {
             CaseStatisticDTO caseStatisticDTO = caseStatisticMap.get(caseDTOInstance.getId());
-
             boolean cancelled = false;
             for (Event event : caseDTOInstance.getCaseEvents()) {
                 participantIDsRelatedToCase.add(event.getResourceid());
