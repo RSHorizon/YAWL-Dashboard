@@ -15,47 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.session;
+package org.yawlfoundation.yawldashboardbackend.session.workletservice;
 
-import java.util.Collection;
+public interface WsSessionPool {
 
-
-
-/**
- * Data about a user.
- *
- * @author Philipp R. Thomas <philipp.thomas@floaz.de>
- */
-public class UserData {
-
-	private String				username;
-
-	private Collection<String>	authorities;
-
-
-	public UserData(String username, Collection<String> authorities) {
-		this.username = username;
-		this.authorities = authorities;
-	}
-
-
-	public String getUsername() {
-		return username;
-	}
-
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-
-	public Collection<String> getAuthorities() {
-		return authorities;
-	}
-
-
-	public void setAuthorities(Collection<String> authorities) {
-		this.authorities = authorities;
-	}
+	WsSessionHandle getHandle();
 
 }

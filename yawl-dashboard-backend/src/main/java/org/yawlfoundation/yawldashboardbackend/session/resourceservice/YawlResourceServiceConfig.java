@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend;
+package org.yawlfoundation.yawldashboardbackend.session.resourceservice;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceLogGatewayClient;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.PermanentResourceServiceSessionPool;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.PermanentResourceServiceSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceLogManagerImpl;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManagerImpl;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManagerImpl;
@@ -36,7 +36,7 @@ import org.yawlfoundation.yawl.resourcing.rsInterface.WorkQueueGatewayClient;
  * @editedBy Robin Steinwarz
  */
 @Configuration
-class YawlClientConfig {
+public class YawlResourceServiceConfig {
 
 	@Value("${yawl.resourceservice.url}")
 	private String		resourceServiceUrl;
@@ -59,43 +59,43 @@ class YawlClientConfig {
 
 
 	@Bean
-	protected ResourceGatewayClient resourceGatewayClient() {
+	public ResourceGatewayClient resourceGatewayClient() {
 		return new ResourceGatewayClient(createUrlForClient(resourceServiceUrl, resourceGatewayPath));
 	}
 
 	@Bean
-	protected ResourceLogGatewayClient resourceLogGatewayClient() {
+	public ResourceLogGatewayClient resourceLogGatewayClient() {
 		return new ResourceLogGatewayClient(createUrlForClient(resourceServiceUrl, resourceLogGatewayPath));
 	}
 
 	@Bean
-	protected WorkQueueGatewayClient workQueueGatewayClient() {
+	public WorkQueueGatewayClient workQueueGatewayClient() {
 		return new WorkQueueGatewayClient(createUrlForClient(resourceServiceUrl, workQueueGatewayPath));
 	}
 
-	protected static String createUrlForClient(String base, String path) {
+	public static String createUrlForClient(String base, String path) {
 		return (base.endsWith("/") ? base : base + "/") + path;
 	}
 
 
 	@Bean
-	protected PermanentResourceServiceSessionPool permanentResourceServiceSessionPool() {
+	public PermanentResourceServiceSessionPool permanentResourceServiceSessionPool() {
 		return new PermanentResourceServiceSessionPool(resourceGatewayClient(), resourceServiceUsername, resourceServicePassword);
 	}
 
 
 	@Bean
-	protected ResourceManagerImpl resourceManager() {
+	public ResourceManagerImpl resourceManager() {
 		return new ResourceManagerImpl(permanentResourceServiceSessionPool(), resourceGatewayClient());
 	}
 
 	@Bean
-	protected ResourceLogManagerImpl resourceLogManager() {
+	public ResourceLogManagerImpl resourceLogManager() {
 		return new ResourceLogManagerImpl(permanentResourceServiceSessionPool(), resourceLogGatewayClient());
 	}
 
 	@Bean
-	protected WorkItemManagerImpl workItemManager() {
+	public WorkItemManagerImpl workItemManager() {
 		return new WorkItemManagerImpl(permanentResourceServiceSessionPool(), workQueueGatewayClient(), resourceManager());
 	}
 

@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionHandle;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ParticipantMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.RoleMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;

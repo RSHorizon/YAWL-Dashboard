@@ -65,7 +65,6 @@ public class YawlAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public boolean supports(Class<?> type) {
 		return true;
-		//return UsernamePasswordAuthenticationToken.class.isAssignableFrom(type);
 	}
 
 }

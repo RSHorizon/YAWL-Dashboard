@@ -15,20 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.yawlclient;
+package org.yawlfoundation.yawldashboardbackend.session.workletservice;
 
 
 
-/**
- * A pool with session handles for the resource service.
- * @author Philipp Thomas <philipp.thomas@floaz.de>
- */
-public interface ResourceServiceSessionPool {
+public interface WsSessionHandle extends AutoCloseable {
 
-	/**
-	 * Provides a session handle.
-	 * @return the handle.
-	 */
-	ResourceServiceSessionHandle	getHandle();
+	String	getRawHandle();
 
+	@Override
+	void close();
 }

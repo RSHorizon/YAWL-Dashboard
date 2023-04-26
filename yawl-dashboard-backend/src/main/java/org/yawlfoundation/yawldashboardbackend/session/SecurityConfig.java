@@ -15,36 +15,25 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend;
+package org.yawlfoundation.yawldashboardbackend.session;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.yawlfoundation.yawldashboardbackend.session.*;
-
-import java.util.Arrays;
-import java.util.List;
+import org.yawlfoundation.yawldashboardbackend.session.handler.RestAuthenticationEntryPoint;
+import org.yawlfoundation.yawldashboardbackend.session.handler.RestAuthenticationFailureHandler;
+import org.yawlfoundation.yawldashboardbackend.session.handler.RestAuthenticationSuccessHandler;
+import org.yawlfoundation.yawldashboardbackend.session.handler.RestLogoutSuccessHandler;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.YawlResourceServiceConfig;
+import org.yawlfoundation.yawldashboardbackend.session.userdetailaccess.SessionDataHolder;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -57,7 +46,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 class SecurityConfig {
 	@Autowired
-	private YawlClientConfig yawlClientConfig;
+	private YawlResourceServiceConfig yawlResourceServiceConfig;
 
 	@Autowired
 	private AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -98,13 +87,13 @@ class SecurityConfig {
 
 	@Bean
 	protected UserDetailsService userDetailsService() {
-		return new YawlUserDetailsService(yawlClientConfig.resourceManager());
+		return new YawlUserDetailsService(yawlResourceServiceConfig.resourceManager());
 	}
 
 
 	@Bean
 	protected YawlAuthenticationProvider yawlAuthenticationProvider() {
-		return new YawlAuthenticationProvider(yawlClientConfig.resourceManager(), userDetailsService());
+		return new YawlAuthenticationProvider(yawlResourceServiceConfig.resourceManager(), userDetailsService());
 	}
 
 

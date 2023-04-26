@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend;
+package org.yawlfoundation.yawldashboardbackend.session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.WebProperties;

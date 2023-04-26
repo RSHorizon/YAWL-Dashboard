@@ -25,9 +25,7 @@ import org.yawlfoundation.yawldashboardbackend.dao.ExtensionSpecificationDao;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
 import org.yawlfoundation.yawldashboardbackend.dto.*;
 import org.yawlfoundation.yawldashboardbackend.model.*;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceLogManager;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManager;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.*;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
@@ -59,14 +57,25 @@ class SpecificationController {
     @Autowired
     private ExtensionTaskDao extensionTaskDao;
 
+    @Autowired
+    InterfaceEManagerImpl interfaceEManager;
+
+    @Autowired
+    WsManagerImpl wsManager;
+
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public void testRoute() {
         YSpecificationID specId = new YSpecificationID("UID_abd5e00c-fb54-4ee9-b31a-197f2d65f685", "0.6", "Test_Prozess");
         //resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
-        //resourceLogManager.getSpecificationEvents(specId);
+        List<Event> events = resourceLogManager.getSpecificationEvents(specId);
         //workItemManager.getSpecificationList();
-        workItemManager.getSpecificationDefinitionById(specId);
+        String things = interfaceEManager.getSpecificationXESLog(specId);
+        String things2 = interfaceEManager.getCompleteCaseLogsForSpecification(specId);
+        String things3 = wsManager.getRunningWorklets();
+        String things4 = wsManager.getOrphanedWorklets();
+        //workItemManager.getSpecificationDefinitionById(specId);
+        System.out.println("Test completed.");
     }
 
     @RequestMapping(value = "/api/specification/{uri}/{specificationID}/{specversion}/statistic", method = RequestMethod.GET)

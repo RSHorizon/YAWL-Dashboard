@@ -28,8 +28,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManager;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 
-
-
 /**
  * The user details service that retrieves data from YAWL Resource Service.
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>

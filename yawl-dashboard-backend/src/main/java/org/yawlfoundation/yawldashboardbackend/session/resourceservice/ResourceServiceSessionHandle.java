@@ -15,30 +15,27 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.session;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+package org.yawlfoundation.yawldashboardbackend.session.resourceservice;
 
 
 
 /**
- * SessionDataController.
- *
- * @author Philipp R. Thomas <philipp.thomas@floaz.de>
+ * A session handle the encapsulates the raw handle.
+ * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
-@RestController
-class SessionDataController {
+public interface ResourceServiceSessionHandle extends AutoCloseable {
 
-	@Autowired
-	private SessionDataHolder sessionDataHolder;
+	/**
+	 * Provides the raw session handle.
+	 * @return the raw handle.
+	 */
+	String	getRawHandle();
 
-	//@CrossOrigin
-	@RequestMapping("/api/user")
-	public UserData user() {
-		return sessionDataHolder.getUserData();
-	}
+
+	/**
+	 * Closes the handle.
+	 */
+	@Override
+	void close();
 
 }

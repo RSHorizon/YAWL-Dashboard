@@ -15,32 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.yawlclient;
+package org.yawlfoundation.yawldashboardbackend.session.interfaceE;
 
+public interface InterfaceESessionPool {
 
-
-/**
- * A session handle the encapsulates the raw handle.
- * @author Philipp Thomas <philipp.thomas@floaz.de>
- */
-public class SimpleResourceManagerSessionHandle implements ResourceServiceSessionHandle {
-
-	private final String rawHandle;
-
-
-	public SimpleResourceManagerSessionHandle(String rawHandle) {
-		this.rawHandle = rawHandle;
-	}
-
-
-	@Override
-	public String getRawHandle() {
-		return rawHandle;
-	}
-
-
-	@Override
-	public void close() {
-	}
+	InterfaceESessionHandle getHandle();
 
 }

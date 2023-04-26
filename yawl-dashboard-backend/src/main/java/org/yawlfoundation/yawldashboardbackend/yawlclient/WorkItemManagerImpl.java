@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.jdom2.JDOMException;
-import org.yawlfoundation.yawl.elements.YDecomposition;
 import org.yawlfoundation.yawl.elements.YNet;
 import org.yawlfoundation.yawl.elements.YSpecification;
 import org.yawlfoundation.yawl.elements.YTask;
@@ -34,6 +33,8 @@ import org.yawlfoundation.yawl.engine.interfce.WorkItemRecord;
 import org.yawlfoundation.yawl.exceptions.YSyntaxException;
 import org.yawlfoundation.yawl.resourcing.rsInterface.WorkQueueGatewayClient;
 import org.yawlfoundation.yawl.unmarshal.YMarshal;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionHandle;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.CaseMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.FailureMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ParticipantMarshaller;

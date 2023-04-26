@@ -15,29 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.session;
-
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+package org.yawlfoundation.yawldashboardbackend.session.interfaceE;
 
 
 
-/**
- * SessionDataController.
- * @author Philipp R. Thomas <philipp.thomas@floaz.de>
- */
-public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public interface InterfaceESessionHandle extends AutoCloseable {
+
+	String	getRawHandle();
 
 	@Override
-	public void commence(HttpServletRequest request,
-						 HttpServletResponse response,
-						 AuthenticationException authException)
-											throws IOException, ServletException {
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-	}
-
+	void close();
 }

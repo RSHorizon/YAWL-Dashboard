@@ -6,6 +6,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceLogGatewayClient;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionHandle;
+import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.FailureMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.SpecificationMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;

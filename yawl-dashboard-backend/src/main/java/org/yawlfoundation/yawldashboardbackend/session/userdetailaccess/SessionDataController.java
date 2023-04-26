@@ -15,28 +15,28 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.session;
+package org.yawlfoundation.yawldashboardbackend.session.userdetailaccess;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 
 /**
  * SessionDataController.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  */
-public class RestAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+@RestController
+class SessionDataController {
 
-	@Override
-	public void onAuthenticationFailure(HttpServletRequest request,
-										HttpServletResponse response,
-										AuthenticationException exception) throws IOException, ServletException {
-		super.onAuthenticationFailure(request, response, exception);
+	@Autowired
+	private SessionDataHolder sessionDataHolder;
+
+	@RequestMapping("/api/user")
+	public UserData user() {
+		return sessionDataHolder.getUserData();
 	}
 
 }

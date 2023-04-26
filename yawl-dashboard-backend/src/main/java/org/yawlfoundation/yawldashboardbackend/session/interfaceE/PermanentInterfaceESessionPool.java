@@ -15,29 +15,26 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.yawlclient;
+package org.yawlfoundation.yawldashboardbackend.session.interfaceE;
 
-import java.io.IOException;
-import java.net.ConnectException;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.yawlfoundation.yawl.engine.interfce.interfaceE.YLogGatewayClient;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
+import java.io.IOException;
+import java.net.ConnectException;
 
-/**
- * PermanentResourceServiceSessionPool.
- * @author Philipp Thomas <philipp.thomas@floaz.de>
- */
-public class PermanentResourceServiceSessionPool implements ResourceServiceSessionPool {
+public class PermanentInterfaceESessionPool implements InterfaceESessionPool {
 
-	private final ResourceGatewayClient	connection;
+	private final YLogGatewayClient connection;
 	private final String				username;
 	private final String				password;
 
 	private String						handle = null;
 
 
-	public PermanentResourceServiceSessionPool(ResourceGatewayClient connection, String username, String password) {
+	public PermanentInterfaceESessionPool(YLogGatewayClient connection, String username, String password) {
 		this.connection = connection;
 		this.username = username;
 		this.password = password;
@@ -64,17 +61,17 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 			handle = connection.connect(username, password);
 			if (!connection.successful(handle)) {
 				handle = null;
-				throw new RuntimeException("Could not connect to the YAWL resource service!");
+				throw new RuntimeException("Could not connect to the YAWL interface E!");
 			}
 		}catch(ConnectException exception){
-			System.out.println("Could not connect to the YAWL resource service!");
+			System.out.println("Could not connect to the YAWL interface E!");
 		}
 	}
 
 
 	@PreDestroy
 	public synchronized void disconnect() throws IOException {
-		if(handle == null || connection == null) {
+		/*if(handle == null || connection == null) {
 			return;
 		}
 
@@ -85,7 +82,9 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 		}
 		finally {
 			handle = null;
-		}
+		}*/
+
+		handle = null;
 	}
 
 
@@ -97,7 +96,7 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 				reconnect();
 			}
 		} catch(ConnectException exception){
-			System.out.println("Could not connect to the YAWL resource service!");
+			System.out.println("Could not connect to the YAWL interface E!");
 		}
     }
 
@@ -122,7 +121,7 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 
 
 	@Override
-	public synchronized ResourceServiceSessionHandle getHandle() {
+	public synchronized InterfaceESessionHandle getHandle() {
 		if(!isConnected()) {
 			try {
 				connect();
@@ -131,7 +130,7 @@ public class PermanentResourceServiceSessionPool implements ResourceServiceSessi
 				throw new RuntimeException("No session handle available!");
 			}
 		}
-		return new SimpleResourceManagerSessionHandle(handle);
+		return new SimpleInterfaceESessionHandle(handle);
 	}
 
 }

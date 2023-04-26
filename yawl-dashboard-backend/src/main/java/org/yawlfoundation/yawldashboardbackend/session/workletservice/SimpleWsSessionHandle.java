@@ -15,27 +15,26 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with YAWL. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.yawlfoundation.yawldashboardbackend.yawlclient;
+package org.yawlfoundation.yawldashboardbackend.session.workletservice;
+
+public class SimpleWsSessionHandle implements WsSessionHandle {
+
+	private final String rawHandle;
 
 
-
-/**
- * A session handle the encapsulates the raw handle.
- * @author Philipp Thomas <philipp.thomas@floaz.de>
- */
-public interface ResourceServiceSessionHandle extends AutoCloseable {
-
-	/**
-	 * Provides the raw session handle.
-	 * @return the raw handle.
-	 */
-	String	getRawHandle();
+	public SimpleWsSessionHandle(String rawHandle) {
+		this.rawHandle = rawHandle;
+	}
 
 
-	/**
-	 * Closes the handle.
-	 */
 	@Override
-	void close();
+	public String getRawHandle() {
+		return rawHandle;
+	}
+
+
+	@Override
+	public void close() {
+	}
 
 }
