@@ -56,10 +56,10 @@ export class SpecificationService {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
 
-    let url = env.apiUrl + "specification/"
+    let url = env.apiUrl + "statistic/specification/"
       + encodeURIComponent(uri)
       + "/" + encodeURIComponent(id)
-      + "/" + encodeURIComponent(version) + "/statistic";
+      + "/" + encodeURIComponent(version);
 
     return this.http.get<HttpResponse<SpecificationStatistic>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<SpecificationStatistic>) => res),

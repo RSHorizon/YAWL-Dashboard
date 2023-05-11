@@ -25,7 +25,10 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Capability;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Position;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 
 
 /**
@@ -66,6 +69,28 @@ public abstract class ParticipantMarshaller {
 		participant.setDescription(element.getChildText("description"));
 		participant.setNotes(element.getChildText("notes"));
 		participant.setAdmin(Boolean.valueOf(element.getChildText("isAdministrator")));
+		element.getChild("roles").getChildren("role").forEach(role -> {
+			Role newRole = new Role();
+			newRole.setName(role.getChildText("name"));
+			newRole.setDescription(role.getChildText("description"));
+			newRole.setNotes(role.getChildText("notes"));
+			newRole.setId(role.getAttributeValue("id"));
+			participant.getRoles().add(newRole);
+		});
+		element.getChild("positions").getChildren("position").forEach(position -> {
+			Position newPosition = new Position();
+			newPosition.setTitle(position.getChildText("title"));
+			newPosition.setId(position.getAttributeValue("id"));
+			participant.getPositions().add(newPosition);
+		});
+		element.getChild("capabilities").getChildren("capability").forEach(capability -> {
+			Capability newCapability = new Capability();
+			newCapability.setName(capability.getChildText("name"));
+			newCapability.setDescription(capability.getChildText("description"));
+			newCapability.setId(capability.getAttributeValue("id"));
+			participant.getCapabilities().add(newCapability);
+		});
+
 		return participant;
 	}
 

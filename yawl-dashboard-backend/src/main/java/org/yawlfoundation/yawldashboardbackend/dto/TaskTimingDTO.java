@@ -10,7 +10,7 @@ public class TaskTimingDTO {
     private String taskid;
     private String caseid;
     private String decompositionOrder;
-    private List<Participant> participants = new ArrayList<>();
+    private Map<String, List<String>> participants = new HashMap<>();
     private boolean automated = false;
     private boolean cancelled = false;
     private String status;
@@ -114,11 +114,12 @@ public class TaskTimingDTO {
         this.latestEventTimestamp = latestEventTimestamp;
     }
 
-    public List<Participant> getParticipants() {
+    public Map<String, List<String>> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<Participant> participants) {
+    public void setParticipants(Map<String, List<String>> participants) {
         this.participants = participants;
     }
+
 }

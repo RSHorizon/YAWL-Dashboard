@@ -6,7 +6,7 @@ export interface ExtensionTask {
   specversion: string;
   uri: string;
   taskid : string;
-  costResourceHour : string;
-  maxTaskAge : string;
-  maxQueueAge : string;
+  costResourceHour : number;
+  maxTaskAge : number;
+  maxQueueAge : number;
 }

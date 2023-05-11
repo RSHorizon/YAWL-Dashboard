@@ -2,15 +2,14 @@ package org.yawlfoundation.yawldashboardbackend.dto;
 
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 /**
  * @author Robin Steinwarz
  */
 public class TaskStatisticDTO implements Comparable<TaskStatisticDTO> {
     private String taskid;
-    private Set<Participant> participants = new HashSet<>();
+    private Map<String, List<String>> participants = new HashMap<>();
     private String decompositionOrder = "";
     private long avgCompletionTime = 0;
     private Integer[] avgOccurrencesPerWeek = {0,0,0,0,0,0,0,0};
@@ -69,14 +68,6 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO> {
         this.avgTimeToReach = avgTimeToReach;
     }
 
-    public Set<Participant> getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(Set<Participant> participants) {
-        this.participants = participants;
-    }
-
     @Override
     public int compareTo(TaskStatisticDTO taskStatisticDTO) {
         return decompositionOrderComparison(this.decompositionOrder, taskStatisticDTO.decompositionOrder);
@@ -111,5 +102,14 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO> {
         }
 
         return 0;
+    }
+
+
+    public Map<String, List<String>> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Map<String, List<String>> participants) {
+        this.participants = participants;
     }
 }

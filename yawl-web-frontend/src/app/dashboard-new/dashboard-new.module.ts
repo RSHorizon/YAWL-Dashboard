@@ -16,9 +16,13 @@ import { WorkitemQueueDialogComponent } from './workitem-queue-dialog/workitem-q
 import { WorkitemsDialogComponent } from './workitems-dialog/workitems-dialog.component';
 import { TaskViewComponent } from './task-view/task-view.component';
 import { TimestampformComponent } from './timestampform/timestampform.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatTableModule} from "@angular/material/table";
 import {BrowserModule} from "@angular/platform-browser";
+import { SpecificationStatisticViewComponent } from './specification-statistic-view/specification-statistic-view.component';
+import {NgxChartsModule} from "@swimlane/ngx-charts";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {MatNativeDateModule} from "@angular/material/core";
 
 /**
  * @author Robin Steinwarz
@@ -32,7 +36,8 @@ import {BrowserModule} from "@angular/platform-browser";
     WorkitemQueueDialogComponent,
     WorkitemsDialogComponent,
     TaskViewComponent,
-    TimestampformComponent
+    TimestampformComponent,
+    SpecificationStatisticViewComponent
   ],
   imports: [
     CommonModule,
@@ -40,12 +45,16 @@ import {BrowserModule} from "@angular/platform-browser";
     LayoutModule,
     MatSlideToggleModule,
     MaterialSharedModule,
+    MatNativeDateModule,
     FontAwesomeModule,
     BrowserModule,
     MatSortModule,
     MatTableModule,
     MatGridListModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    NgxChartsModule
   ]
 })
 export class DashboardNewModule { }

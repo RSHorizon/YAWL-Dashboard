@@ -1,0 +1,243 @@
+
+<p>
+  <mat-button-toggle-group (valueChange)="selectStatistic($event)" appearance="legacy">
+    <mat-button-toggle value="performance" [checked]="true">Performance</mat-button-toggle>
+    <mat-button-toggle value="capacity">Capacity</mat-button-toggle>
+    <mat-button-toggle value="resources">Resources</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <mat-form-field appearance="legacy">
+    <mat-label>Select statistic range</mat-label>
+    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+      <input (dateChange)="updateData()" matStartDate formControlName="start" placeholder="Start date">
+      <input (dateChange)="updateData()" matEndDate formControlName="end" placeholder="End date">
+    </mat-date-range-input>
+    <mat-hint *ngIf="this.casesInRange !== 0">Cases found - {{ this.casesInRange }}</mat-hint>
+    <mat-hint *ngIf="this.casesInRange === 0" style="color: darkred">Cases found - {{ this.casesInRange }}</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+
+    <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+    <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="legacy">
+    <mat-label>Statistic fineness</mat-label>
+    <mat-select [(value)]="fineness" (valueChange)="updateData()" >
+      <mat-option [value]="'month'">{{ 'month' }}</mat-option>
+      <mat-option [value]="'year'">{{ 'year' }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</p>
+
+<mat-grid-list *ngIf="statisticSelection === 'performance'" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+  <mat-grid-tile rowspan="2" colspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Avg. case duration</div>
+      <div class="statistic-body ngx-charts-small-text">
+        <ngx-charts-line-chart
+          [view]="[500,200]"
+          [results]="specPerformanceComparison"
+          [xAxis]="true"
+          [xAxisLabel]="'Time period'"
+          [yAxis]="true"
+          [yAxisLabel]="'Avg. case duration'"
+          [yAxisTickFormatting]="pastTimeFormat"
+          [roundDomains]="true"
+          [scheme]="'ocean'">
+          ></ngx-charts-line-chart>
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <div class="statistic-container">
+      <div class="statistic-title">Overall case success rate</div>
+      <div class="statistic-body ngx-charts-small-text">
+        <ngx-charts-bar-horizontal
+          [roundEdges]="false"
+          [view]="[225,75]"
+          [results]="overallSuccessRate"
+          [xAxis]="true"
+          [xAxisTickFormatting]="percentageFormat"
+          [dataLabelFormatting]="percentageFormat"
+          [xScaleMin]="10"
+          [xScaleMax]="100"
+          [scheme]="'ocean'">
+          ></ngx-charts-bar-horizontal>
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Specifications avg. case duration</div>
+      <div class="statistic-body">
+        <ngx-charts-pie-chart
+          [view]="[250,200]"
+          [results]="avgSpecificationCaseTime"
+          [legend]="false"
+          [legendTitle]="'Specifications'"
+          [legendPosition]="legendPiePosition"
+          [labels]="false"
+          [doughnut]="false"
+          [tooltipText]="formatPieChartTimestampLabel"
+          [scheme]="'ocean'"
+          ></ngx-charts-pie-chart>
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Specifications case duration outliers</div>
+      <div class="statistic-body">
+        <ngx-charts-pie-chart
+          [view]="[250,200]"
+          [results]="longestCases"
+          [legend]="false"
+          [legendTitle]="'Specifications'"
+          [legendPosition]="legendPiePosition"
+          [labels]="false"
+          [doughnut]="false"
+          [tooltipText]="formatPieChartTimestampLabel"
+          [scheme]="'ocean'"
+        ></ngx-charts-pie-chart>
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <div class="statistic-container">
+      <div class="statistic-title">Overall deadline accuracy</div>
+      <div class="statistic-body ngx-charts-small-text">
+        <ngx-charts-bar-horizontal
+          [roundEdges]="false"
+          [view]="[225,75]"
+          [results]="overallDeadlineAccuracy"
+          [xAxis]="true"
+          [xAxisTickFormatting]="percentageFormat"
+          [dataLabelFormatting]="percentageFormat"
+          [xScaleMax]="100"
+          [scheme]="'ocean'">
+          ></ngx-charts-bar-horizontal>
+      </div>
+    </div>
+  </mat-grid-tile>
+</mat-grid-list>
+
+<!------                                CAPACITY                                             ------->
+<!------                                CAPACITY                                             ------->
+
+<mat-grid-list *ngIf="statisticSelection === 'capacity'" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Overall case instances</div>
+      <div class="statistic-body ngx-charts-small-text">
+        <ngx-charts-bar-vertical-stacked
+          [view]="[220,200]"
+          [barPadding]="1"
+          [results]="caseInstances"
+          [xAxis]="true"
+          [yAxis]="true"
+          [showDataLabel]="false"
+          [roundDomains]="true"
+          [scheme]="'ocean'">
+          ></ngx-charts-bar-vertical-stacked>
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Avg. demand for capacity</div>
+      <div class="statistic-body ngx-charts-small-text">
+        <ngx-charts-bar-vertical-stacked
+          [view]="[220,200]"
+          [barPadding]="1"
+          [results]="demandForCapacity"
+          [xAxis]="true"
+          [yAxis]="true"
+          [showDataLabel]="false"
+          [dataLabelFormatting]="pastTimeFormat"
+          [yAxisTickFormatting]="pastTimeFormat"
+          [roundDomains]="true"
+          [scheme]="'ocean'">
+          ></ngx-charts-bar-vertical-stacked>
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Active Bottlenecks</div>
+      <div class="statistic-body">
+        <ngx-charts-pie-chart
+          [view]="[250,200]"
+          [results]="activeBottlenecks"
+          [labels]="false"
+          [doughnut]="false"
+          [scheme]="'ocean'"
+        ></ngx-charts-pie-chart>
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <div class="statistic-container">
+      <div class="statistic-title">Current amount of resources</div>
+      <div class="statistic-body">
+        <ngx-charts-bar-horizontal
+          [roundEdges]="false"
+          [view]="[250,75]"
+          [results]="sumOfResourcesAvailable"
+          [xAxis]="true"
+          [showDataLabel]="true"
+          [scheme]="'ocean'">
+          ></ngx-charts-bar-horizontal>
+      </div>
+    </div>
+  </mat-grid-tile>
+</mat-grid-list>
+
+
+<!------                                RESOURCES                                             ------->
+<!------                                RESOURCES                                             ------->
+
+<mat-grid-list *ngIf="statisticSelection === 'resources'" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Overall case instances</div>
+      <div class="statistic-body">
+
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <div class="statistic-container">
+      <div class="statistic-title">Overall case success rate</div>
+      <div class="statistic-body">
+
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Specifications avg. case duration</div>
+      <div class="statistic-body">
+
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile rowspan="2">
+    <div class="statistic-container">
+      <div class="statistic-title">Specifications case duration outliers</div>
+      <div class="statistic-body">
+
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile>5</mat-grid-tile>
+  <mat-grid-tile>
+    <div class="statistic-container">
+      <div class="statistic-title">Overall deadline accuracy</div>
+      <div class="statistic-body">
+
+      </div>
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile>7</mat-grid-tile>
+</mat-grid-list>

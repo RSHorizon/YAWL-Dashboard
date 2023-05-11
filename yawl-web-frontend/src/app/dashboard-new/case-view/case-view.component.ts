@@ -1,10 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong} from '@fortawesome/free-solid-svg-icons';
-import {ExtensionSpecificationService} from "../services/extension-specification.service";
 import {ActivatedRoute} from "@angular/router";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
-import {CaseService} from "../../yawl/resources/services/case.service";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {WorkitemQueueDialogComponent} from "../workitem-queue-dialog/workitem-queue-dialog.component";
@@ -17,6 +15,7 @@ import {SpecificationStatistic} from "../../yawl/resources/dto/specification-sta
 import {FormatUtils} from "../../util/format-util";
 import {env} from "../../../environments/environment";
 import {NotifierService} from "angular-notifier";
+import {ExtensionSpecificationService} from "../../yawl/resources/services/extension-specification.service";
 
 /**
  * @author Robin Steinwarz
@@ -65,7 +64,6 @@ export class CaseViewComponent implements OnInit {
   constructor(public dialog: MatDialog,
               private extensionSpecificationService: ExtensionSpecificationService,
               private specificationService: SpecificationService,
-              private caseService: CaseService,
               private route: ActivatedRoute,
               private notifierService: NotifierService) {
   }

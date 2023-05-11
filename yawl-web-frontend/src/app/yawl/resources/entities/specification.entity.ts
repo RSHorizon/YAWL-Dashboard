@@ -11,6 +11,4 @@ export interface Specification {
 	description : string;
 	authors : string[];
   activeCasesCount: string;
-  core: boolean|undefined;
-
 }

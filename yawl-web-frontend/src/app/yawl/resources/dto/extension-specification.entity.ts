@@ -6,8 +6,8 @@ export interface ExtensionSpecification {
   specversion: string;
   uri: string;
   core : string;
-  specificationTimeLimit : string;
-  costResourceHour : string;
-  maxTaskAge : string;
-  maxQueueAge : string;
+  specificationTimeLimit : number;
+  costResourceHour : number;
+  maxTaskAge : number;
+  maxQueueAge : number;
 }

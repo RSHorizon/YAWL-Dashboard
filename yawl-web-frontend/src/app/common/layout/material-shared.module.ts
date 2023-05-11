@@ -20,9 +20,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatListModule } from '@angular/material/list';
 
-import { CovalentCommonModule} from '@covalent/core/common';
-import { CovalentLayoutModule } from '@covalent/core/layout';
-import { CovalentLoadingModule } from '@covalent/core/loading';
 
 
 /**
@@ -52,10 +49,7 @@ import { CovalentLoadingModule } from '@covalent/core/loading';
         MatTableModule,
         MatTabsModule,
         MatToolbarModule,
-        MatTooltipModule,
-        CovalentCommonModule,
-        CovalentLayoutModule,
-        CovalentLoadingModule,
+        MatTooltipModule
 	],
 	exports: [
         MatButtonModule,
@@ -77,9 +71,6 @@ import { CovalentLoadingModule } from '@covalent/core/loading';
         MatTabsModule,
         MatToolbarModule,
         MatTooltipModule,
-        CovalentCommonModule,
-        CovalentLayoutModule,
-        CovalentLoadingModule,
 	],
 })
 export class MaterialSharedModule { }

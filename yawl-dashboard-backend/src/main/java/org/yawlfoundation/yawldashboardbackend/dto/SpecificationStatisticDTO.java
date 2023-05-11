@@ -1,8 +1,11 @@
 package org.yawlfoundation.yawldashboardbackend.dto;
 
+
+
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

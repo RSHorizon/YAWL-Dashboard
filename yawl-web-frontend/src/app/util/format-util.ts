@@ -28,6 +28,22 @@ export class FormatUtils {
     return hours + "h " + minutes + "m " + seconds + "s";
   }
 
+  applyPastTimeFormatForTimestampWithDays(timestamp: number){
+    let daysMs = timestamp
+    let hoursMs = daysMs % (1000 * 60 * 60 * 24)
+    let minutesMs = hoursMs % (1000 * 60 * 60)
+    let secondsMs = hoursMs % (1000 * 60)
+
+    let days = Math.floor(daysMs / (1000 * 60 * 60 * 24))
+    let hours = Math.floor(hoursMs / (1000 * 60 * 60))
+    let minutes = Math.floor( minutesMs / (1000 * 60))
+    let seconds = Math.floor(secondsMs / (1000))
+
+    return days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+  }
+
+
+
   applyDatetimeFormat(timestamp: number): string {
     if (timestamp === 0) {
       return ""

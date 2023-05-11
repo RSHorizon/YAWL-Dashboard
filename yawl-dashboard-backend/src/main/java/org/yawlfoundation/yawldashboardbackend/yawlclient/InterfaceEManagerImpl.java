@@ -11,9 +11,11 @@ import org.yawlfoundation.yawldashboardbackend.session.interfaceE.InterfaceESess
 import org.yawlfoundation.yawldashboardbackend.session.interfaceE.InterfaceESessionPool;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionHandle;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.CaseMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.FailureMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.SpecificationMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.SpecificationStatistic;
 
 import java.io.IOException;
@@ -54,12 +56,30 @@ public class InterfaceEManagerImpl implements InterfaceEManager {
         }
     }
 
-
-    public String getAllSpecifications(){
+    public List<Event> getCaseEvents(String caseID){
         try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
-            String result = connection.getAllSpecifications(handle.getRawHandle());
+            String xml = connection.getCaseEvents(caseID, handle.getRawHandle());
+            return CaseMarshaller.unmarshallCaseEventList(xml);
+        } catch (IOException | JDOMException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public String getCompleteCaseLog(String caseID){
+        try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
+            String result = connection.getCompleteCaseLog(caseID, handle.getRawHandle());
             return result;
         } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+
+    public List<Specification> getAllSpecifications(){
+        try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
+            String xml = connection.getAllSpecifications(handle.getRawHandle());
+            return SpecificationMarshaller.unmarshallSpecificationsList(xml);
+        } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);
         }
     }

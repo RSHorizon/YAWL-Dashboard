@@ -14,6 +14,7 @@ import org.yawlfoundation.yawldashboardbackend.session.workletservice.SimpleWsSe
 import org.yawlfoundation.yawldashboardbackend.session.workletservice.WsSessionHandle;
 import org.yawlfoundation.yawldashboardbackend.session.workletservice.WsSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.FailureMarshaller;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 
 import java.io.IOException;
 
@@ -43,6 +44,33 @@ public class WsManagerImpl implements WsManager {
     public String getOrphanedWorklets(){
         try (WsSessionHandle handle = wsSessionPool.getHandle()) {
             String result = connection.getOrphanedWorklets(handle.getRawHandle());
+            return result;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public String getWorklet(YSpecificationID specificationID){
+        try (WsSessionHandle handle = wsSessionPool.getHandle()) {
+            String result = connection.getWorklet(specificationID, handle.getRawHandle());
+            return result;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public String getWorkletNames(){
+        try (WsSessionHandle handle = wsSessionPool.getHandle()) {
+            String result = connection.getWorkletNames(handle.getRawHandle());
+            return result;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public String getWorkletInfoList(){
+        try (WsSessionHandle handle = wsSessionPool.getHandle()) {
+            String result = connection.getWorkletInfoList(handle.getRawHandle());
             return result;
         } catch (IOException ex) {
             throw new RuntimeException(ex);

@@ -43,8 +43,6 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
-import {CovalentLayoutModule} from '@covalent/core/layout';
-
 /**
  *
  * @author Robin Steinwarz
@@ -89,8 +87,7 @@ import {CovalentLayoutModule} from '@covalent/core/layout';
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    FontAwesomeModule,
-    CovalentLayoutModule
+    FontAwesomeModule
   ],
   exports: [
     MatAutocompleteModule,

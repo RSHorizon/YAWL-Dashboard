@@ -2,10 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {catchError, map} from "rxjs/operators";
-import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
-import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
-import {env} from "../../../environments/environment";
+import {env} from "../../../../environments/environment";
 import {NotifierService} from "angular-notifier";
+import {Specification} from "../entities/specification.entity";
+import {ExtensionSpecification} from "../dto/extension-specification.entity";
+import {ExtensionTask} from "../dto/extension-task.entity";
 
 /**
  * @author Robin Steinwarz
@@ -21,8 +22,8 @@ export class ExtensionSpecificationService {
   private baseURL: string = env.apiUrl;
 
   getExtensionSpecifications(): Observable<ExtensionSpecification[]> {
-    return this.http.get<HttpResponse<any>>(this.baseURL + "specification/extension", {withCredentials: true}).pipe(
-      map((res: HttpResponse<any>) => res),
+    return this.http.get<HttpResponse<ExtensionSpecification>>(this.baseURL + "specification/extension", {withCredentials: true}).pipe(
+      map((res: HttpResponse<ExtensionSpecification>) => res),
       catchError((error: any) => this.handleError(error))
     )
   }

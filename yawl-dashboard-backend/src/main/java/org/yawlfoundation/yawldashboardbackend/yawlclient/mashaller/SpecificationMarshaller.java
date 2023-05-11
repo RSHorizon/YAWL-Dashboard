@@ -19,6 +19,7 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.jdom2.Document;
@@ -91,6 +92,32 @@ public abstract class SpecificationMarshaller {
 		}
 
 		return set;
+	}
+
+	public static List<Specification> unmarshallSpecificationsList(String xml) throws JDOMException, IOException {
+		SAXBuilder builder = new SAXBuilder();
+		Document document = (Document) builder.build(new StringReader(xml));
+		Element root = document.getRootElement();
+		List<Specification> specifications = new ArrayList<>();
+		for(Element eventElement : root.getChildren()) {
+			Specification specification = new Specification();
+			specification.setKey(eventElement.getAttributeValue("key"));
+			for (Element content : eventElement.getChildren()){
+				if(content.getName().equals("id")){
+					for(Element idElement : content.getChildren()){
+						if(idElement.getName().equals("identifier")){
+							specification.setId(idElement.getValue());
+						}else if(idElement.getName().equals("version")){
+							specification.setSpecversion(idElement.getValue());
+						}else if(idElement.getName().equals("uri")){
+							specification.setUri(idElement.getValue());
+						}
+					}
+				}
+			}
+			specifications.add(specification);
+		}
+		return specifications;
 	}
 
 	public static YSpecificationID unmarshallYSpecificationID(String xml) {

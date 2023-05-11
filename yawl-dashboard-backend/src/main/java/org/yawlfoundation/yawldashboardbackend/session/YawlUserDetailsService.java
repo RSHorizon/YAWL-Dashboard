@@ -58,6 +58,7 @@ public class YawlUserDetailsService implements UserDetailsService {
 		}
 
 		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
 		if(participant.isAdmin()) {
 			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		}

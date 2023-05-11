@@ -40,19 +40,11 @@ public interface WorkItemManager {
 
 	WorkItemRecord			getWorkItemById(String workItemId);
 
-	List<WorkItemRecord>	getQueuedWorkItemsById(String participantId, int queue);
-
-	List<WorkItemRecord>	getQueuedWorkItemsByUsername(String username, int queue);
-
 	Set<WorkItemRecord>		getUnofferedWorkItems();
 
 	Set<WorkItemRecord>		getOldWorkItems(LocalDateTime boundary);
 
 	Set<WorkItemRecord>		getWorkItemsWithExpiringTimer(LocalDateTime boundary);
-
-	int						getNumberQueuedWorkItemsById(String participantId, int queue);
-
-	int						getNumberQueuedWorkItemsByUsername(String username, int queue);
 
 	int						getNumberWorkItemsByCaseId(Integer caseId);
 

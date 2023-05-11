@@ -13,8 +13,10 @@ public class CaseStatisticDTO implements Serializable {
     private long start = 0;
     private long end = 0;
     private long age = 0;
+    private long resourceTime = 0;
     private long runningWorkitemsCount = 0;
     private long queuedWorkitemsCount = 0;
+
 
     public CaseStatisticDTO(String caseid) {
         this.caseid = caseid;
@@ -98,5 +100,13 @@ public class CaseStatisticDTO implements Serializable {
 
     public void setTaskTimingDTOS(List<TaskTimingDTO> taskTimingDTOS) {
         this.taskTimingDTOS = taskTimingDTOS;
+    }
+
+    public long getResourceTime() {
+        return resourceTime;
+    }
+
+    public void setResourceTime(long resourceTime) {
+        this.resourceTime = resourceTime;
     }
 }

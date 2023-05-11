@@ -17,10 +17,10 @@
  */
 package org.yawlfoundation.yawldashboardbackend.yawlclient;
 
-import java.util.List;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+
+import java.util.List;
 
 
 /**
@@ -31,32 +31,11 @@ public interface ResourceManager {
 
 	boolean		checkCredentials(String username, String password);
 
-	List<String>	getAllParticipantNames();
-
     List<Participant> getParticipants();
 
-    Participant	getParticipantById(String id);
+	String getConstraints();
 
 	Participant	getParticipantByName(String name);
 
-	String		addParticipant(String username, String password, String lastname, String firstname,
-							   boolean admin, String description, String notes);
-
-	void		removeParticipantByName(String name);
-
-	void		removeParticipantById(String roleId);
-
-
-	List<String>	getAllRoles();
-
-	Role		getRoleById(String id);
-
-	Role		getRoleByName(String name);
-
-	String		addRole(String name, String description, String notes, String parentId);
-
-	void		removeRoleByName(String name);
-
-	void		removeRoleById(String roleId);
 
 }

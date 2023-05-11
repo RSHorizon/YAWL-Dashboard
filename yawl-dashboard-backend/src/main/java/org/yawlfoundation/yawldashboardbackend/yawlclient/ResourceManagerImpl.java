@@ -21,16 +21,17 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
+import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceMarshaller;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionHandle;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ParticipantMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.RoleMarshaller;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 import org.yawlfoundation.yawl.util.PasswordEncryptor;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 
 /**
  * CreateUserScript.
@@ -64,7 +65,6 @@ public class ResourceManagerImpl implements ResourceManager {
     }
 
 
-    @Override
     public List<String> getAllParticipantNames() {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getAllParticipantNames(handle.getRawHandle());
@@ -90,22 +90,14 @@ public class ResourceManagerImpl implements ResourceManager {
         }
     }
 
-
-    @Override
-    public Participant getParticipantById(String id) {
+    public String getConstraints() {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getParticipant(id, handle.getRawHandle());
-
-            if (!connection.successful(result)) {
-                return null;
-            } else {
-                return ParticipantMarshaller.parseParticipant(result);
-            }
-        } catch (IOException | JDOMException ex) {
-            throw new RuntimeException(ex);
+            String result = connection.getConstraints(handle.getRawHandle());
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public Participant getParticipantByName(String name) {
@@ -117,153 +109,8 @@ public class ResourceManagerImpl implements ResourceManager {
             } else {
                 return ParticipantMarshaller.parseParticipant(result);
             }
-        } catch (IOException | JDOMException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    @Override
-    public String addParticipant(String username, String password, String lastname, String firstname,
-                                 boolean admin, String description, String notes) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.addParticipant(username, password, true, lastname, firstname,
-                    admin, description, notes, handle.getRawHandle());
-
-            if (result.startsWith("<failure>")) {
-                return null;
-            } else {
-                return result;
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    @Override
-    public void removeParticipantByName(String name) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            Participant participant = getParticipantByName(name);
-            if (participant == null) {
-                throw new RuntimeException("Participant does not exist!");
-            }
-            removeParticipantById(participant.getId());
-        }
-    }
-
-
-    @Override
-    public void removeParticipantById(String roleId) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.removeParticipant(roleId, handle.getRawHandle());
-
-            if (result.startsWith("<failure>")) {
-                throw new RuntimeException("Participant could not be deleted!");
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    @Override
-    public List<String> getAllRoles() {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getAllRoleNames(handle.getRawHandle());
-
-            if (result.startsWith("<failure>")) {
-                return null;
-            } else {
-                return Arrays.asList(result.split(","));
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-//		try {
-//			Document document = dBuilder.parse(new ByteArrayInputStream((result.getBytes(StandardCharsets.UTF_8))));
-//			Element root = document.getDocumentElement();
-//
-//			if(root.getTagName().equals("<failure>")) {
-//				throw new RuntimeException(root.getNodeValue());
-//			} else {
-//				return result;
-//			}
-//		}
-//		catch(SAXException e) {
-//			throw new RuntimeException(e);
-//		}
-    }
-
-
-    @Override
-    public Role getRoleById(String id) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getRole(id, handle.getRawHandle());
-
-            if (!connection.successful(result)) {
-                throw new RuntimeException();
-            } else {
-                return RoleMarshaller.parseRole(result);
-            }
-        } catch (IOException | JDOMException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    @Override
-    public Role getRoleByName(String name) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getRoleByName(name, handle.getRawHandle());
-
-            if (!connection.successful(result)) {
-                throw new RuntimeException();
-            } else {
-                return RoleMarshaller.parseRole(result);
-            }
-        } catch (IOException | JDOMException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    @Override
-    public String addRole(String name, String description, String notes, String parentId) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.addRole(name, description, notes, parentId, handle.getRawHandle());
-
-            if (result.startsWith("<failure>")) {
-                return null;
-            } else {
-                return result;
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    @Override
-    public void removeRoleByName(String name) {
-        Role role = getRoleByName(name);
-        if (role == null) {
-            throw new RuntimeException("Role does not exist!");
-        }
-        removeRoleById(role.getId());
-    }
-
-
-    @Override
-    public void removeRoleById(String roleId) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.removeRole(roleId, handle.getRawHandle());
-
-            if (result.startsWith("<failure>")) {
-                throw new RuntimeException("Role could not be deleted!");
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException | JDOMException e) {
+            throw new RuntimeException(e);
         }
     }
 

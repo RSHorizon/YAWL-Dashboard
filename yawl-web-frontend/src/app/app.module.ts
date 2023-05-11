@@ -4,12 +4,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
-
-import {ContextMenuModule} from 'ngx-contextmenu';
-
-import {NotifierModule, NotifierOptions} from 'angular-notifier';
-
-
+import {NotifierModule} from 'angular-notifier';
 import {LayoutModule} from './common/layout/layout.module';
 import {SessionModule} from './common/session/session.module';
 import {YawlResourcesModule} from './yawl/resources/yawl-resources.module';
@@ -29,6 +24,7 @@ import {CommonModule, HashLocationStrategy, LocationStrategy} from "@angular/com
 import {MatMenuModule} from "@angular/material/menu";
 import {MaterialModule} from './material.module';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {NgxChartsModule} from "@swimlane/ngx-charts";
 
 @NgModule({
   declarations: [
@@ -40,14 +36,12 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
   imports: [
     CommonModule,
     BrowserModule,
-    HttpClientModule,
     BrowserAnimationsModule,
+    NgxChartsModule,
+    HttpClientModule,
     RouterModule.forRoot(routesConfig),
     FormsModule,
     NotifierModule,
-    ContextMenuModule.forRoot({
-      useBootstrap4: false,
-    }),
     LayoutModule,
     SessionModule,
     YawlResourcesModule,

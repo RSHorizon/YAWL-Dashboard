@@ -17,6 +17,10 @@
  */
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Philipp Thomas
  */
@@ -29,6 +33,10 @@ public class Participant {
 	private String notes;
 	private String description;
 	private boolean admin;
+
+	private List<Role> roles = new ArrayList<>();
+	private List<Capability> capabilities = new ArrayList<>();
+	private List<Position> positions = new ArrayList<>();
 
 
 	public String getId() {
@@ -100,4 +108,27 @@ public class Participant {
 		this.admin = admin;
 	}
 
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
+	public List<Capability> getCapabilities() {
+		return capabilities;
+	}
+
+	public void setCapabilities(List<Capability> capabilities) {
+		this.capabilities = capabilities;
+	}
+
+	public List<Position> getPositions() {
+		return positions;
+	}
+
+	public void setPositions(List<Position> positions) {
+		this.positions = positions;
+	}
 }

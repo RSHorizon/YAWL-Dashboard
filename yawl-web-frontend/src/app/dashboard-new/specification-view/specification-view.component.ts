@@ -1,15 +1,17 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {faPencil, faArrowsToEye} from '@fortawesome/free-solid-svg-icons';
 import {MatSort, Sort} from "@angular/material/sort";
 import {LiveAnnouncer} from '@angular/cdk/a11y';
-import {SpecificationService} from '../../yawl/resources/services/specification.service';
-import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {MatTableDataSource} from "@angular/material/table";
-import {ExtensionSpecificationService} from "../services/extension-specification.service";
-import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
-import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
-import {FormatUtils} from "../../util/format-util";
 import {env} from "../../../environments/environment";
+import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
+import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
+import {ExtensionSpecificationService} from "../../yawl/resources/services/extension-specification.service";
 
 /**
  * @author Robin Steinwarz
@@ -19,91 +21,70 @@ import {env} from "../../../environments/environment";
   templateUrl: './specification-view.component.html',
   styleUrls: ['./specification-view.component.css']
 })
-export class SpecificationViewComponent implements OnInit {
+export class SpecificationViewComponent implements OnInit, AfterViewInit {
   faPencil = faPencil
   faArrowsToEye = faArrowsToEye
   specificationsURL = env.remoteUIUrl;
 
   // @ts-ignore
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
 
   displayedColumns: string[] = ['uri', 'specversion', 'documentation', 'activeCasesCount', 'core', 'actions'];
-  // @ts-ignore
-  dataSource: MatTableDataSource | undefined;
+  dataSource: MatTableDataSource<SpecificationDataContainer> = new MatTableDataSource<SpecificationDataContainer>();
 
-  constructor(private _liveAnnouncer: LiveAnnouncer, private specificationService: SpecificationService, private extensionSpecificationService: ExtensionSpecificationService) {
+  specificationDataContainer: SpecificationDataContainer[] | undefined = undefined;
+
+  constructor(private _liveAnnouncer: LiveAnnouncer,
+              private specificationDataService: SpecificationDataService,
+              private extensionSpecificationService: ExtensionSpecificationService) {
   }
 
-  extensionSpecification: ExtensionSpecification[] | undefined = undefined;
-
   ngOnInit(): void {
-    this.specificationService.findAll().subscribe(specifications => {
-      this.dataSource = new MatTableDataSource(specifications);
+  }
+
+  ngAfterViewInit(): void {
+    this.specificationDataService.getSpecificationsData().subscribe(specificationDataContainers => {
+      this.dataSource.data = specificationDataContainers;
+      this.specificationDataContainer = specificationDataContainers;
       this.dataSource.sort = this.sort;
-
-      this.extensionSpecificationService.getExtensionSpecifications().subscribe(extensionSpecifications => {
-        this.extensionSpecification = extensionSpecifications;
-        // if no extension specification exists for one specification,
-        // inform the backend
-        specifications.forEach(specification => {
-          if (extensionSpecifications.filter(extensionSpecification =>
-            extensionSpecification.specificationId === specification.id).length === 0) {
-            this.extensionSpecificationService.getExtensionSpecification(specification.id, specification.specversion, specification.uri)
-              // @ts-ignore
-              .subscribe(extensionSpecification => this.extensionSpecification.push(extensionSpecification));
-          }
-        })
-
-        // add core values to specification for sorting
-        specifications.forEach(specification => {
-          specification.core = this.isCoreChecked(specification);
-        })
-
-      })
+      this.dataSource.sortingDataAccessor = (row, key) => {
+        switch (key) {
+          case 'uri':
+            return row.specificationInformation.uri;
+          case 'specversion':
+            return row.specificationInformation.specversion;
+          case 'documentation':
+            return row.specificationInformation.description;
+          case 'activeCaseCount':
+            return row.specificationInformation.activeCasesCount;
+          case 'core':
+            return row.extensionSpecification.core;
+          default:
+            return row.specificationInformation.specversion;
+        }
+      };
     });
   }
 
-  isCoreChecked(specification: Specification): boolean {
-    if (this.extensionSpecification === undefined) {
-      return false;
-    }
-    let ext = this.extensionSpecification?.find((extensionSpecification) =>
-      extensionSpecification.specificationId === specification.id
-      && extensionSpecification.specversion === specification.specversion
-      && extensionSpecification.uri === specification.uri);
-    if (ext == null) {
-      return false;
-    }
-    // @ts-ignore
-    return <int>ext.core;
-  }
 
-  checkCore(specification: Specification): void {
-
-    if (this.extensionSpecification === undefined) {
-      return;
-    }
-    let ext = this.extensionSpecification?.find((extensionSpecification) =>
-      extensionSpecification.specificationId === specification.id
-      && extensionSpecification.specversion === specification.specversion
-      && extensionSpecification.uri === specification.uri
-    );
-
-    if (ext == null) {
-      return;
-    }
+  checkCore(specification: SpecificationDataContainer): void {
     let willBeCoreSpecification = false;
-    if (ext.core == "0") {
+    // @ts-ignore
+    if (specification.extensionSpecification.core === false) {
       willBeCoreSpecification = true;
     }
     // @ts-ignore
-    ext.core = <number>willBeCoreSpecification;
+    specification.extensionSpecification.core = <number>willBeCoreSpecification;
+    let id = specification.specificationInformation.id;
+    let uri = specification.specificationInformation.uri;
+    let version = specification.specificationInformation.specversion;
     // @ts-ignore
-    this.extensionSpecificationService.setCoreAttribute(specification.id, specification.specversion, specification.uri, <number>willBeCoreSpecification).subscribe();
+    this.extensionSpecificationService.setCoreAttribute(id, version, uri, <number>willBeCoreSpecification).subscribe();
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
+    // @ts-ignore
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
@@ -111,7 +92,8 @@ export class SpecificationViewComponent implements OnInit {
   announceSortChange(sort: Sort) {
     const isAsc = sort.direction === 'asc';
     if (sort.direction === '') {
-      this.dataSource?.data.sort((a: Specification, b: Specification) => this.compare(a.specversion, b.specversion, false));
+      this.dataSource?.data.sort((a: SpecificationDataContainer, b: SpecificationDataContainer) =>
+        this.compare(a.specificationInformation.specversion, b.specificationInformation.specversion, false));
     }
     return;
   }

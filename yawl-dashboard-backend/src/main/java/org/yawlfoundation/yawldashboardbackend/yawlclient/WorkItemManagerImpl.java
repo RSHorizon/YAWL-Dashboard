@@ -103,32 +103,6 @@ public class WorkItemManagerImpl implements WorkItemManager {
 
 
     @Override
-    public synchronized List<WorkItemRecord> getQueuedWorkItemsById(String participantId, int queue) {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getQueuedWorkItems(participantId, queue, handle.getRawHandle());
-
-            if (!connection.successful(result)) {
-                throw new RuntimeException(FailureMarshaller.parseFailure(result));
-            } else {
-                return WorkItemMarshaller.unmarshalWorkItems(result);
-            }
-        } catch (IOException | JDOMException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    @Override
-    public synchronized List<WorkItemRecord> getQueuedWorkItemsByUsername(String username, int queue) {
-        Participant p = rm.getParticipantByName(username);
-        if (p == null) {
-            throw new RuntimeException("Participant \"" + username + "\" not found!");
-        }
-        return getQueuedWorkItemsById(p.getId(), queue);
-    }
-
-
-    @Override
     public synchronized Set<WorkItemRecord> getUnofferedWorkItems() {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getAdminQueues(handle.getRawHandle());
@@ -229,26 +203,6 @@ public class WorkItemManagerImpl implements WorkItemManager {
         } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-
-    @Override
-    public synchronized int getNumberQueuedWorkItemsById(String participantId, int queue) {
-        List<WorkItemRecord> list = getQueuedWorkItemsById(participantId, queue);
-        if (list == null) {
-            return 0;
-        }
-        return list.size();
-    }
-
-
-    @Override
-    public synchronized int getNumberQueuedWorkItemsByUsername(String username, int queue) {
-        List<WorkItemRecord> list = getQueuedWorkItemsByUsername(username, queue);
-        if (list == null) {
-            return 0;
-        }
-        return list.size();
     }
 
 

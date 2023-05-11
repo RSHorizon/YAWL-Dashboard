@@ -19,12 +19,16 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 
 
 /**
@@ -50,6 +54,24 @@ public abstract class CaseMarshaller {
 		}
 
 		return result;
+	}
+
+	public static List<Event> unmarshallCaseEventList(String xml) throws JDOMException, IOException {
+		SAXBuilder builder = new SAXBuilder();
+		Document document = (Document) builder.build(new StringReader(xml));
+		Element root = document.getRootElement();
+		List<Event> caseEvents = new ArrayList<>();
+		for(Element eventElement : root.getChildren()) {
+			String description = eventElement.getChildText("descriptor");
+			String[] interestingEvents = {"CaseCancel", "CaseStart", "CaseComplete"};
+			if(Arrays.asList(interestingEvents).contains(description)){
+				String key = eventElement.getAttributeValue("key");
+				String timestamp = eventElement.getChildText("timestamp");
+				Event event = new Event("", "", "", "", "", description, timestamp, key);
+				caseEvents.add(event);
+			}
+		}
+		return caseEvents;
 	}
 
 }

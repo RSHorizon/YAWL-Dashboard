@@ -34,6 +34,8 @@ public class Specification {
 	private String metatitle;
 	private Integer activeCasesCount;
 
+	private String key;
+
 
 	public Integer getActiveCasesCount() {
 		return activeCasesCount;
@@ -112,4 +114,11 @@ public class Specification {
 	}
 
 
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
 }
