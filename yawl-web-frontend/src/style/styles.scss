@@ -79,6 +79,21 @@ $gutter-width: 80%;
   }
 }
 
+.ngx-charts-extra-small-text {
+  .ngx-charts {
+    text {
+      font-size: 6px !important;
+    }
+  }
+}
+
+.ngx-charts {
+  .polar-chart .pie-label-line{
+    stroke: rgba(60, 99, 145, 0.54) !important;
+  }
+}
+
+
 
 /* ***********************************************************
  * Forms

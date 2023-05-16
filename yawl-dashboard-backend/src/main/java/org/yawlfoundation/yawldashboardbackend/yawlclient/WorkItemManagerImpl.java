@@ -23,6 +23,9 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.jdom2.Attribute;
+import org.jdom2.Content;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.elements.YNet;
 import org.yawlfoundation.yawl.elements.YSpecification;
@@ -40,12 +43,9 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.FailureMarsh
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ParticipantMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.SpecificationMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.WorkItemMarshaller;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Case;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.*;
 import org.yawlfoundation.yawl.resourcing.QueueSet;
 import org.yawlfoundation.yawl.resourcing.WorkQueue;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 
 /**
@@ -628,6 +628,26 @@ public class WorkItemManagerImpl implements WorkItemManager {
     }
 
     @Override
+    public String getCaseDataSchema(YSpecificationID specID) {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getCaseDataSchema(specID, handle.getRawHandle());
+            return result;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public String synchroniseCaches() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.synchroniseCaches(handle.getRawHandle());
+            return result;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
     public synchronized List<Task> getSpecificationDefinitionById(YSpecificationID ySpecificationID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String specData = connection.getSpecData(ySpecificationID, handle.getRawHandle());
@@ -635,12 +655,7 @@ public class WorkItemManagerImpl implements WorkItemManager {
                 SpecificationData specificationData = SpecificationMarshaller.parseSpecificationDefinition(specData);
                 List<YSpecification> ySpecification = YMarshal.unmarshalSpecifications(specificationData.getAsXML());
 
-                List<String> taskIds = getTasksFromNet(ySpecification.get(0).getRootNet());
-                return taskIds.stream()
-                        .map(taskId -> new Task(taskId, ySpecificationID.getIdentifier(), ySpecificationID.getVersionAsString(),
-                                ySpecificationID.getUri()))
-                        .collect(Collectors.toList());
-
+                return getTasksFromNet(ySpecification.get(0).getRootNet(), ySpecificationID);
             } catch (YSyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -649,19 +664,87 @@ public class WorkItemManagerImpl implements WorkItemManager {
         }
     }
 
-    private List<String> getTasksFromNet(YNet net){
-        List<String> taskIds = new ArrayList<>();
+    private List<Task> getTasksFromNet(YNet net, YSpecificationID ySpecificationID){
+        List<Task> tasks = new ArrayList<>();
+        // net.getNetTasks().get(0).getResourcingSpecs().getContent()
         for(YTask yTask: net.getNetTasks()){
             if(yTask.getClass().getName().equals("org.yawlfoundation.yawl.elements.YAtomicTask")){
-                taskIds.add(yTask.getID());
+                Task task = new Task(yTask.getID(), ySpecificationID.getIdentifier(), ySpecificationID.getVersionAsString(),
+                        ySpecificationID.getUri());
+                if(yTask.getResourcingSpecs() != null){
+                    for(Element element : yTask.getResourcingSpecs().getChildren()){
+                        if(element.getName().equals("offer")){
+                            for(Element offerElement : element.getChildren()){
+                                if(offerElement.getName().equals("distributionSet")){
+                                    for(Element distributionElement : offerElement.getChildren()){
+                                        if(distributionElement.getName().equals("initialSet")){
+                                            Set<String> roles = new HashSet<>();
+                                            for(Element roleElement : distributionElement.getChildren()){
+                                                roles.add(roleElement.getValue());
+                                            }
+                                            task.setDemandedRoles(roles);
+                                        }
+                                        if(distributionElement.getName().equals("filters")){
+                                            for(Element filtersElement : distributionElement.getChildren()){
+                                                String name = "";
+                                                List<String> params = new ArrayList<>();
+                                                for(Element filterElement: filtersElement.getChildren()){
+                                                    if(filterElement.getName().equals("name")){
+                                                        name = filterElement.getContent().get(0).getValue();
+                                                    }else if(filterElement.getName().equals("params")){
+                                                        for(Element param : filterElement.getChildren()){
+                                                            for(Element keyValue : param.getChildren()){
+                                                                if(keyValue.getName().equals("value")){
+                                                                    params.add(keyValue.getValue());
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                if(name.equals("OrgFilter")){
+                                                    params.forEach(param -> {
+                                                        Arrays.stream(param.split("[|&]")).forEach(positionName -> {
+                                                            task.getDemandedPositions().add(positionName.trim());
+                                                        });
+                                                    });
+                                                }else if(name.equals("CapabilityFilter")){
+                                                    params.forEach(param -> {
+                                                        Arrays.stream(param.split("[|&]")).forEach(capabilityName -> {
+                                                            task.getDemandedCapabilities().add(capabilityName.trim());
+                                                        });
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Attribute offerer = element.getAttribute("initiator");
+                            if(offerer != null && offerer.getValue().equals("system")){
+                                task.setAutoOffer(true);
+                            }
+                        } else if(element.getName().equals("allocate")){
+                            Attribute allocator = element.getAttribute("initiator");
+                            if(allocator != null && allocator.getValue().equals("system")){
+                                task.setAutoAllocate(true);
+                            }
+                        } else if(element.getName().equals("start")){
+                            Attribute starter = element.getAttribute("initiator");
+                            if(starter != null && starter.getValue().equals("system")){
+                                task.setAutoStart(true);
+                            }
+                        }
+                    }
+                }
+                tasks.add(task);
             }else if(yTask.getClass().getName().equals("org.yawlfoundation.yawl.elements.YCompositeTask")){
                 if(yTask.getDecompositionPrototype().getClass().getName().equals("org.yawlfoundation.yawl.elements.YNet")){
-                    taskIds.addAll(getTasksFromNet((YNet) yTask.getDecompositionPrototype()));
+                    tasks.addAll(getTasksFromNet((YNet) yTask.getDecompositionPrototype(), ySpecificationID));
                 }
             }
         }
 
-        return taskIds;
+        return tasks;
     }
 
 }

@@ -9,16 +9,14 @@ import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
 import org.yawlfoundation.yawldashboardbackend.dto.*;
 import org.yawlfoundation.yawldashboardbackend.model.SpecificationId;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.*;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.*;
 
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @Secured("ROLE_ADMIN")
@@ -66,7 +64,6 @@ public class StatisticController {
             participantsInformationMap.put(participant.getId(), participant);
         }
         Set<String> relatedParticipantIDs = new HashSet<>();
-
         // Map all resource events to separate case objects
         List<CaseDTO> cases = new ArrayList<>();
         mapEventsToCases(events, cases, speckey);
@@ -78,8 +75,21 @@ public class StatisticController {
         List<TaskStatisticDTO> taskStatistics = new ArrayList<>();
         // Prefill existing tasks
         List<Task> allExistingTasks = workItemManager.getSpecificationDefinitionById(specId);
-        for(Task existingTask : allExistingTasks){
-            taskStatistics.add(new TaskStatisticDTO(existingTask.getId()));
+        List<Role> roles = resourceManager.getRoles();
+        List<Capability> capabilities = resourceManager.getCapabilities();
+        List<Position> positions = resourceManager.getPositions();
+        for (Task existingTask : allExistingTasks) {
+            TaskStatisticDTO newTaskStatistic = new TaskStatisticDTO(existingTask.getId());
+            newTaskStatistic.setAutoOffer(existingTask.isAutoOffer());
+            newTaskStatistic.setAutoAllocate(existingTask.isAutoAllocate());
+            newTaskStatistic.setAutoStart(existingTask.isAutoStart());
+            newTaskStatistic.setDemandedRoles(roles.stream().filter(role ->
+                    existingTask.getDemandedRoles().contains(role.getId())).collect(Collectors.toSet()));
+            newTaskStatistic.setDemandedCapabilities(capabilities.stream().filter(capability ->
+                    existingTask.getDemandedCapabilities().contains(capability.getName())).collect(Collectors.toSet()));
+            newTaskStatistic.setDemandedPosition(positions.stream().filter(position ->
+                    existingTask.getDemandedPositions().contains(position.getTitle())).collect(Collectors.toSet()));
+            taskStatistics.add(newTaskStatistic);
             taskTimings.put(existingTask.getId(), new HashMap<>());
         }
         StatisticEventRepairService.fixTaskOrder(cases, smallestDecompositionOrders, allExistingTasks, caseStatisticMap,
@@ -92,7 +102,7 @@ public class StatisticController {
 
         // Task performance
         measureTaskPerformance(taskStatistics, allExistingTasks, taskTimings, caseStatisticMap,
-                smallestDecompositionOrders, specId, specificationStatistic);
+                smallestDecompositionOrders, specId, specificationStatistic, participantsInformationMap);
 
         // Set final specification statistic data
         specificationStatistic.setSpeckey(speckey);
@@ -129,14 +139,14 @@ public class StatisticController {
             }
         });
 
-        for(CaseDTO caseInstance: cases){
+        for (CaseDTO caseInstance : cases) {
             List<Event> caseEvents = interfaceEManager.getCaseEvents(caseInstance.getId());
             caseInstance.setCaseEvents(caseEvents);
         }
     }
 
     private void measureSpecificationPerformance(List<CaseDTO> cases, Map<String, CaseStatisticDTO> caseStatisticMap,
-                                                 List<Long> caseStartTimestamps, SpecificationStatisticDTO specificationStatistic){
+                                                 List<Long> caseStartTimestamps, SpecificationStatisticDTO specificationStatistic) {
         long avgCaseCompletionTime = 0L;
         int successful = 0;
         int unsuccessful = 0;
@@ -180,10 +190,10 @@ public class StatisticController {
                                         Map<String, Map<String, TaskTimingDTO>> taskTimings,
                                         Map<String, CaseStatisticDTO> caseStatisticMap,
                                         Map<String, String> smallestDecompositionOrders, YSpecificationID specId,
-                                        SpecificationStatisticDTO specificationStatistic){
+                                        SpecificationStatisticDTO specificationStatistic,
+                                        Map<String, Participant> participantsInformationMap) {
         final long now = new Date().getTime();
         for (TaskStatisticDTO taskStatistic : taskStatistics) {
-
             List<Long> creationTimestamps = new ArrayList<>();
             AtomicLong avgQueueTime = new AtomicLong();
             AtomicLong avgQueueTimeCounter = new AtomicLong();
@@ -196,7 +206,17 @@ public class StatisticController {
                         CaseStatisticDTO relatedCaseDTO = caseStatisticMap.get(taskTimingDTO.getCaseid());
                         long creationTimestamp, queueTime, completionTime = 0;
 
-                        taskStatistic.setParticipants(taskTimingDTO.getParticipants());
+                        taskStatistic.setParticipants(Stream.of(taskStatistic.getParticipants(), taskTimingDTO.getParticipants())
+                                .flatMap(map -> map.entrySet().stream())
+                                .collect(Collectors.toMap(
+                                        Map.Entry::getKey,
+                                        e -> new HashSet<>(e.getValue()),
+                                        (left, right) -> {
+                                            left.addAll(right);
+                                            return left;
+                                        }
+                                )));
+                        taskStatistic.setAutomated(taskTimingDTO.isAutomated());
 
                         // one of the offered or allocated times must be set
                         if (taskTimingDTO.getOfferedTimestamp() == 0L || taskTimingDTO.getAllocatedTimestamp() == 0L) {
@@ -220,7 +240,7 @@ public class StatisticController {
                             } else {
                                 completionTime = taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp();
                             }
-                            if(!relatedCaseDTO.isCancelled() && !taskTimingDTO.isAutomated()){
+                            if (!relatedCaseDTO.isCancelled() && !taskTimingDTO.isAutomated()) {
                                 relatedCaseDTO.setResourceTime(relatedCaseDTO.getResourceTime() + completionTime);
                             }
 
@@ -253,14 +273,45 @@ public class StatisticController {
         }
 
         long avgResourceTimePerWeekSummed = 0;
-        for (TaskStatisticDTO taskStatisticDTO : taskStatistics) {
+        double automatedTasks = 0;
+        for (TaskStatisticDTO taskStatistic : taskStatistics) {
             // Save decompositionOrder
-            taskStatisticDTO.setDecompositionOrder(smallestDecompositionOrders.get(taskStatisticDTO.getTaskid()));
-
+            taskStatistic.setDecompositionOrder(smallestDecompositionOrders.get(taskStatistic.getTaskid()));
+            // Save automation
+            if (taskStatistic.isAutomated()) {
+                automatedTasks++;
+            }
             // Avg. Capacity needed
-            avgResourceTimePerWeekSummed += taskStatisticDTO.getAvgCompletionTime() * taskStatisticDTO.getAvgOccurrencesPerWeek()[7];
+            avgResourceTimePerWeekSummed += taskStatistic.getAvgCompletionTime() * taskStatistic.getAvgOccurrencesPerWeek()[7];
+            // Associated capabilities and roles
+            taskStatistic.getParticipants().forEach((participantKey, events) -> {
+                if(events.contains("Start") || events.contains("Complete")){
+                    participantsInformationMap.get(participantKey).getCapabilities().forEach(capability -> {
+                        Map<String, Integer> associatedCapabilities = taskStatistic.getAssociatedCapabilities();
+                        if(!associatedCapabilities.containsKey(capability.getName())){
+                            associatedCapabilities.put(capability.getName(), 0);
+                        }
+                        associatedCapabilities.replace(capability.getName(), associatedCapabilities.get(capability.getName()) + 1);
+                    });
+                    participantsInformationMap.get(participantKey).getRoles().forEach(role -> {
+                        Map<String, Integer> associatedRoles = taskStatistic.getAssociatedRoles();
+                        if(!associatedRoles.containsKey(role.getName())){
+                            associatedRoles.put(role.getName(), 0);
+                        }
+                        associatedRoles.replace(role.getName(), associatedRoles.get(role.getName()) + 1);
+                    });
+                    participantsInformationMap.get(participantKey).getPositions().forEach(position -> {
+                        Map<String, Integer> associatedPositions = taskStatistic.getAssociatedPosition();
+                        if(!associatedPositions.containsKey(position.getTitle())){
+                            associatedPositions.put(position.getTitle(), 0);
+                        }
+                        associatedPositions.replace(position.getTitle(), associatedPositions.get(position.getTitle()) + 1);
+                    });
+                }
+            });
         }
         specificationStatistic.setAvgResourceTimePerWeekSummed(avgResourceTimePerWeekSummed);
+        specificationStatistic.setAutomationPercentage(automatedTasks / taskStatistics.size());
 
         // Avg. Time to reach of task
         taskStatistics = taskStatistics.stream().sorted().collect(Collectors.toList());
@@ -291,7 +342,6 @@ public class StatisticController {
         }
 
     }
-
 
 
 }

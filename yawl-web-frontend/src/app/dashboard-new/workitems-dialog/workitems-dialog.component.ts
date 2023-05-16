@@ -68,7 +68,6 @@ export class WorkitemsDialogComponent implements AfterViewInit {
     this.specificationStatistic = data.specificationStatistic;
     this.caseid = data.caseid;
 
-    console.log(this.specificationStatistic);
 
     let caseStatisticDTO: CaseStatistic = this.specificationStatistic.caseStatisticDTOS
       .filter(caseInstance => caseInstance.caseid === this.caseid)[0]
@@ -204,7 +203,8 @@ export class WorkitemsDialogComponent implements AfterViewInit {
       return [];
     }
     let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
-    return task.participants;
+    //return task.participants;
+    return [];
   }
 
   isInQueue(workitem: any): boolean {

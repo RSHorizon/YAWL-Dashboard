@@ -23,6 +23,7 @@ public class SpecificationStatisticDTO implements Serializable {
     long avgCaseCompletionTime;
     int successfulCases;
     int unsuccessfulCases;
+    double automationPercentage;
     Integer[] caseOccurrencesPerDayOfWeek;
     long avgResourceTimePerWeekSummed;
 
@@ -127,4 +128,14 @@ public class SpecificationStatisticDTO implements Serializable {
     public void setParticipants(Set<Participant> participants) {
         this.participants = participants;
     }
+
+
+    public double getAutomationPercentage() {
+        return automationPercentage;
+    }
+
+    public void setAutomationPercentage(double automationPercentage) {
+        this.automationPercentage = automationPercentage;
+    }
+
 }

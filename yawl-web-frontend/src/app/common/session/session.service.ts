@@ -29,8 +29,8 @@ export class SessionService {
 
 
   constructor(private http: HttpClient) {
+    this.startIntervalSessionCheck();
   }
-
 
   startIntervalSessionCheck() {
     if (!this.sessionCheckInterval) {

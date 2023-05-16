@@ -1,5 +1,10 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * The dto for specification.
  * @author Philipp Thomas
@@ -12,6 +17,12 @@ public class Task {
     String specificationId;
     String specversion;
     String uri;
+    Set<String> demandedCapabilities = new HashSet<>();
+    Set<String> demandedRoles = new HashSet<>();
+    Set<String> demandedPositions = new HashSet<>();
+    boolean autoOffer = false;
+    boolean autoAllocate = false;
+    boolean autoStart = false;
 
     public Task(String id, String specificationId, String specversion, String uri) {
         this.id = id;
@@ -50,5 +61,62 @@ public class Task {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
+    }
+
+    public Set<String> getDemandedCapabilities() {
+        return demandedCapabilities;
+    }
+
+    public void setDemandedCapabilities(Set<String> demandedCapabilities) {
+        this.demandedCapabilities = demandedCapabilities;
+    }
+
+    public Set<String> getDemandedRoles() {
+        return demandedRoles;
+    }
+
+    public void setDemandedRoles(Set<String> demandedRoles) {
+        this.demandedRoles = demandedRoles;
+    }
+
+    public Set<String> getDemandedPositions() {
+        return demandedPositions;
+    }
+
+    public void setDemandedPositions(Set<String> demandedPositions) {
+        this.demandedPositions = demandedPositions;
+    }
+
+    public boolean isAutoOffer() {
+        return autoOffer;
+    }
+
+    public void setAutoOffer(boolean autoOffer) {
+        this.autoOffer = autoOffer;
+    }
+
+    public boolean isAutoAllocate() {
+        return autoAllocate;
+    }
+
+    public void setAutoAllocate(boolean autoAllocate) {
+        this.autoAllocate = autoAllocate;
+    }
+
+    public boolean isAutoStart() {
+        return autoStart;
+    }
+
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
     }
 }

@@ -41,7 +41,6 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource(this.specificationStatistic!.taskStatisticDTOS);
-    console.log(this.specificationStatistic!.taskStatisticDTOS);
   }
 
   saveLimits(task: any): void {

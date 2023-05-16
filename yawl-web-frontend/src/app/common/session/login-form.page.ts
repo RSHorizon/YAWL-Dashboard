@@ -71,6 +71,7 @@ export class LoginFormPage implements OnInit{
 
 
   private redirect() {
+    console.log(this.sessionService.redirectUrl);
     if (!this.sessionService.redirectUrl
       || this.sessionService.redirectUrl == "login") {
       this.router.navigate(['']);

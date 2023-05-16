@@ -5,6 +5,8 @@ public class Capability {
     private String name;
     private String description;
 
+    private String notes;
+
     public String getId() {
         return id;
     }
@@ -27,5 +29,13 @@ public class Capability {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

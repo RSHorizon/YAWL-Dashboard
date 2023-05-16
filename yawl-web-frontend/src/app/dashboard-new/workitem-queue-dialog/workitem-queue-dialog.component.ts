@@ -68,7 +68,6 @@ export class WorkitemQueueDialogComponent implements OnInit {
         this.queueSize = workitems.length;
         this.dataSource = new MatTableDataSource(workitems);
         this.dataSource.sort = this.sort;
-        console.log(workitems);
       });
 
     specificationService.findTasksById(this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri)

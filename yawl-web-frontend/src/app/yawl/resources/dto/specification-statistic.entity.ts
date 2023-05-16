@@ -19,4 +19,5 @@ export interface SpecificationStatistic {
   unsuccessfulCases : number;
   caseOccurrencesPerDayOfWeek: number[];
   avgResourceTimePerWeekSummed : number;
+  automationPercentage: number;
 }

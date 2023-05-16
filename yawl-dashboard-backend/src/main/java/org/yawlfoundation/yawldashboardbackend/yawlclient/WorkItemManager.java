@@ -22,11 +22,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.yawlfoundation.yawl.engine.YSpecificationID;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Case;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.*;
 import org.yawlfoundation.yawl.engine.interfce.WorkItemRecord;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 
 /**
@@ -80,6 +77,10 @@ public interface WorkItemManager {
 	String					launchCaseById(String caseId, String data);
 
 	String					launchCaseByUri(String caseUri, String data);
+
+	String getCaseDataSchema(YSpecificationID specID);
+
+	String synchroniseCaches();
 
 	List<Task> getSpecificationDefinitionById(YSpecificationID ySpecificationID);
 }

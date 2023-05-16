@@ -9,7 +9,6 @@ import {LayoutModule} from './common/layout/layout.module';
 import {SessionModule} from './common/session/session.module';
 import {YawlResourcesModule} from './yawl/resources/yawl-resources.module';
 import {DashboardNewModule} from './dashboard-new/dashboard-new.module';
-
 /**
  *
  * @author Philipp Thomas

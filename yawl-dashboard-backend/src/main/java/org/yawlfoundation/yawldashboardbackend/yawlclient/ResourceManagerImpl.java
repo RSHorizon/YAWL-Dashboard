@@ -21,17 +21,20 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
-import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceMarshaller;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionHandle;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.CapabilityMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ParticipantMarshaller;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.RoleMarshaller;
 import org.yawlfoundation.yawl.util.PasswordEncryptor;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.PositionMarshaller;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.RoleMarshaller;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Capability;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Position;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 
 /**
  * CreateUserScript.
@@ -90,9 +93,40 @@ public class ResourceManagerImpl implements ResourceManager {
         }
     }
 
+    @Override
     public String getConstraints() {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getConstraints(handle.getRawHandle());
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getFilters() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getFilters(handle.getRawHandle());
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getAllSelectors() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getFilters(handle.getRawHandle());
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getAllocators() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getFilters(handle.getRawHandle());
             return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -109,6 +143,36 @@ public class ResourceManagerImpl implements ResourceManager {
             } else {
                 return ParticipantMarshaller.parseParticipant(result);
             }
+        } catch (IOException | JDOMException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Role> getRoles() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getRoles(handle.getRawHandle());
+            return RoleMarshaller.parseRoles(result);
+        } catch (IOException | JDOMException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Capability> getCapabilities() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getCapabilities(handle.getRawHandle());
+            return CapabilityMarshaller.parseCapabilities(result);
+        } catch (IOException | JDOMException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Position> getPositions() {
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getPositions(handle.getRawHandle());
+            return PositionMarshaller.parsePositions(result);
         } catch (IOException | JDOMException e) {
             throw new RuntimeException(e);
         }

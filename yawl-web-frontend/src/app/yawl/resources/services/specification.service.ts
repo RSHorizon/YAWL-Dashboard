@@ -32,7 +32,7 @@ export class SpecificationService {
 
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(
       map((res: HttpResponse<any>) => res),
-      map((res: any) => res.specifications),
+      map((res: any) => res),
       catchError((error) => this.handleError(error))
     )
   }

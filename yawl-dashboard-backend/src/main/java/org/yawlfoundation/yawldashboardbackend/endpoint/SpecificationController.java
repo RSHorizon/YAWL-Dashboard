@@ -70,6 +70,7 @@ class SpecificationController {
         YSpecificationID worklet = new YSpecificationID("UID_e6626c72-29c2-4439-b330-1ce2bd1ebd52", "0.1", "EmergencyNotEnoughCopiesWorklet");
         //resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
         List<Event> events = resourceLogManager.getSpecificationEvents(specId);
+        List<Specification> specificationsSD = workItemManager.getSpecificationList();
         //workItemManager.getSpecificationList();
         //String things = interfaceEManager.getSpecificationXESLog(specId);
         //String things2 = interfaceEManager.getCompleteCaseLogsForSpecification(specId);
@@ -85,13 +86,13 @@ class SpecificationController {
         //workItemManager.getSpecificationDefinitionById(specId);
         List<Participant> participants = resourceManager.getParticipants();
         List<Specification> specifications = interfaceEManager.getAllSpecifications();
-        String things10 = resourceManager.getConstraints();
+
         System.out.println("Test completed.");
     }
 
     @RequestMapping(value = "/api/specification", method = RequestMethod.GET)
-    public SpecificationListResource getSpecifications() {
-        return new SpecificationListResource(workItemManager.getAllLoadedSpecifications());
+    public List<Specification> getSpecifications() {
+        return workItemManager.getAllLoadedSpecifications();
     }
 
     @RequestMapping(value = "/api/specification/{uri}/{specificationID}/{specversion}", method = RequestMethod.GET)

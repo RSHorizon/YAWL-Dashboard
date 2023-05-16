@@ -82,13 +82,13 @@ public class StatisticEventRepairService {
                 }
                 TaskTimingDTO taskTiming = timingMap.get(eventIdentifier);
                 // Relate participant to tasktiming
-                Map<String, List<String>> participantsMap = taskTiming.getParticipants();
+                Map<String, Set<String>> participantsMap = taskTiming.getParticipants();
                 if(!event.getResourceid().equals("") && !participantsMap.containsKey(event.getResourceid())){
-                    participantsMap.put(event.getResourceid(), new ArrayList<>());
+                    participantsMap.put(event.getResourceid(), new HashSet<>());
                 }
-                List<String> participantHadEvents = participantsMap.get(event.getResourceid());
+                Set<String> participantHadEvents = participantsMap.get(event.getResourceid());
                 if(participantHadEvents == null){
-                    participantHadEvents = new ArrayList<>();
+                    participantHadEvents = new HashSet<>();
                 }
                 // Handle events
                 switch (event.getEventtype()) {

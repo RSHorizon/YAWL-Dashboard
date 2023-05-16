@@ -18,7 +18,10 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient;
 
 
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Capability;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Position;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 
 import java.util.List;
 
@@ -35,7 +38,18 @@ public interface ResourceManager {
 
 	String getConstraints();
 
+	String getFilters();
+
+	String getAllSelectors();
+
+	String getAllocators();
+
 	Participant	getParticipantByName(String name);
 
 
+	List<Role> getRoles();
+
+	List<Capability> getCapabilities();
+
+	List<Position> getPositions();
 }
