@@ -71,7 +71,6 @@ export class SpecificationStatisticViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.specificationDataService.getSpecificationsData().subscribe(specificationDataContainers => {
-      console.log(specificationDataContainers);
       this.specificationDataContainers = specificationDataContainers;
       this.statisticTicks = this.calculateStatisticticks();
       this.processIncidentFreeRate();
@@ -384,7 +383,6 @@ export class SpecificationStatisticViewComponent implements OnInit {
       if(candidates === 0){
         automationElement.series.push({name: "No candidates found", value: 0})
       }
-      console.log(automationElement);
       this.automationCandidates.push(automationElement);
     });
   }

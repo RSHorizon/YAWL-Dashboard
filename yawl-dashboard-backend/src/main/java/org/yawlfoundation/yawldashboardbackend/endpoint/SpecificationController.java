@@ -227,7 +227,7 @@ class SpecificationController {
         extensionTaskDao.setAttributes(specificationID, specversion, uri, taskid, costResourceHour, maxTaskAge, maxQueueAge);
     }
 
-    private void createLocalEntities(String specificationID, String specversion, String uri) {
+    public void createLocalEntities(String specificationID, String specversion, String uri) {
         List<Task> tasks = workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
 
         ExtensionSpecification newExtensionSpecification = new ExtensionSpecification();

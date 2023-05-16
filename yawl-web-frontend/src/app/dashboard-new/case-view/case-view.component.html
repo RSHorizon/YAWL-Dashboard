@@ -1,11 +1,8 @@
 <!-- @author Robin Steinwarz--->
 
 <default-page>
-  <div *ngIf="errorState">
-    <h3>Error</h3>
-  </div>
 
-  <div *ngIf="!errorState">
+  <div>
     <p>
       <a href="/#/dashboard">
         <mat-toolbar>
@@ -14,8 +11,9 @@
           </button>
           <span>Back</span>
           <span class="spacer"></span>
-          <span [innerHTML]="specificationStatistic?.uri"></span>, <span style="margin-left: .5em;"
-                                                                         [innerHTML]="specificationStatistic?.version"></span>
+          <span [innerHTML]="specificationDataContainer?.specificationStatistic?.uri"></span>,
+          <span style="margin-left: .5em;"
+                [innerHTML]="specificationDataContainer?.specificationStatistic?.version"></span>
         </mat-toolbar>
       </a>
     </p>
@@ -32,51 +30,229 @@
     </section>
   </div>
 
-  <div *ngIf="!errorState && isCaseView() && specificationStatistic != undefined">
+  <p>
+    <mat-button-toggle-group (valueChange)="selectStatistic($event)" appearance="legacy">
+      <mat-button-toggle value="common" [checked]="true">Common</mat-button-toggle>
+      <mat-button-toggle value="success">Success</mat-button-toggle>
+      <mat-button-toggle value="performance">Performance</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <mat-form-field appearance="legacy">
+      <mat-label>Select statistic range</mat-label>
+      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+        <input (dateChange)="updateData()" matStartDate formControlName="start" placeholder="Start date">
+        <input (dateChange)="updateData()" matEndDate formControlName="end" placeholder="End date">
+      </mat-date-range-input>
+      <mat-hint *ngIf="this.casesInRange !== 0">Cases found - {{ this.casesInRange }}</mat-hint>
+      <mat-hint *ngIf="this.casesInRange === 0" style="color: darkred">Cases found - {{ this.casesInRange }}</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+
+      <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+      <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="legacy">
+      <mat-label>Statistic fineness</mat-label>
+      <mat-select [(value)]="fineness" (valueChange)="updateData()" >
+        <mat-option [value]="'month'">{{ 'month' }}</mat-option>
+        <mat-option [value]="'year'">{{ 'year' }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </p>
+
+  <mat-grid-list *ngIf="loaded && isCaseView() && statisticSelection==='common'" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Overall case instances</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-bar-vertical-stacked
+            [view]="[225,185]"
+            [barPadding]="1"
+            [results]="caseInstances"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showDataLabel]="false"
+            [roundDomains]="true"
+            [scheme]="'ocean'">
+            ></ngx-charts-bar-vertical-stacked>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Avg. demand for capacity</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-bar-vertical-stacked
+            [view]="[225,185]"
+            [barPadding]="1"
+            [results]="capacityDemand"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showDataLabel]="false"
+            [dataLabelFormatting]="pastTimeFormat"
+            [yAxisTickFormatting]="pastTimeFormat"
+            [roundDomains]="true"
+            [scheme]="'ocean'">
+            ></ngx-charts-bar-vertical-stacked>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Avg. case instances per weekday</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-bar-vertical-stacked
+            [view]="[225,185]"
+            [barPadding]="1"
+            [results]="avgCasesPerWeekday"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showDataLabel]="false"
+            [roundDomains]="true"
+            [scheme]="'ocean'">
+            ></ngx-charts-bar-vertical-stacked>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Cost</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-bar-vertical-stacked
+            [view]="[225,185]"
+            [barPadding]="1"
+            [results]="costs"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showDataLabel]="false"
+            [roundDomains]="true"
+            [scheme]="'ocean'">
+            ></ngx-charts-bar-vertical-stacked>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <mat-grid-list *ngIf="loaded && isCaseView() && statisticSelection==='success'" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Success rate</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-bar-vertical-stacked
+            [view]="[225,150]"
+            [barPadding]="1"
+            [results]="successValues"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showDataLabel]="false"
+            [roundDomains]="true"
+            [scheme]="'ocean'">
+            ></ngx-charts-bar-vertical-stacked>
+          <p style="margin:2em; margin-top:1em; font-size: 8px; text-align: center">
+            {{successful}} cases were successful. {{unsucessful}} cases were unsuccessful.
+          </p>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">SLA met rate</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-line-chart
+            [view]="[200,150]"
+            [results]="successLine"
+            [xAxis]="true"
+            [xAxisLabel]="'Time period'"
+            [yAxis]="true"
+            [yAxisTickFormatting]="percentageFormat"
+            [scheme]="'ocean'">
+            ></ngx-charts-line-chart>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Deadline accuracy</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-bar-vertical-stacked
+            [view]="[225,150]"
+            [barPadding]="1"
+            [results]="deadlineValues"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showDataLabel]="false"
+            [roundDomains]="true"
+            [scheme]="'ocean'">
+            ></ngx-charts-bar-vertical-stacked>
+          <p style="margin:2em; margin-top:1em; font-size: 8px; text-align: center">
+            {{deadlineNotExceeded}} cases met the deadline. {{deadlineExceeded}} cases did not.
+          </p>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">SLA met rate</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <ngx-charts-line-chart
+            [view]="[200,150]"
+            [results]="slaLine"
+            [xAxis]="true"
+            [xAxisLabel]="'Time period'"
+            [yAxis]="true"
+            [yAxisTickFormatting]="percentageFormat"
+            [scheme]="'ocean'">
+            ></ngx-charts-line-chart>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <div *ngIf="isCaseView() && specificationDataContainer?.specificationStatistic! != undefined">
     <div class="statistics">
       <mat-grid-list rowHeight="70px" cols="6">
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Avg. completing time</mat-label>
             <input matInput disabled
-                   value="{{formatUtils.applyPastTimeFormatForTimestamp(specificationStatistic.avgCaseCompletionTime)}}">
+                   value="{{formatUtils.applyPastTimeFormatForTimestamp(specificationDataContainer?.specificationStatistic?.avgCaseCompletionTime!)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Avg. occuring cases</mat-label>
             <input matInput disabled
-                   value="{{formatUtils.applyOccurencesFormat(specificationStatistic.caseOccurrencesPerDayOfWeek)}}">
+                   value="{{formatUtils.applyOccurencesFormat(specificationDataContainer?.specificationStatistic?.caseOccurrencesPerDayOfWeek!)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Successful cases</mat-label>
-            <input matInput disabled value="{{specificationStatistic.successfulCases}}">
+            <input matInput disabled value="{{specificationDataContainer?.specificationStatistic?.successfulCases!}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Avg. capacity needed per week</mat-label>
             <input matInput disabled
-                   value="{{formatUtils.applyPastTimeFormatForTimestamp(specificationStatistic.avgResourceTimePerWeekSummed)}}">
+                   value="{{formatUtils.applyPastTimeFormatForTimestamp(specificationDataContainer?.specificationStatistic!.avgResourceTimePerWeekSummed!)}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile rowspan="2">
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Resource summary</mat-label>
             <textarea style="height: 85px;resize: none;" matInput
-                      disabled>{{formatUtils.applyParticipantsArrayFormat(specificationStatistic.participants)}}</textarea>
+                      disabled>{{formatUtils.applyParticipantsArrayFormat(specificationDataContainer?.specificationStatistic!.participants!)}}</textarea>
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile>
-          <div style="display: block; width: 87%; white-space: nowrap;">
+          <div style="display: block; white-space: nowrap;">
             <mat-label
               style="color: rgba(0, 0, 0, 0.38); font-size: 8px; font-weight: 600; font-family: Roboto, 'Helvetica Neue', sans-serif">
               Max case time
-            </mat-label>
-            <br>
+            </mat-label><br>
             <app-timestampform [(timestamp)]="specificationTimeLimit" [daySelectionActive]="true"
                                (timestampChanged)="changedSpecificationAttributes()"></app-timestampform>
           </div>
@@ -85,24 +261,29 @@
         <mat-grid-tile>
           <mat-form-field class="grid-form" appearance="fill" disabled>
             <mat-label>Cancelled cases</mat-label>
-            <input matInput disabled value="{{specificationStatistic.unsuccessfulCases}}">
+            <input matInput disabled value="{{specificationDataContainer?.specificationStatistic?.unsuccessfulCases!}}">
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field class="grid-form" appearance="fill" disabled>
-            <mat-label>Avg. cost per week</mat-label>
-            <input matInput disabled value="{{(costs)?costs.toFixed(2): 0}}">
-          </mat-form-field>
+
         </mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
         <mat-grid-tile></mat-grid-tile>
       </mat-grid-list>
-      <p>
-        <a style="float:right" mat-raised-button (click)="openWorkitemQueueDialog()" target="_blank">Work item queue</a>
-      </p>
     </div>
 
-    <h1>Cases</h1>
+    <p>
+      <span style="font-size: 30px">Cases</span>
+      <a style="float:right" mat-raised-button (click)="openWorkitemQueueDialog()" target="_blank">Work item queue</a>
+      <span style="display: block; white-space: nowrap; float:right; margin-top: -24px; margin-right: 1em">
+        <mat-label
+          style="color: rgba(0, 0, 0, 0.38); font-size: 8px; font-weight: 600; font-family: Roboto, 'Helvetica Neue', sans-serif">
+          Max case time
+        </mat-label><br>
+        <app-timestampform [(timestamp)]="specificationTimeLimit" [daySelectionActive]="true"
+                           (timestampChanged)="changedSpecificationAttributes()"></app-timestampform>
+      </span>
+    </p>
     <table mat-table [dataSource]="dataSource" matSort
            matSortActive="caseid" matSortDirection="asc"
            (matSortChange)="announceSortChange($event)"
@@ -162,8 +343,8 @@
           Overdue
         </th>
         <td mat-cell *matCellDef="let element">
-          <span *ngIf="extensionSpecification !== undefined">
-            {{formatUtils.applyIsOverdueFormat(element.age, +extensionSpecification.specificationTimeLimit)}}
+          <span *ngIf="specificationDataContainer?.extensionSpecification! !== undefined">
+            {{formatUtils.applyIsOverdueFormat(element.age, +specificationDataContainer?.extensionSpecification?.specificationTimeLimit!)}}
           </span>
         </td>
       </ng-container>
@@ -203,7 +384,7 @@
   </div>
 
   <div *ngIf="isTaskView()">
-    <app-task-view [specificationStatistic]="this.specificationStatistic"></app-task-view>
+    <app-task-view [specificationStatistic]="specificationDataContainer?.specificationStatistic!"></app-task-view>
   </div>
 
   <div class="bottom-page-margin"></div>

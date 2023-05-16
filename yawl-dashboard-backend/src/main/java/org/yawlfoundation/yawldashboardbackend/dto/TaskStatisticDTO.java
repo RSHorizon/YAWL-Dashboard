@@ -27,6 +27,9 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
     private long avgQueueTime = 0;
     private boolean automated = false;
     private long avgTimeToReach = 0;
+    private double costResourceHour;
+    private long maxQueueAge;
+    private long maxTaskAge;
     Set<Capability> demandedCapabilities = new HashSet<>();
     Set<Role> demandedRoles = new HashSet<>();
     Set<Position> demandedPosition = new HashSet<>();
@@ -208,5 +211,29 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
 
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
+    }
+
+    public double getCostResourceHour() {
+        return costResourceHour;
+    }
+
+    public void setCostResourceHour(double costResourceHour) {
+        this.costResourceHour = costResourceHour;
+    }
+
+    public long getMaxQueueAge() {
+        return maxQueueAge;
+    }
+
+    public void setMaxQueueAge(long maxQueueAge) {
+        this.maxQueueAge = maxQueueAge;
+    }
+
+    public long getMaxTaskAge() {
+        return maxTaskAge;
+    }
+
+    public void setMaxTaskAge(long maxTaskAge) {
+        this.maxTaskAge = maxTaskAge;
     }
 }

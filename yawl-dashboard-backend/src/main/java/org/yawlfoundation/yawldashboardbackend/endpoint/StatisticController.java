@@ -7,6 +7,8 @@ import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionSpecificationDao;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
 import org.yawlfoundation.yawldashboardbackend.dto.*;
+import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
+import org.yawlfoundation.yawldashboardbackend.model.ExtensionTask;
 import org.yawlfoundation.yawldashboardbackend.model.SpecificationId;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.*;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.*;
@@ -34,6 +36,8 @@ public class StatisticController {
     @Autowired
     private ExtensionTaskDao extensionTaskDao;
 
+    @Autowired
+    private SpecificationController specificationController;
     @Autowired
     InterfaceEManagerImpl interfaceEManager;
 
@@ -78,6 +82,10 @@ public class StatisticController {
         List<Role> roles = resourceManager.getRoles();
         List<Capability> capabilities = resourceManager.getCapabilities();
         List<Position> positions = resourceManager.getPositions();
+        if (extensionSpecificationDao.findByComposedID(specificationID, specversion, uri) == null) {
+            specificationController.createLocalEntities(specificationID, specversion, uri);
+        }
+        List<ExtensionTask> extensionTasks = extensionTaskDao.findAllByComposedID(specificationID, specversion, uri);
         for (Task existingTask : allExistingTasks) {
             TaskStatisticDTO newTaskStatistic = new TaskStatisticDTO(existingTask.getId());
             newTaskStatistic.setAutoOffer(existingTask.isAutoOffer());
@@ -89,6 +97,13 @@ public class StatisticController {
                     existingTask.getDemandedCapabilities().contains(capability.getName())).collect(Collectors.toSet()));
             newTaskStatistic.setDemandedPosition(positions.stream().filter(position ->
                     existingTask.getDemandedPositions().contains(position.getTitle())).collect(Collectors.toSet()));
+            extensionTasks.forEach(extensionTask -> {
+                if(extensionTask.getTaskid().equals(existingTask.getId())){
+                    newTaskStatistic.setCostResourceHour(extensionTask.getCostResourceHour());
+                    newTaskStatistic.setMaxQueueAge(extensionTask.getMaxQueueAge());
+                    newTaskStatistic.setMaxTaskAge(extensionTask.getMaxTaskAge());
+                }
+            });
             taskStatistics.add(newTaskStatistic);
             taskTimings.put(existingTask.getId(), new HashMap<>());
         }

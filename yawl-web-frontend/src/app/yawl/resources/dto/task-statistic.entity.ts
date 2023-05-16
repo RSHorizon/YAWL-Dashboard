@@ -23,7 +23,7 @@ export interface TaskStatistic {
   autoOffer: boolean;
   autoAllocate: boolean;
   autoStart: boolean;
-  costResourceHour?: number;
-  maxQueueAge?: number;
-  maxTaskAge?: number;
+  costResourceHour: number;
+  maxQueueAge: number;
+  maxTaskAge: number;
 }
