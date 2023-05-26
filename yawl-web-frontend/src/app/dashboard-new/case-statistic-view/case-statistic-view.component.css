@@ -4,57 +4,6 @@
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 3px;
 }
 
-.statistic-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-}
-
-.statistic-title {
-  padding: .5em;
-  width: 98%;
-  font-weight: bold;
-  font-size: 9px;
-  color: #00000087;
-}
-
-.statistic-title-info {
-  float: right;
-  font-size: 10px;
-  color: #829dc1;
-}
-
-.statistic-title-info fa-icon {
-  float: right;
-  font-size: 10px;
-  color: #829dc1;
-}
-
-.statistic-body {
-  width: 100%;
-  height: calc(100% - 1.5em);
-  display:flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-.statistic-graph{
-  width: 95%;
-  height: 95%;
-  margin-top: 2px;
-  display:flex;
-}
-
-.statistic-label{
-  width: 95%;
-  height: 20%;
-  margin: 1em;
-  font-size: 8px;
-  text-align: center
-}
 
 .scrollbar{
   overflow-y: auto;
@@ -86,11 +35,6 @@
   background: #c0cad5;
 }
 
-.chart-capsule{
-  width: 100%;
-  height: 100%
-}
-
 .mat-expansion-panel:not([class*=mat-elevation-z]){
   box-shadow: none;
 }
@@ -108,9 +52,5 @@
 .mat-expansion-panel-header-title{
   font-size: 9px;
   color: #919191;
-}
-
-.statistic-text-lists{
-  margin-top: 20px;
 }
 

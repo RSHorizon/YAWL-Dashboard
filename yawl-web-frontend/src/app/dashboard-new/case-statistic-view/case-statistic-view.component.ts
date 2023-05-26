@@ -7,19 +7,16 @@ import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
 import {StatisticUtils} from "../../util/statistic-utils";
 import {faCircleInfo} from '@fortawesome/free-solid-svg-icons';
-import {ChartConfiguration} from "chart.js/dist/types";
+import {ChartConfiguration, ScriptableContext} from "chart.js/dist/types";
 import {CaseStatisticChartConfigurations} from "./case-statistic-chart-configurations";
 import {ColorUtils} from "../../util/color-util";
-import {
-  SpecificationStatisticChartConfigurations
-} from "../specification-statistic-view/specification-statistic-chart-configurations";
 
 @Component({
   selector: 'app-case-statistic-view',
   templateUrl: './case-statistic-view.component.html',
   styleUrls: ['./case-statistic-view.component.css']
 })
-export class CaseStatisticViewComponent implements OnInit {
+export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
 
   @Input("specificationDataContainer")
   specificationDataContainer: SpecificationDataContainer | undefined;
@@ -53,7 +50,10 @@ export class CaseStatisticViewComponent implements OnInit {
   // Performance
   overallIndicatorOptions = CaseStatisticChartConfigurations.caseIndicatorOptions(this.fineness === 'month');
   overallIndicatorData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
-
+  casePerformanceOptions = CaseStatisticChartConfigurations.casePerformanceOptions(this.fineness === 'month');
+  casePerformanceData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
+  casePerformanceDistributionOptions = CaseStatisticChartConfigurations.casePerformanceDistributionOptions(this.fineness === 'month');
+  casePerformanceDistributionData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
 
   // Success
   deadlineNotExceeded: number = 0;
@@ -74,6 +74,9 @@ export class CaseStatisticViewComponent implements OnInit {
   constructor() {
   }
 
+  ngAfterViewInit(): void {
+  }
+
   ngOnInit(): void {
     this.specificationTimeLimit = <number>this.specificationDataContainer?.extensionSpecification.specificationTimeLimit;
     this.statisticTicks = StatisticUtils.calculateStatisticTicks(this.range, this.fineness);
@@ -82,13 +85,9 @@ export class CaseStatisticViewComponent implements OnInit {
     this.processCosts();
     this.processAssociatedParticipants();
     this.processIndicatorRate();
-
-    //this.processSuccessStats();
-    this.processCasesInRange();
-    /*this.processCosts();
-
     this.processPerformance();
-    this.processPerformanceDistribution();*/
+    this.processPerformanceDistribution();
+    this.processCasesInRange();
     this.loaded = true;
   }
 
@@ -98,12 +97,14 @@ export class CaseStatisticViewComponent implements OnInit {
       return;
     }
     this.statisticTicks = StatisticUtils.calculateStatisticTicks(this.range, this.fineness);
-    this.processSuccessStats();
-    this.processCasesInRange();
+    this.weekDayOccurrences();
+    this.processRessourceUtilization();
     this.processCosts();
     this.processAssociatedParticipants();
+    this.processIndicatorRate();
     this.processPerformance();
     this.processPerformanceDistribution();
+    this.processCasesInRange();
   }
 
   selectStatistic(val: any) {
@@ -390,7 +391,9 @@ export class CaseStatisticViewComponent implements OnInit {
     this.specificationDataContainer!.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
-        let yearMonthID = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+        let yearMonthID = (this.fineness === 'month') ? new Date(startDate.getFullYear(),
+          startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0)
+          .getTime();
         let monthInstance = allStarts.get(yearMonthID)!;
         caseStatistic.taskTimingDTOS.forEach(taskTiming => {
           if (!taskTiming.automated && !taskTiming.cancelled && taskTiming.endTimestamp !== 0) {
@@ -426,7 +429,8 @@ export class CaseStatisticViewComponent implements OnInit {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)
         && caseStatistic.end !== 0) {
         let startDate = new Date(caseStatistic.start);
-        let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+        let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0)
+          .getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
         if (!successMap.has(tick)) {
           successMap.set(tick, {success: [], sla: []});
         }
@@ -478,41 +482,63 @@ export class CaseStatisticViewComponent implements OnInit {
 
   processPerformance(): void {
     this.casePerformance = [];
-    let map: Map<string, { min: number, max: number, ages: number[] }> = new Map;
+    let map: Map<number, { min: number, minColor: string, max: number, maxColor: string, ages: number[] }> = new Map;
     this.statisticTicks.forEach(tick => {
-      let label = tick.year + ((this.fineness === 'month') ? " " + StatisticUtils.monthNames[tick.month] : "");
-      map.set(label, {min: Number.MAX_VALUE, max: 0, ages: []});
+      map.set(((this.fineness === 'month') ? tick.month : tick.year), {
+        min: Number.MAX_VALUE, minColor: "",
+        max: 0, maxColor: "", ages: []});
     })
     this.specificationDataContainer?.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-      if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
+      if (!caseStatistic.cancelled && caseStatistic.end !== 0 &&
+        StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
-        let label = startDate.getFullYear() + ((this.fineness === 'month') ? " " + StatisticUtils.monthNames[startDate.getMonth()] : "");
+        let label = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0)
+          .getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
         let instance = map.get(label)!;
         instance.ages.push(caseStatistic.age);
         if (instance.min > caseStatistic.age) {
           instance.min = caseStatistic.age;
+          instance.minColor = caseStatistic.color!;
         }
         if (instance.max < caseStatistic.age) {
           instance.max = caseStatistic.age;
+          instance.maxColor = caseStatistic.color!;
         }
       }
     })
-    let specificationMonthlyPerformance: { name: string, series: { name: string; value: number, min: number, max: number }[] } = {
-      name: "Avg. duration",
-      series: []
-    };
+    let labels: number[] = [];
+    let min: number[] = [];
+    let colorsMin: string[] = [];
+    let max: number[] = [];
+    let colorsMax: string[] = [];
+    let avgArray: number[] = [];
+
     map.forEach((instance, label) => {
       const sum = instance.ages.reduce((a, b) => a + b, 0);
       const avg = (sum / instance.ages.length) || 0;
-      specificationMonthlyPerformance.series.push({
-        name: label,
-        value: avg,
-        min: (avg === 0) ? 0 : instance.min,
-        max: instance.max
-      });
+      labels.push(label);
+      min.push((avg === 0) ? 0 : instance.min);
+      colorsMin.push(instance.minColor);
+      max.push(instance.max);
+      colorsMax.push(instance.maxColor);
+      avgArray.push(avg);
     })
-    this.casePerformance.push(specificationMonthlyPerformance);
-    StatisticUtils.preventNullStatistic(this.casePerformance, true);
+
+    this.casePerformanceData.labels = labels;
+    this.casePerformanceData.datasets = [{
+      data: min,
+      label: 'Minimal duration',
+      backgroundColor: ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor())
+    }, {
+      data: avgArray,
+      label: 'Average duration',
+      backgroundColor: ColorUtils.getMuchLighterColor(ColorUtils.getSecondaryColor())
+    }, {
+      data: max,
+      label: 'Maximal duration',
+      backgroundColor: ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor())
+    }
+    ];
   }
 
   processPerformanceDistribution(): void {
@@ -524,38 +550,39 @@ export class CaseStatisticViewComponent implements OnInit {
       }
     });
     casePerformanceSorted = casePerformanceSorted.sort((a, b) => (a.age > b.age) ? 1 : -1);
-    let performanceDistributionMap: Map<number, { name: string; value: number }[]> =
-      new Map([[0, []], [10, []], [20, []], [30, []], [40, []], [50, []], [60, []],
-        [70, []], [80, []], [90, []], [100, []]]);
     if (casePerformanceSorted.length !== 0) {
       let min = casePerformanceSorted[0].age;
       let max = casePerformanceSorted[casePerformanceSorted.length - 1].age;
       this.casePerformanceDistributionMin = "(" + this.formatUtils.applyPastTimeFormatForTimestampWithDays(min) + ")"
       this.casePerformanceDistributionMax = "(" + this.formatUtils.applyPastTimeFormatForTimestampWithDays(max) + ")"
       let diff = max - min;
+      let performanceDistributionMap: Map<number, {duration: number, performance: { name: string; value: number }[]}> =
+        new Map([[0, {duration: min, performance:[]}], [10, {duration: min+.1*diff, performance:[]}], [20, {duration: min+.2*diff, performance:[]}],
+          [30, {duration: min+.3*diff, performance:[]}], [40, {duration: min+.4*diff, performance:[]}], [50, {duration: min+.5*diff, performance:[]}],
+          [60, {duration: min+.6*diff, performance:[]}], [70, {duration: min+.7*diff, performance:[]}], [80, {duration: min+.8*diff, performance:[]}],
+          [90, {duration: min+.9*diff, performance:[]}], [100, {duration: max, performance:[]}]]);
       casePerformanceSorted.forEach(caseElement => {
         let fraction = (Math.round((Math.abs((1 - (max - caseElement.age)) / diff)) * 10) * 10);
         if (diff === 0) {
           fraction = 100;
         }
-        performanceDistributionMap.get(fraction)!.push({name: caseElement.name, value: 1});
+        let figure = performanceDistributionMap.get(fraction)!;
+        figure.performance.push({name: caseElement.name, value: 1})
       });
 
+      this.casePerformanceDistributionData.labels = [];
+      this.casePerformanceDistributionData.datasets = [];
+      let data: number[] = [];
       performanceDistributionMap.forEach((performance, label) => {
-        let performanceDistributionElement: { name: string, series: { name: string; value: number }[] } = {
-          name: label + "%",
-          series: []
-        }
-        performance.forEach(caseRef => {
-          performanceDistributionElement.series.push({
-            name: "Case ID " + caseRef.name,
-            value: 1
-          });
-        })
-        this.casePerformanceDistribution.push(performanceDistributionElement);
+        this.casePerformanceDistributionData.labels?.push(label + "% (" + FormatUtils.applyPastTimeFormatForTimestampWithDays(performance.duration) + ")");
+        data.push(performance.performance.length)
       });
+      this.casePerformanceDistributionData.datasets.push({
+        label: "Case size",
+        data: data,
+        backgroundColor: ColorUtils.getMuchLighterColor(ColorUtils.getSecondaryColor())
+      })
     }
-    StatisticUtils.preventNullStatistic(this.casePerformanceDistribution, true);
   }
 
   processAssociatedParticipants(): void {

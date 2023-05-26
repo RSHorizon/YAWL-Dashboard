@@ -90,212 +90,66 @@
   </mat-grid-list>
 </div>
 
-<div *ngIf="specificTaskStatistic !== ''" [hidden]="specificTaskStatistic === ''" style="margin-top: .5em;">
+<div [hidden]="specificTaskStatistic === ''" style="margin-top: .5em;">
   <mat-grid-list cols="5" rowHeight="3:1"
                  [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Avg. completion time</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-bar-vertical
-              [animations]="false"
-              [barPadding]="1"
-              [results]="avgCompletionTimeOverPeriods"
-              [xAxis]="true"
-              [yAxis]="true"
-              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [dataLabelFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [yScaleMax]="100"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [roundEdges]="false"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical>
+        <div class="statistic-title">
+          <div class="statistic-title-text">How long does the selected task run usually?</div>
+          <div class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart visualizes the average time it takes to complete the selected task ({{specificTaskStatistic}}) for each period.
+                                 For the calculation of the average completion time of one period all task instances started
+                                 in that period were considered. Cancelled tasks excluded."></fa-icon>
           </div>
-          <div class="statistic-label"></div>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="avgCompletionTimeOverPeriodsData.datasets"
+                               [labels]="avgCompletionTimeOverPeriodsData.labels"
+                               [options]="avgCompletionTimeOverPeriodsOptions"></app-chart-capsule>
+          </div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Participants involvement</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="participantsProcessedInstances"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
+        <div class="statistic-title">
+          <div class="statistic-title-text">How do our resources perform on average on the selected task?</div>
+          <div class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart visualizes the average time it takes to complete the selected task ({{specificTaskStatistic}} for our resources."></fa-icon>
           </div>
-          <div class="statistic-label"></div>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="participantAvgPerformanceData.datasets"
+                               [labels]="participantAvgPerformanceData.labels"
+                               [options]="participantAvgPerformanceOptions"></app-chart-capsule>
+          </div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Participant performance</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-line-chart
-              [animations]="false"
-              [results]="participantAvgPerformance"
-              [xAxis]="true"
-              [xAxisLabel]="'Time period'"
-              [yAxis]="true"
-              [yAxisLabel]="'Avg. case duration'"
-              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-line-chart>
+        <div class="statistic-title">
+          <div class="statistic-title-text">What resources usually take on this task?</div>
+          <div class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart visualizes the number of work items corresponding to the selected task ({{specificTaskStatistic}})
+                      that each resource has processed in total."></fa-icon>
           </div>
-          <div class="statistic-label"></div>
         </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Configured roles</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="configuredRoles"
-              [xAxis]="true"
-              [yAxis]="false"
-              [animations]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="participantsProcessedInstancesData.datasets"
+                               [labels]="participantsProcessedInstancesData.labels"
+                               [options]="participantsProcessedInstancesOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Configured roles</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="configuredCapabilities"
-              [xAxis]="true"
-              [yAxis]="false"
-              [animations]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
-          </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Configured roles</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="configuredPositions"
-              [xAxis]="true"
-              [yAxis]="false"
-              [animations]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
-          </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Participants have associated roles</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="associatedRoles"
-              [xAxis]="true"
-              [yAxis]="false"
-              [animations]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
-          </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Participants have associated capabilities</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="associatedCapabilities"
-              [xAxis]="true"
-              [yAxis]="false"
-              [animations]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
-          </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Participants have associated positions</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="associatedPositions"
-              [xAxis]="true"
-              [yAxis]="false"
-              [animations]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
-          </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>

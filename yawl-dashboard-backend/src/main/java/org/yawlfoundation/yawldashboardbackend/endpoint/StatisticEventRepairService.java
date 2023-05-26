@@ -137,26 +137,22 @@ public class StatisticEventRepairService {
                         taskTiming.setEndTimestamp(eventTimestamp);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
                         participantHadEvents.add("Complete");
-                        caseStatisticDTO.setEnd(eventTimestamp);
                         break;
                     case "autotask_complete":
                         taskTiming.setEndTimestamp(eventTimestamp);
                         taskTiming.setAutomated(true);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
-                        caseStatisticDTO.setEnd(eventTimestamp);
                         break;
                     case "cancel":
                     case "cancelled_by_case":
                         taskTiming.setCancelled(true);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Cancelled");
                         participantHadEvents.add("Cancel");
-                        caseStatisticDTO.setEnd(eventTimestamp);
                         break;
                     case "timer_expired":
                         taskTiming.setCancelled(true);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Expired");
                         participantHadEvents.add("Expired");
-                        caseStatisticDTO.setEnd(eventTimestamp);
                         break;
                     case "suspended":
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Suspended");

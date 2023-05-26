@@ -1,20 +1,16 @@
-import {AfterContentInit, AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
-import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong, faCircleInfo} from '@fortawesome/free-solid-svg-icons';
-import {LiveAnnouncer} from "@angular/cdk/a11y";
-import {Specification} from "../../yawl/resources/entities/specification.entity";
+import {
+  faArrowsToEye,
+  faCircleInfo,
+  faSquare
+} from '@fortawesome/free-solid-svg-icons';
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
-import {Time} from "@angular/common";
-import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
-import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
-import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
-import {Participant} from "../../yawl/resources/entities/participant.entity";
-import {FormatUtils} from "../../util/format-util";
 import {NotifierService} from "angular-notifier";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
-import {Task} from "../../yawl/resources/entities/work-item.entity";
+
 /**
  * @author Robin Steinwarz
  */
@@ -24,13 +20,14 @@ import {Task} from "../../yawl/resources/entities/work-item.entity";
   styleUrls: ['./task-view.component.css']
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
-  faArrowsToEye=faArrowsToEye;
+  faArrowsToEye = faArrowsToEye;
   faCircleInfo = faCircleInfo;
+  faSquare = faSquare;
   @Input("specificationDataContainer")
   specificationDataContainer!: SpecificationDataContainer;
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
-  displayedColumns: string[] = ['name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
+  displayedColumns: string[] = ['color','name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
   specificTaskStatisticSelection = '';
@@ -69,7 +66,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
     };
   }
 
-  selectSpecificTaskStatistic(taskid: string){
+  selectSpecificTaskStatistic(taskid: string) {
     this.specificTaskStatisticSelection = taskid;
   }
 
@@ -91,7 +88,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
 
   announceSortChange(sort: Sort) {
     const isAsc = sort.direction === 'asc';
-    if(sort.direction === ''){
+    if (sort.direction === '') {
       this.dataSource?.data.sort((a: TaskStatistic, b: TaskStatistic) => this.compare(a.minimalOrder, b.minimalOrder, true));
     }
   }

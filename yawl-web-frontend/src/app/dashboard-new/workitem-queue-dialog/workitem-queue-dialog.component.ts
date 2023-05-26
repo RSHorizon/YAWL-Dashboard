@@ -69,7 +69,6 @@ export class WorkitemQueueDialogComponent implements OnInit {
   ngOnInit(): void {
     let workitems: TaskTiming[] = [];
     this.specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseInstance => {
-      console.log(caseInstance);
       workitems.push(...caseInstance.queue);
     });
     this.specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {

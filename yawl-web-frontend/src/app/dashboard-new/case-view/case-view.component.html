@@ -29,6 +29,8 @@
     </section>
   </div>
 
+  <!--<div *ngFor="let color of colores" style="width:30px; height:30px;" [style.background-color]="color">{{color}}</div>
+  -->
   <div *ngIf="specificationDataContainer?.specificationStatistic! != undefined" [hidden]="!isCaseView()">
     <app-case-statistic-view [specificationDataContainer]="specificationDataContainer"></app-case-statistic-view>
     <p style="margin-top:2em">
@@ -47,6 +49,16 @@
            matSortActive="caseid" matSortDirection="asc"
            (matSortChange)="announceSortChange($event)"
            class="mat-elevation-z8">
+
+      <!-- Color Column -->
+      <ng-container matColumnDef="color">
+        <th mat-header-cell *matHeaderCellDef >
+          Color
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <fa-icon [style.color]="element.color" [fixedWidth]="true" [icon]="faSquare"></fa-icon>
+        </td>
+      </ng-container>
 
       <!-- Case ID Column -->
       <ng-container matColumnDef="caseid">

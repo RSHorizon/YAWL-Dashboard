@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong} from '@fortawesome/free-solid-svg-icons';
+import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong, faSquare} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute} from "@angular/router";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
 import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
@@ -21,6 +21,7 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
 import {FormControl, FormGroup} from "@angular/forms";
 import {Role} from "../../yawl/resources/entities/role.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {ColorUtils} from "../../util/color-util";
 
 /**
  * @author Robin Steinwarz
@@ -40,6 +41,7 @@ export class CaseViewComponent implements OnInit {
   faPencil = faPencil;
   faArrowLeftLong = faArrowLeftLong
   faArrowsToEye = faArrowsToEye;
+  faSquare=faSquare;
 
   // @ts-ignore
   viewType: number = '0';
@@ -56,7 +58,7 @@ export class CaseViewComponent implements OnInit {
   cases: CaseStatistic[] | undefined = undefined;
   specificationTimeLimit: number = 0;
 
-
+  colores = ColorUtils.colorMix2;
 
   constructor(public dialog: MatDialog,
               private specificationDataService: SpecificationDataService,
@@ -78,7 +80,6 @@ export class CaseViewComponent implements OnInit {
             this.dataSource.data = this.cases!;
             this.dataSource.sort = this.sort;
             this.specificationTimeLimit = <number>this.specificationDataContainer?.extensionSpecification.specificationTimeLimit;
-            console.log(this.specificationDataContainer);
           }
         })
       });

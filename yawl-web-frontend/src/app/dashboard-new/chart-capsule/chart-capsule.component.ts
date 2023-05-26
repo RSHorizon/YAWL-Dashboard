@@ -53,7 +53,7 @@ export class ChartCapsuleComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if(this.chart === undefined){
-      this.tryInstantiateChart();
+      //this.tryInstantiateChart();
     }else{
       this.tryUpdateChart();
     }

@@ -13,6 +13,7 @@ export class CaseStatisticChartConfigurations {
     return {
       animation: false,
       maintainAspectRatio: false,
+      normalized: true,
       scales: {
         x: {
           stacked: true,
@@ -35,6 +36,13 @@ export class CaseStatisticChartConfigurations {
           ticks: {
             font: {
               size: 9
+            }
+          },
+          title: {
+            display: true,
+            text: 'Number of cases started',
+            font: {
+              size: 7
             }
           }
         }
@@ -69,6 +77,7 @@ export class CaseStatisticChartConfigurations {
     return {
       animation: false,
       maintainAspectRatio: false,
+      normalized: true,
       scales: {
         x: {
           stacked: true,
@@ -91,6 +100,13 @@ export class CaseStatisticChartConfigurations {
           ticks: {
             font: {
               size: 9
+            }
+          },
+          title: {
+            display: true,
+            text: 'Sum of costs',
+            font: {
+              size: 7
             }
           }
         }
@@ -125,6 +141,8 @@ export class CaseStatisticChartConfigurations {
   static resourceUtilizationOptions(month: boolean): ChartConfiguration<'line'>['options']{
     return {
       animation: false,
+      normalized: true,
+      spanGaps: true,
       elements: {
         line: {
           borderWidth: 1
@@ -159,7 +177,10 @@ export class CaseStatisticChartConfigurations {
           min: 0,
           title: {
             display: true,
-            text: 'Number of participants'
+            text: 'Number of participants',
+            font: {
+              size: 7
+            }
           }
         }
       },
@@ -191,6 +212,7 @@ export class CaseStatisticChartConfigurations {
   static caseIndicatorOptions(month: boolean): ChartConfiguration<'bar'>['options']{
     return {
       animation: false,
+      normalized: true,
       scales: {
         x: {
           type: 'time',
@@ -218,7 +240,14 @@ export class CaseStatisticChartConfigurations {
             }
           },
           min: 0,
-          max: 1
+          max: 1,
+          title: {
+            display: true,
+            text: 'Ratio as percentage',
+            font: {
+              size: 7
+            }
+          }
         }
       },
       plugins: {
@@ -246,5 +275,133 @@ export class CaseStatisticChartConfigurations {
       }
     };
   }
+
+  static casePerformanceOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+    return {
+      animation: false,
+      maintainAspectRatio: false,
+      normalized: true,
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            unit: (month)?'month': 'year',
+            displayFormats: {
+              year: 'yyy MMM',
+              month: 'yyy MMM',
+            }
+          },
+          ticks: {
+            font: {
+              size: 9
+            }
+          }
+        },
+        y: {
+          ticks: {
+            font: {
+              size: 9
+            },
+            // Include a dollar sign in the ticks
+            callback: function (value, index, ticks) {
+              return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
+            }
+          },
+          title: {
+            display: true,
+            text: 'Run time',
+            font: {
+              size: 7
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 0,
+            boxHeight: 0,
+            font: {
+              size: 7
+            }
+          }
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
+              if(!tooltipItem){
+                return "";
+              }
+              return [" " + tooltipItem.dataset.label + " bar",
+                // @ts-ignore
+                "Value: " + FormatUtils.applyPastTimeFormatForTimestampWithDays(tooltipItem.raw)];
+            }
+          }
+        },
+      }
+    };
+  }
+
+
+  static casePerformanceDistributionOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+    return {
+      animation: false,
+      maintainAspectRatio: false,
+      normalized: true,
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            font: {
+              size: 9
+            }
+          }
+        },
+        y: {
+          stacked: true,
+          ticks: {
+            font: {
+              size: 9
+            }
+          },
+          title: {
+            display: true,
+            text: 'Number of cases per distribution percentile',
+            font: {
+              size: 7
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false,
+          labels: {
+            font: {
+              size: 7
+            }
+          }
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
+              if(!tooltipItem){
+                return "";
+              }
+              return [" " + tooltipItem.dataset.label + " bar",
+                // @ts-ignore
+                "Value: " + tooltipItem.raw];
+            }
+          }
+        },
+      }
+    };
+  }
+
 
 }

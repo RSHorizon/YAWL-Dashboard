@@ -42,7 +42,10 @@ export class SpecificationStatisticChartConfigurations {
           min: 0,
           title: {
             display: true,
-            text: 'Average run time'
+            text: 'Avg. run time',
+            font: {
+              size: 7
+            }
           }
         }
       },
@@ -102,6 +105,13 @@ export class SpecificationStatisticChartConfigurations {
             font: {
               size: 9
             }
+          },
+          title: {
+            display: true,
+            text: 'Queue size',
+            font: {
+              size: 7
+            }
           }
         },
         y: {
@@ -113,7 +123,10 @@ export class SpecificationStatisticChartConfigurations {
           min: 0,
           title: {
             display: true,
-            text: 'Work item queue size'
+            text: 'Number of work items in queue',
+            font: {
+              size: 7
+            }
           }
         }
       },
@@ -171,7 +184,14 @@ export class SpecificationStatisticChartConfigurations {
             }
           },
           min: 0,
-          max: 1
+          max: 1,
+          title: {
+            display: true,
+            text: 'Ratio in percentage',
+            font: {
+              size: 7
+            }
+          }
         }
       },
       plugins: {
@@ -222,6 +242,13 @@ export class SpecificationStatisticChartConfigurations {
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
               return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
+            }
+          },
+          title: {
+            display: true,
+            text: 'Run time',
+            font: {
+              size: 7
             }
           }
         }
@@ -287,6 +314,13 @@ export class SpecificationStatisticChartConfigurations {
             callback: function (value, index, ticks) {
               return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
             }
+          },
+          title: {
+            display: true,
+            text: 'Utilized capacity',
+            font: {
+              size: 7
+            }
           }
         }
       },
@@ -337,6 +371,13 @@ export class SpecificationStatisticChartConfigurations {
             font: {
               size: 9
             }
+          },
+          title: {
+            display: true,
+            text: 'Number of work items in queue',
+            font: {
+              size: 7
+            }
           }
         }
       },
@@ -386,6 +427,13 @@ export class SpecificationStatisticChartConfigurations {
             callback: function (value, index, ticks) {
               return FormatUtils.applyDecimalPercentageFormat(<number>value);
             }
+          },
+          title: {
+            display: true,
+            text: 'Automation ratio in %',
+            font: {
+              size: 7
+            }
           }
         }
       },
@@ -434,6 +482,13 @@ export class SpecificationStatisticChartConfigurations {
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
               return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
+            }
+          },
+          title: {
+            display: true,
+            text: 'Avg. time to complete',
+            font: {
+              size: 7
             }
           }
         }
@@ -521,7 +576,6 @@ export class SpecificationStatisticChartConfigurations {
               size: 7
             },
             callback: function (value, index, ticks) {
-              console.log(value);
               return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
             }
           },

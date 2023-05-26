@@ -42,13 +42,14 @@
   <mat-grid-list cols="5" rowHeight="2:1" [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How long do our cases run on average?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How long do our cases run on average?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the average runtime of all cases
                      that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
                      Cancelled and uncompleted cases excluded."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -60,12 +61,13 @@
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How severe are our process outliers?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How severe are our process outliers?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the minimum, maximum and average runtime for all cases of a corresponding process.
                       Cancelled and uncompleted cases excluded."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -79,14 +81,15 @@
     </mat-grid-tile>
     <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How successful are our cases?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How successful are our cases?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the overall success and deadline fulfilled ratio for cases
                      that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
                      A successful case has not been cancelled. A case has met its deadline if its runtime is shorter
                      than the specification time limit of its process. Uncompleted cases excluded."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -107,8 +110,9 @@
   <mat-grid-list cols="5" rowHeight="2:1" [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How high is our capacity utilization?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How high is our capacity utilization?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the overall capacity utilization for
                                 {{fineness === 'month'? 'monthly' : 'annual'}} periods.
@@ -117,7 +121,7 @@
                                 time elapsed between start and completion. In the case where a work item was
                                 completed over a period of several days, 8 hours of resource time was allocated
                                 to each day. Cancelled cases and cancelled or automated work items were excluded."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -132,13 +136,14 @@
 
     <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">When did we encounter bottlenecks?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">When did we encounter bottlenecks?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the queue size for each hour in the specified time window. The
                                  queue size is the sum of all offered or allocated, but not started work items
                                  at a given hour. Please note that the maximum time span for this chart is 4 years."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -153,12 +158,13 @@
 
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Where do we currently encounter bottlenecks?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">Where do we currently encounter bottlenecks?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the sum of offered or allocated work items of a certain type
                                   waiting to be processed."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -180,12 +186,13 @@
   <mat-grid-list cols="5" rowHeight="2:1" [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How automated are our processes?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How automated are our processes?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the automation ratio for each process. This ratio is calculated
                      by dividing the number of automated tasks of a corresponding process by the number of all its tasks."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -199,15 +206,16 @@
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Where is further automation effective?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">Where is further automation effective?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows all tasks for each process and illustrates how much time our
                                  resources spent on average on one of these tasks. This average time is calculated for
                                  each task by dividing the sum of the time spans between the start and completion of all
                                  corresponding work items by the number of work items. Automated tasks and cancelled
                                  work items excluded."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -221,11 +229,12 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our role distribution?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How is our role distribution?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each role the sum of our resources currently having this role."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -239,11 +248,12 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our capability distribution?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How is our capability distribution?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each capability the sum of our resources currently possessing this capability."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -257,11 +267,12 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our position distribution?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How is our position distribution?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each position the sum of our resources currently having this position."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -275,11 +286,12 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our role distribution according to our processes?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How is our role distribution according to our processes?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each role the sum of tasks requiring it."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -293,11 +305,12 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our capability distribution according to our processes?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How is our capability distribution according to our processes?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each capability the sum of tasks requiring it."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -311,11 +324,12 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our position distribution according to our processes?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How is our position distribution according to our processes?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each position the sum of tasks requiring it."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -329,8 +343,9 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How did we really utilize roles?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How did we really utilize roles?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the summed resource time for each role for all work items in all
                      processes. This time can be an indication of which role was needed most for our processes.
@@ -338,7 +353,7 @@
                      the work item had the corresponding role. The resource time is calculated from the time that
                      elapsed between the start and completion of a work item. In the case that a work item took longer
                      than two days to complete, each work day contributes 8 hours of resource time."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -352,8 +367,9 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How did we really utilize capabilities?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How did we really utilize capabilities?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the summed resource time for each capability for all work items in all
                      processes. This time can be an indication of which capability was needed most for our processes.
@@ -361,7 +377,7 @@
                      the work item had the corresponding capability. The resource time is calculated from the time that
                      elapsed between the start and completion of a work item. In the case that a work item took longer
                      than two days to complete, each work day contributes 8 hours of resource time."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
@@ -375,8 +391,9 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How did we really utilize positions?
-          <span class="statistic-title-info">
+        <div class="statistic-title">
+          <div class="statistic-title-text">How did we really utilize positions?</div>
+          <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the summed resource time for each position for all work items in all
                      processes. This time can be an indication of which position was needed most for our processes.
@@ -384,7 +401,7 @@
                      the work item had the corresponding position. The resource time is calculated from the time that
                      elapsed between the start and completion of a work item. In the case that a work item took longer
                      than two days to complete, each work day contributes 8 hours of resource time."></fa-icon>
-          </span>
+          </div>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">

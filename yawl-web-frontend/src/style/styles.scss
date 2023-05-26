@@ -4,6 +4,7 @@
 @charset "UTF-8";
 
 @use '@angular/material' as mat;
+@use 'statistics.scss';
 @import '@angular/material/theming';
 @import '@covalent/core/theming/all-theme';
 @include mat.core();
