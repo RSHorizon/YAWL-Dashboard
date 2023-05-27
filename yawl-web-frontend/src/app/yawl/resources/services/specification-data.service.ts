@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Injectable, NgZone} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, EventEmitter, Injectable, NgZone} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {NotifierService} from "angular-notifier";
 import {SpecificationService} from "./specification.service";
@@ -50,7 +50,7 @@ export class SpecificationDataService {
         // if no extension specification exists for one specification,
         // inform the backend
         let observables: any[] = [];
-        specifications.forEach(specification => {
+        specifications.forEach((specification, key) => {
           // @ts-ignore
           let specificationDataContainer: SpecificationDataContainer = {};
           specificationDataContainer.specificationInformation = specification;
@@ -84,13 +84,16 @@ export class SpecificationDataService {
           })
 
           this.specificationDataContainers!.push(specificationDataContainer);
+
+          if(key === specifications.length - 1){
+            forkJoin(observables).subscribe(() => {
+              this.loading = undefined;
+              this.dataHasBeenLoaded = true;
+              subject.next(this.specificationDataContainers);
+              subject.complete();
+            })
+          }
         });
-        forkJoin(observables).subscribe(() => {
-          this.loading = undefined;
-          this.dataHasBeenLoaded = true;
-          subject.next(this.specificationDataContainers);
-          subject.complete();
-        })
       })
     });
     return subject;

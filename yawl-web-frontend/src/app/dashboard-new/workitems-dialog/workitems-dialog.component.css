@@ -104,3 +104,9 @@ tr.element-row:not(.example-expanded-row):active {
 .element-description-attribution {
   opacity: 0.5;
 }
+
+.full-form-field{
+  width: 100%;
+  height: 100%;
+  resize: none;
+}

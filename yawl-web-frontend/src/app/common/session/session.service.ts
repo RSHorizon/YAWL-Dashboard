@@ -141,7 +141,6 @@ export class SessionService {
     return of(errMsg);
   }
 
-
   isLoggedIn() {
     return this.loggedIn;
   }

@@ -8,9 +8,11 @@ import java.util.*;
  */
 public class TaskTimingDTO {
     private String taskid;
+    private String name;
     private String caseid;
     private String decompositionOrder;
     // <Participant_ID, Set<Event>>
+
     private Map<String, Set<String>> participants = new HashMap<>();
     private boolean automated = false;
     private boolean cancelled = false;
@@ -121,5 +123,13 @@ public class TaskTimingDTO {
 
     public void setParticipants(Map<String, Set<String>> participants) {
         this.participants = participants;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

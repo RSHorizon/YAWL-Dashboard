@@ -5,10 +5,8 @@ package org.yawlfoundation.yawldashboardbackend.dto;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 /**
  * @author Robin Steinwarz
  */
@@ -19,7 +17,8 @@ public class SpecificationStatisticDTO implements Serializable {
     String speckey;
     List<TaskStatisticDTO> taskStatisticDTOS;
     List<CaseStatisticDTO> caseStatisticDTOS;
-    Set<Participant> participants = new HashSet<>();
+    List<AssociatedParticipants> eventAssociatedParticipants;
+    List<AssociatedParticipants> roleAssociatedParticipants;
     long avgCaseCompletionTime;
     int successfulCases;
     int unsuccessfulCases;
@@ -121,14 +120,21 @@ public class SpecificationStatisticDTO implements Serializable {
         this.avgResourceTimePerWeekSummed = avgResourceTimePerWeekSummed;
     }
 
-    public Set<Participant> getParticipants() {
-        return participants;
+    public List<AssociatedParticipants> getEventAssociatedParticipants() {
+        return eventAssociatedParticipants;
     }
 
-    public void setParticipants(Set<Participant> participants) {
-        this.participants = participants;
+    public void setEventAssociatedParticipants(List<AssociatedParticipants> eventAssociatedParticipants) {
+        this.eventAssociatedParticipants = eventAssociatedParticipants;
     }
 
+    public List<AssociatedParticipants> getRoleAssociatedParticipants() {
+        return roleAssociatedParticipants;
+    }
+
+    public void setRoleAssociatedParticipants(List<AssociatedParticipants> roleAssociatedParticipants) {
+        this.roleAssociatedParticipants = roleAssociatedParticipants;
+    }
 
     public double getAutomationPercentage() {
         return automationPercentage;

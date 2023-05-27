@@ -9,7 +9,7 @@ mat-form-field{
 }
 
 .mat-cell {
-  height: 130px;
+  padding-top: .5em;
 }
 
 .mat-column-taskid{

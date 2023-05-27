@@ -1,4 +1,3 @@
-
 <p>
   <mat-button-toggle-group (valueChange)="selectStatistic($event)" appearance="legacy">
     <mat-button-toggle value="performance" [checked]="true">Performance</mat-button-toggle>
@@ -12,8 +11,8 @@
       <input (dateChange)="updateData()" matStartDate formControlName="start" placeholder="Start date">
       <input (dateChange)="updateData()" matEndDate formControlName="end" placeholder="End date">
     </mat-date-range-input>
-    <mat-hint *ngIf="this.casesInRange !== 0">Cases found - {{ this.casesInRange }}</mat-hint>
-    <mat-hint *ngIf="this.casesInRange === 0" style="color: darkred">Cases found - {{ this.casesInRange }}</mat-hint>
+    <mat-hint *ngIf="this.casesInRange !== 0">Cases found: {{ this.casesInRange }}</mat-hint>
+    <mat-hint *ngIf="this.casesInRange === 0" style="color: darkred">Cases found: {{ this.casesInRange }}</mat-hint>
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-date-range-picker #picker></mat-date-range-picker>
 
@@ -23,7 +22,7 @@
 
   <mat-form-field appearance="legacy">
     <mat-label>Statistic fineness</mat-label>
-    <mat-select [(value)]="fineness" (valueChange)="updateData()" >
+    <mat-select [(value)]="fineness" (valueChange)="updateData()">
       <mat-option [value]="'month'">{{ 'month' }}</mat-option>
       <mat-option [value]="'year'">{{ 'year' }}</mat-option>
     </mat-select>
@@ -31,7 +30,7 @@
 
   <mat-form-field *ngIf="statisticSelection==='resources'" appearance="legacy">
     <mat-label>Resource aspect</mat-label>
-    <mat-select [(value)]="statisticResourceSelection" >
+    <mat-select [(value)]="statisticResourceSelection">
       <mat-option [value]="'role'">{{ 'Role' }}</mat-option>
       <mat-option [value]="'capability'">{{ 'Capability' }}</mat-option>
       <mat-option [value]="'position'">{{ 'Position' }}</mat-option>
@@ -39,390 +38,462 @@
   </mat-form-field>
 </p>
 
-<mat-grid-list *ngIf="statisticSelection === 'performance' && loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
-  <mat-grid-tile rowspan="2" colspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Avg. case duration</div>
-      <div class="statistic-body ngx-charts-small-text">
-        <ngx-charts-line-chart
-          [view]="[450,200]"
-          [results]="specPerformanceComparison"
-          [xAxis]="true"
-          [xAxisLabel]="'Time period'"
-          [yAxis]="true"
-          [yAxisLabel]="'Avg. case duration'"
-          [yAxisTickFormatting]="pastTimeFormat"
-          [roundDomains]="true"
-          [scheme]="'ocean'">
-          ></ngx-charts-line-chart>
+<div [hidden]="statisticSelection !== 'performance'">
+  <mat-grid-list *ngIf="loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2" colspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Avg. case duration</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-line-chart
+              [animations]="false"
+              [results]="specPerformanceComparison"
+              [xAxis]="true"
+              [xAxisLabel]="'Time period'"
+              [yAxis]="true"
+              [yAxisLabel]="'Avg. case duration'"
+              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-line-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile>
-    <div class="statistic-container">
-      <div class="statistic-title">Overall case success rate</div>
-      <div class="statistic-body ngx-charts-small-text">
-        <ngx-charts-bar-horizontal
-          [roundEdges]="false"
-          [view]="[225,75]"
-          [results]="overallSuccessRate"
-          [xAxis]="true"
-          [xAxisTickFormatting]="percentageFormat"
-          [dataLabelFormatting]="percentageFormat"
-          [xScaleMin]="10"
-          [xScaleMax]="100"
-          [scheme]="'ocean'">
-          ></ngx-charts-bar-horizontal>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <div class="statistic-container">
+        <div class="statistic-title">Overall case success rate</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-horizontal
+              [animations]="false"
+              [roundEdges]="false"
+              [results]="overallSuccessRate"
+              [xAxis]="true"
+              [xAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [dataLabelFormatting]="formatUtils.applyPercentageFormat"
+              [xScaleMin]="10"
+              [xScaleMax]="100"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-horizontal>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Specifications avg. case duration</div>
-      <div class="statistic-body">
-        <ngx-charts-pie-chart
-          [view]="[225,175]"
-          [results]="avgSpecificationCaseTime"
-          [legend]="false"
-          [legendTitle]="'Specifications'"
-          [legendPosition]="legendPiePosition"
-          [labels]="false"
-          [doughnut]="true"
-          [tooltipText]="formatPieChartTimestampLabel"
-          [scheme]="'ocean'"
-          ></ngx-charts-pie-chart>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Specifications avg. case duration</div>
+        <div class="statistic-body">
+          <div class="statistic-graph">
+            <ngx-charts-pie-chart
+              [animations]="false"
+              [results]="avgSpecificationCaseTime"
+              [legend]="false"
+              [legendTitle]="'Specifications'"
+              [legendPosition]="legendPiePosition"
+              [labels]="false"
+              [doughnut]="true"
+              [tooltipText]="formatUtils.applyPieChartTimestampLabelFormat"
+              [scheme]="'ocean'"
+            ></ngx-charts-pie-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Specifications case duration outliers</div>
-      <div class="statistic-body">
-        <ngx-charts-pie-chart
-          [view]="[225,175]"
-          [results]="longestCases"
-          [legend]="false"
-          [legendTitle]="'Specifications'"
-          [legendPosition]="legendPiePosition"
-          [labels]="false"
-          [doughnut]="true"
-          [tooltipText]="formatPieChartTimestampLabel"
-          [scheme]="'ocean'"
-        ></ngx-charts-pie-chart>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Specifications case duration outliers</div>
+        <div class="statistic-body">
+          <div class="statistic-graph">
+            <ngx-charts-pie-chart
+              [animations]="false"
+              [results]="longestCases"
+              [legend]="false"
+              [legendTitle]="'Specifications'"
+              [legendPosition]="legendPiePosition"
+              [labels]="false"
+              [doughnut]="true"
+              [tooltipText]="formatUtils.applyPieChartTimestampLabelFormat"
+              [scheme]="'ocean'"
+            ></ngx-charts-pie-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile>
-    <div class="statistic-container">
-      <div class="statistic-title">Overall deadline accuracy</div>
-      <div class="statistic-body ngx-charts-small-text">
-        <ngx-charts-bar-horizontal
-          [roundEdges]="false"
-          [view]="[225,75]"
-          [results]="overallDeadlineAccuracy"
-          [xAxis]="true"
-          [xAxisTickFormatting]="percentageFormat"
-          [dataLabelFormatting]="percentageFormat"
-          [xScaleMax]="100"
-          [scheme]="'ocean'">
-          ></ngx-charts-bar-horizontal>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <div class="statistic-container">
+        <div class="statistic-title">Overall deadline accuracy</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-horizontal
+              [animations]="false"
+              [roundEdges]="false"
+              [results]="overallDeadlineAccuracy"
+              [xAxis]="true"
+              [xAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [dataLabelFormatting]="formatUtils.applyPercentageFormat"
+              [xScaleMax]="100"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-horizontal>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-</mat-grid-list>
-
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
 <!------                                CAPACITY                                             ------->
 <!------                                CAPACITY                                             ------->
 
-<mat-grid-list *ngIf="statisticSelection === 'capacity' && loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
-  <mat-grid-tile rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Overall case instances</div>
-      <div class="statistic-body ngx-charts-small-text">
-        <ngx-charts-bar-vertical-stacked
-          [view]="[220,200]"
-          [barPadding]="1"
-          [results]="caseInstances"
-          [xAxis]="true"
-          [yAxis]="true"
-          [showDataLabel]="false"
-          [roundDomains]="true"
-          [scheme]="'ocean'">
-          ></ngx-charts-bar-vertical-stacked>
+<div [hidden]="statisticSelection !== 'capacity'">
+  <mat-grid-list *ngIf="loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Overall case instances</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="caseInstances"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Avg. demand for capacity</div>
-      <div class="statistic-body ngx-charts-small-text">
-        <ngx-charts-bar-vertical-stacked
-          [view]="[220,200]"
-          [barPadding]="1"
-          [results]="demandForCapacity"
-          [xAxis]="true"
-          [yAxis]="true"
-          [showDataLabel]="false"
-          [dataLabelFormatting]="pastTimeFormat"
-          [yAxisTickFormatting]="pastTimeFormat"
-          [roundDomains]="true"
-          [scheme]="'ocean'">
-          ></ngx-charts-bar-vertical-stacked>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Avg. demand for capacity</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="demandForCapacity"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [dataLabelFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Active Bottlenecks</div>
-      <div class="statistic-body">
-        <ngx-charts-pie-chart
-          [view]="[225,175]"
-          [results]="activeBottlenecks"
-          [labels]="false"
-          [doughnut]="true"
-          [scheme]="'ocean'"
-        ></ngx-charts-pie-chart>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Active Bottlenecks</div>
+        <div class="statistic-body">
+          <div class="statistic-graph">
+            <ngx-charts-pie-chart
+              [animations]="false"
+              [results]="activeBottlenecks"
+              [labels]="false"
+              [doughnut]="true"
+              [scheme]="'ocean'"
+            ></ngx-charts-pie-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile>
-    <div class="statistic-container">
-      <div class="statistic-title">Current amount of resources</div>
-      <div class="statistic-body">
-        <ngx-charts-bar-horizontal
-          [roundEdges]="false"
-          [view]="[225,75]"
-          [results]="sumOfResourcesAvailable"
-          [xAxis]="true"
-          [showDataLabel]="true"
-          [scheme]="'ocean'">
-          ></ngx-charts-bar-horizontal>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <div class="statistic-container">
+        <div class="statistic-title">Current amount of resources</div>
+        <div class="statistic-body">
+          <div class="statistic-graph">
+            <ngx-charts-bar-horizontal
+              [animations]="false"
+              [roundEdges]="false"
+              [results]="sumOfResourcesAvailable"
+              [xAxis]="true"
+              [showDataLabel]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-horizontal>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-</mat-grid-list>
-
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
 
 <!------                                RESOURCES                                             ------->
 <!------                                RESOURCES                                             ------->
 
-<mat-grid-list *ngIf="statisticSelection === 'resources' && loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
-  <mat-grid-tile rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Specification automation ratio</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-bar-vertical
-          [view]="[220,200]"
-          [barPadding]="1"
-          [results]="automationPercentage"
-          [xAxis]="true"
-          [yAxis]="true"
-          [xAxisTickFormatting]="percentageFormat"
-          [yAxisTickFormatting]="percentageFormat"
-          [dataLabelFormatting]="percentageFormat"
-          [yScaleMax]="100"
-          [showDataLabel]="false"
-          [roundDomains]="true"
-          [roundEdges]="false"
-          [scheme]="'ocean'">
-          ></ngx-charts-bar-vertical>
+<div [hidden]="statisticSelection !== 'resources'">
+  <mat-grid-list *ngIf="loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Specification automation ratio</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical
+              [animations]="false"
+              [barPadding]="1"
+              [results]="automationPercentage"
+              [xAxis]="true"
+              [yAxis]="true"
+              [xAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [dataLabelFormatting]="formatUtils.applyPercentageFormat"
+              [yScaleMax]="100"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [roundEdges]="false"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Specification automation candidates</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-bar-vertical-stacked
-          [view]="[220,200]"
-          [barPadding]="1"
-          [results]="automationCandidates"
-          [xAxis]="true"
-          [yAxis]="true"
-          [dataLabelFormatting]="pastTimeFormat"
-          [yAxisTickFormatting]="pastTimeFormat"
-          [showDataLabel]="false"
-          [roundDomains]="true"
-          [scheme]="'ocean'">
-          ></ngx-charts-bar-vertical-stacked>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Specification automation candidates</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="automationCandidates"
+              [xAxis]="true"
+              [yAxis]="true"
+              [dataLabelFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Overall roles distribution</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="resourceRoles"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Overall roles distribution</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="resourceRoles"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Overall capabilities distribution</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="resourceCapabilities"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Overall capabilities distribution</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="resourceCapabilities"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Overall positions distribution</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="resourcePositions"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Overall positions distribution</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="resourcePositions"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Relative specified demand for role</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="demandForRoles"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [yAxisTickFormatting]="percentageFormat"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Relative specified demand for role</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="demandForRoles"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Relative specified demand for capability</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="demandForCapabilities"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [yAxisTickFormatting]="percentageFormat"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Relative specified demand for capability</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="demandForCapabilities"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Relative specified demand for position</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="demandForPositions"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [yAxisTickFormatting]="percentageFormat"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Relative specified demand for position</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="demandForPositions"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Relative observed demand for role</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="associativeDemandForRoles"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [yAxisTickFormatting]="percentageFormat"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Relative observed demand for role</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="associativeDemandForRoles"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Relative observed demand for capability</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="associativeDemandForCapabilities"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [yAxisTickFormatting]="percentageFormat"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Relative observed demand for capability</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="associativeDemandForCapabilities"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-  <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
-    <div class="statistic-container">
-      <div class="statistic-title">Relative observed demand for position</div>
-      <div class="statistic-body ngx-charts-extra-small-text">
-        <ngx-charts-polar-chart
-          [view]="[225,200]"
-          [results]="associativeDemandForPositions"
-          [xAxis]="true"
-          [yAxis]="true"
-          [animations]="true"
-          [gradient]="true"
-          [showGridLines]="true"
-          [roundDomains]="true"
-          [yAxisTickFormatting]="percentageFormat"
-          [curve]="d3ViewVar.curveLinearClosed"
-          [scheme]="'ocean'">
-          ></ngx-charts-polar-chart>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Relative observed demand for position</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-polar-chart
+              [animations]="false"
+              [results]="associativeDemandForPositions"
+              [xAxis]="true"
+              [yAxis]="true"
+              [gradient]="true"
+              [showGridLines]="true"
+              [roundDomains]="true"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [curve]="d3ViewVar.curveLinearClosed"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-polar-chart>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-</mat-grid-list>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

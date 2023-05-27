@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
 import {
   faPencil,
@@ -22,6 +22,7 @@ import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
 import {env} from "../../../environments/environment";
+import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 
 /**
  * @author Robin Steinwarz
@@ -38,13 +39,13 @@ import {env} from "../../../environments/environment";
     ]),
   ],
 })
-export class WorkitemsDialogComponent implements AfterViewInit {
+export class WorkitemsDialogComponent implements OnInit {
   faArrowLeftLong = faArrowLeftLong;
   faPencil = faPencil;
   faChevronUp = faChevronUp;
   faChevronDown = faChevronDown;
   workitemURL = env.remoteUIUrl;
-  specificationStatistic: SpecificationStatistic;
+  specificationDataContainer!: SpecificationDataContainer;
   tasks: any | undefined;
   caseid: string | undefined;
   formatUtils: FormatUtils = new FormatUtils();
@@ -52,11 +53,13 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['taskid', 'decompositionOrder', 'status', 'queueTime', 'age', 'participants', 'overdue'];
+  displayedColumns: string[] = ['name', 'decompositionOrder', 'status', 'queueTime', 'age', 'participants', 'overdue'];
   displayedColumnsWithExpand = [...this.displayedColumns, 'expand'];
   expandedElement: { desciption: "xxxx" } | undefined;
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
+  taskstatisticMap: Map<String, TaskStatistic> = new Map<String, TaskStatistic>();
+  data!: {specificationDataContainer: SpecificationDataContainer, caseid: string};
 
   constructor(private _liveAnnouncer: LiveAnnouncer,
               private workItemService: WorkItemService,
@@ -65,18 +68,21 @@ export class WorkitemsDialogComponent implements AfterViewInit {
               private dialogRef: MatDialogRef<WorkitemsDialogComponent>,
               // @ts-ignore
               @Inject(MAT_DIALOG_DATA) data) {
-    this.specificationStatistic = data.specificationStatistic;
-    this.caseid = data.caseid;
+    this.data = data;
+    this.caseid = this.data.caseid;
+  }
 
+  ngOnInit(): void {
+    this.specificationDataContainer = this.data.specificationDataContainer;
+    this.specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
+      this.taskstatisticMap.set(taskStatistic.taskid, taskStatistic);
+    })
 
-    let caseStatisticDTO: CaseStatistic = this.specificationStatistic.caseStatisticDTOS
+    let caseStatisticDTO: CaseStatistic = this.specificationDataContainer.specificationStatistic.caseStatisticDTOS
       .filter(caseInstance => caseInstance.caseid === this.caseid)[0]
 
     // @ts-ignore
     this.dataSource = new MatTableDataSource(caseStatisticDTO.taskTimingDTOS);
-  }
-
-  ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
 
@@ -84,8 +90,13 @@ export class WorkitemsDialogComponent implements AfterViewInit {
     this.dialogRef.close();
   }
 
+  computeName(workitem: TaskTiming): string {
+    let task = this.taskstatisticMap.get(workitem.taskid)!;
+    return task.name;
+  }
+
   computeQueueTime(workitem: TaskTiming): number {
-    if (workitem.cancelled) {
+    if(workitem.cancelled){
       return 0;
     }
     let smallestNumbers = [];
@@ -111,7 +122,7 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   }
 
   computeAge(workitem: TaskTiming): number {
-    if (workitem.cancelled) {
+    if(workitem.cancelled){
       return 0;
     }
     let smallestNumbers = [];
@@ -137,9 +148,6 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   }
 
   computeCreationTimestamp(workitem: TaskTiming): number {
-    if (workitem.cancelled) {
-      return 0;
-    }
     let smallestNumbers = [];
     if (workitem.allocatedTimestamp !== 0) {
       smallestNumbers.push(workitem.allocatedTimestamp);
@@ -156,18 +164,12 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   }
 
   computeMaxQueueTime(workitem: TaskTiming): number {
-    if (workitem === undefined) {
-      return 0;
-    }
-    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    let task = this.taskstatisticMap.get(workitem.taskid)!;
     return task.maxQueueAge!;
   }
 
   computeMaxTaskTime(workitem: TaskTiming): number {
-    if (workitem === undefined) {
-      return 0;
-    }
-    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    let task = this.taskstatisticMap.get(workitem.taskid)!;
     if (task.maxTaskAge === undefined) {
       return 0;
     }
@@ -175,58 +177,82 @@ export class WorkitemsDialogComponent implements AfterViewInit {
   }
 
   computeAvgQueueTime(workitem: TaskTiming): number {
-    if (workitem === undefined) {
-      return 0;
-    }
-    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    let task = this.taskstatisticMap.get(workitem.taskid)!;
     return task.avgQueueTime;
   }
 
   computeAvgCompletionTime(workitem: TaskTiming): number {
-    if (workitem === undefined) {
-      return 0;
-    }
-    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    let task = this.taskstatisticMap.get(workitem.taskid)!;
     return task.avgCompletionTime;
   }
 
   computeAvgTimeToReach(workitem: TaskTiming): number {
-    if (workitem === undefined) {
-      return 0;
-    }
-    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
+    let task = this.taskstatisticMap.get(workitem.taskid)!;
     return task.avgTimeToReach;
   }
 
-  computeCommonParticipants(workitem: TaskTiming): Participant[] {
-    if (workitem === undefined) {
-      return [];
-    }
-    let task = this.specificationStatistic.taskStatisticDTOS.filter((task: TaskStatistic) => task.taskid == workitem.taskid)[0];
-    //return task.participants;
-    return [];
+  computeResourcesAsked(workitem: TaskTiming): Participant[] {
+    let participantMap: Map<String, Participant> = new Map<String, Participant>();
+    this.specificationDataContainer.participants.forEach(participant => {
+      participantMap.set(participant.id, participant);
+    })
+    let participantsArray: Participant[] = [];
+    Object.entries(workitem.participants).forEach(entry => {
+      if(entry[0] !== "system"){
+        let isRelevant = false;
+        for(let event of entry[1]){
+          if(event === "Offer" || event === "Allocate"){
+            isRelevant = true;
+            break;
+          }
+        }
+        if(isRelevant){
+          participantsArray.push(participantMap.get(entry[0])!)!;
+        }
+      }
+    })
+
+    return participantsArray;
   }
 
-  isInQueue(workitem: any): boolean {
+  computeResources(workitem: TaskTiming): Participant[]{
+    let participantMap: Map<String, Participant> = new Map<String, Participant>();
+    this.specificationDataContainer.participants.forEach(participant => {
+      participantMap.set(participant.id, participant);
+    })
+    let participantsArray: Participant[] = [];
+    Object.entries(workitem.participants).forEach(entry => {
+      if(entry[0] !== "system"){
+        let isRelevant = false;
+        for(let event of entry[1]){
+          if(event === "Start" || event === "Complete"){
+            isRelevant = true;
+            break;
+          }
+        }
+        if(isRelevant){
+          participantsArray.push(participantMap.get(entry[0])!)!;
+        }
+      }
+    })
+
+    return participantsArray;
+  }
+
+  isInQueue(workitem: TaskTiming): boolean {
     if (workitem.status === "Offered" || workitem.status === "Allocated") {
       return true;
     }
     return false;
   }
 
-  isOverdue(workitem: TaskTiming): boolean {
-    let taskStatistics = this.specificationStatistic.taskStatisticDTOS.filter(taskStatistic => taskStatistic.taskid === workitem.taskid);
-    let taskStatistic = (taskStatistics.length !== 0) ? taskStatistics[0] : null;
-    if (taskStatistic !== null) {
-      let age = this.computeAge(workitem);
-      if (workitem.startTimestamp === 0) {
-        return age > taskStatistic.maxQueueAge!;
-      } else {
-        return age > taskStatistic.maxTaskAge!;
-      }
+  getOverdueLimit(workitem: TaskTiming): number{
+    let taskStatistic = this.taskstatisticMap.get(workitem.taskid)!;
+    if (workitem.startTimestamp === 0) {
+      return taskStatistic.maxQueueAge!;
+    } else {
+      return taskStatistic.maxTaskAge!;
     }
-
-    return false;
   }
 
   applyFilter(event: Event) {
@@ -247,9 +273,9 @@ export class WorkitemsDialogComponent implements AfterViewInit {
     }
 
     if (sortState.active == "overdue" && sortState.direction == "asc") {
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) > this.isOverdue(workitemB)) ? -1 : 1)
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) > this.computeAge(workitemB)) ? -1 : 1)
     } else if (sortState.active == "overdue" && sortState.direction == "desc") {
-      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.isOverdue(workitemA) < this.isOverdue(workitemB)) ? -1 : 1)
+      this.dataSource?.data.sort((workitemA: any, workitemB: any) => (this.computeAge(workitemA) < this.computeAge(workitemB)) ? -1 : 1)
     }
   }
 

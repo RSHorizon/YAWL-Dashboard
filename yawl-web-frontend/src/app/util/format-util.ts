@@ -25,10 +25,14 @@ export class FormatUtils {
     let minutes = Math.floor(minutesMs / (1000 * 60))
     let seconds = Math.floor(secondsMs / (1000))
 
-    return hours + "h " + minutes + "m " + seconds + "s";
+    return hours + ":" + ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
   }
 
   applyPastTimeFormatForTimestampWithDays(timestamp: number){
+    if(timestamp === 0){
+      return 0 + "d " + 0 + ":" + 0 + ":" + 0;
+    }
+
     let daysMs = timestamp
     let hoursMs = daysMs % (1000 * 60 * 60 * 24)
     let minutesMs = hoursMs % (1000 * 60 * 60)
@@ -39,7 +43,7 @@ export class FormatUtils {
     let minutes = Math.floor( minutesMs / (1000 * 60))
     let seconds = Math.floor(secondsMs / (1000))
 
-    return days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+    return days + "d " + hours + ":" + ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
   }
 
 
@@ -62,7 +66,7 @@ export class FormatUtils {
     participants.forEach(participant => {
       chain += ", " + participant.firstname + " " + participant.lastname
     })
-    return chain.substring(2);
+    return chain.substring(2).trim();
   }
 
   applyOccurencesFormat(occurences: number[]): string {
@@ -74,6 +78,9 @@ export class FormatUtils {
   }
 
   applyIsOverdueFormat(age: number, maxTime: number): string {
+    if(maxTime === 0){
+      return "Not set";
+    }
     if (age > maxTime) {
       return "Yes";
     } else {
@@ -83,6 +90,18 @@ export class FormatUtils {
 
   applyBooleanFormat(bool: boolean) {
     return (bool) ? "Yes" : "No";
+  }
+
+  applyPercentageFormat(val: any) {
+    return val.toLocaleString() + '%';
+  }
+
+  applyVerticalGroupChartFormat(data: any): string {
+    return "";
+  }
+
+  applyPieChartTimestampLabelFormat(val: any) {
+    return val.data.label + "<br> " + new FormatUtils().applyPastTimeFormatForTimestampWithDays(val.value);
   }
 
 }

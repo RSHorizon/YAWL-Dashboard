@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Observable} from "rxjs";
+import {Observable, tap} from "rxjs";
 import {SpecificationStatistic} from "../dto/specification-statistic.entity";
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {env} from "../../../../environments/environment";
@@ -29,10 +29,8 @@ export class StatisticService {
       + "/" + encodeURIComponent(id)
       + "/" + encodeURIComponent(version);
 
-    return this.http.get<HttpResponse<SpecificationStatistic>>(url, {headers, withCredentials: true}).pipe(
-      map((res: HttpResponse<SpecificationStatistic>) => res),
-      catchError((error) => this.handleError(error))
-    )
+    return this.http.get<SpecificationStatistic>(url, {headers, withCredentials: true}).pipe(
+        tap({ error: (error) => this.handleError(error)}));
   }
 
   private handleError(error: any): Observable<any> {

@@ -1,7 +1,6 @@
 package org.yawlfoundation.yawldashboardbackend.dto;
 
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Capability;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Position;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 
@@ -13,6 +12,7 @@ import java.util.*;
  */
 public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializable {
     private String taskid;
+    private String name;
     // <Participant_ID, Set<Event>>
     private Map<String, Set<String>> participants = new HashMap<>();
     // <Capability_name, occurrences>
@@ -20,8 +20,9 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
     // <Role_name, occurrences>
     private Map<String, Integer> associatedRoles = new HashMap<>();
     // <Position_name, occurrences>
-    private Map<String, Integer> associatedPosition = new HashMap<>();
+    private Map<String, Integer> associatedPositions = new HashMap<>();
     private String decompositionOrder = "";
+    private String minimalOrder = "";
     private long avgCompletionTime = 0;
     private Integer[] avgOccurrencesPerWeek = {0,0,0,0,0,0,0,0};
     private long avgQueueTime = 0;
@@ -32,7 +33,7 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
     private long maxTaskAge;
     Set<Capability> demandedCapabilities = new HashSet<>();
     Set<Role> demandedRoles = new HashSet<>();
-    Set<Position> demandedPosition = new HashSet<>();
+    Set<Position> demandedPositions = new HashSet<>();
     boolean autoOffer = false;
     boolean autoAllocate = false;
     boolean autoStart = false;
@@ -110,12 +111,12 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
         this.associatedRoles = associatedRoles;
     }
 
-    public Map<String, Integer> getAssociatedPosition() {
-        return associatedPosition;
+    public Map<String, Integer> getAssociatedPositions() {
+        return associatedPositions;
     }
 
-    public void setAssociatedPosition(Map<String, Integer> associatedPosition) {
-        this.associatedPosition = associatedPosition;
+    public void setAssociatedPositions(Map<String, Integer> associatedPositions) {
+        this.associatedPositions = associatedPositions;
     }
 
     public static int decompositionOrderComparison(String order, String order2) {
@@ -181,12 +182,12 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
         this.demandedRoles = demandedRoles;
     }
 
-    public Set<Position> getDemandedPosition() {
-        return demandedPosition;
+    public Set<Position> getDemandedPositions() {
+        return demandedPositions;
     }
 
-    public void setDemandedPosition(Set<Position> demandedPosition) {
-        this.demandedPosition = demandedPosition;
+    public void setDemandedPositions(Set<Position> demandedPositions) {
+        this.demandedPositions = demandedPositions;
     }
 
     public boolean isAutoOffer() {
@@ -235,5 +236,21 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
 
     public void setMaxTaskAge(long maxTaskAge) {
         this.maxTaskAge = maxTaskAge;
+    }
+
+    public String getMinimalOrder() {
+        return minimalOrder;
+    }
+
+    public void setMinimalOrder(String minimalOrder) {
+        this.minimalOrder = minimalOrder;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

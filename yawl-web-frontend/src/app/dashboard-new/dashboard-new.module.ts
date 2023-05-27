@@ -23,6 +23,8 @@ import { SpecificationStatisticViewComponent } from './specification-statistic-v
 import {NgxChartsModule} from "@swimlane/ngx-charts";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatNativeDateModule} from "@angular/material/core";
+import { CaseStatisticViewComponent } from './case-statistic-view/case-statistic-view.component';
+import { TaskStatisticViewComponent } from './task-statistic-view/task-statistic-view.component';
 
 /**
  * @author Robin Steinwarz
@@ -37,7 +39,9 @@ import {MatNativeDateModule} from "@angular/material/core";
     WorkitemsDialogComponent,
     TaskViewComponent,
     TimestampformComponent,
-    SpecificationStatisticViewComponent
+    SpecificationStatisticViewComponent,
+    CaseStatisticViewComponent,
+    TaskStatisticViewComponent
   ],
   imports: [
     CommonModule,

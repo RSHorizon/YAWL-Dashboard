@@ -1,6 +1,7 @@
 import {AfterContentInit, AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
+import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong} from '@fortawesome/free-solid-svg-icons';
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
@@ -12,6 +13,8 @@ import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {FormatUtils} from "../../util/format-util";
 import {NotifierService} from "angular-notifier";
+import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
+import {Task} from "../../yawl/resources/entities/work-item.entity";
 /**
  * @author Robin Steinwarz
  */
@@ -21,15 +24,16 @@ import {NotifierService} from "angular-notifier";
   styleUrls: ['./task-view.component.css']
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
+  faArrowsToEye=faArrowsToEye;
 
-  @Input("specificationStatistic")
-  specificationStatistic: SpecificationStatistic | undefined;
+  @Input("specificationDataContainer")
+  specificationDataContainer!: SpecificationDataContainer;
   // @ts-ignore
   @ViewChild(MatSort) sort: MatSort;
-  displayedColumns: string[] = ['taskid', 'decompositionOrder', 'avgQueueTime', 'avgCompletionTime', 'avgTimeToReach', 'avgOccurrencesPerWeek', 'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
+  displayedColumns: string[] = ['name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource | undefined;
-  formatUtils: FormatUtils = new FormatUtils();
+  specificTaskStatisticSelection = '';
 
   constructor(private specificationService: SpecificationService,
               private notifierService: NotifierService) {
@@ -40,15 +44,41 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource(this.specificationStatistic!.taskStatisticDTOS);
+    this.dataSource = new MatTableDataSource(this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS);
+    this.dataSource.sortingDataAccessor = (row: TaskStatistic, key: any) => {
+      switch (key) {
+        case 'name':
+          return row.name;
+        case 'decompositionOrder':
+          return row.minimalOrder
+        case 'avgQueueTime':
+          return row.avgQueueTime
+        case 'avgCompletionTime':
+          return row.avgCompletionTime
+        case 'avgTimeToReach':
+          return row.avgTimeToReach
+        case 'costResourceHour':
+          return row.costResourceHour
+        case 'maxTaskAge':
+          return row.maxTaskAge
+        case 'maxQueueAge':
+          return row.maxQueueAge
+        default:
+          return row.minimalOrder;
+      }
+    };
+  }
+
+  selectSpecificTaskStatistic(taskid: string){
+    this.specificTaskStatisticSelection = taskid;
   }
 
   saveLimits(task: any): void {
-    if (this.specificationStatistic === undefined) {
+    if (this.specificationDataContainer?.specificationStatistic === undefined) {
       return;
     }
     this.specificationService.storeTaskAttributesById(
-      this.specificationStatistic.id, this.specificationStatistic.version, this.specificationStatistic.uri,
+      this.specificationDataContainer?.specificationStatistic.id, this.specificationDataContainer?.specificationStatistic.version, this.specificationDataContainer?.specificationStatistic.uri,
       task.taskid, task.costResourceHour, task.maxTaskAge, task.maxQueueAge).subscribe(result => {
       this.notifierService.notify("success", "Task attributes saved");
     });
@@ -62,14 +92,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
   announceSortChange(sort: Sort) {
     const isAsc = sort.direction === 'asc';
     if(sort.direction === ''){
-      this.dataSource?.data.sort((a: TaskStatistic, b: TaskStatistic) => this.compare(a.decompositionOrder, b.decompositionOrder, true));
-    }
-    switch (sort.active) {
-      case 'avgOccurrencesPerWeek':
-        this.dataSource?.data.sort((a: TaskStatistic, b: TaskStatistic) => this.compareOccasions(a.avgOccurrencesPerWeek, b.avgOccurrencesPerWeek, isAsc));
-        return;
-      default:
-        return 0;
+      this.dataSource?.data.sort((a: TaskStatistic, b: TaskStatistic) => this.compare(a.minimalOrder, b.minimalOrder, true));
     }
   }
 

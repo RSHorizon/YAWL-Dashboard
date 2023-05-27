@@ -23,4 +23,6 @@ public interface ResourceLogManager {
     YSpecificationID getSpecificationIdentifiers(String speckey);
 
     List<Event> getAllResourceEvents(YSpecificationID specID);
+
+    String getMergedXESLog(YSpecificationID specID);
 }

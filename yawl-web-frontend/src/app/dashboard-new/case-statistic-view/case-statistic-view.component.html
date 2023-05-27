@@ -1,0 +1,295 @@
+<p>
+  <mat-button-toggle-group (valueChange)="selectStatistic($event)" appearance="legacy">
+    <mat-button-toggle value="common" [checked]="true">Common</mat-button-toggle>
+    <mat-button-toggle value="success">Success</mat-button-toggle>
+    <mat-button-toggle value="performance">Performance</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <mat-form-field appearance="legacy">
+    <mat-label>Select statistic range</mat-label>
+    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+      <input (dateChange)="updateData()" matStartDate formControlName="start" placeholder="Start date">
+      <input (dateChange)="updateData()" matEndDate formControlName="end" placeholder="End date">
+    </mat-date-range-input>
+    <mat-hint *ngIf="this.casesInRange !== 0">Cases found: {{ this.casesInRange }}</mat-hint>
+    <mat-hint *ngIf="this.casesInRange === 0" style="color: darkred">Cases found: {{ this.casesInRange }}</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+
+    <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+    <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="legacy">
+    <mat-label>Statistic fineness</mat-label>
+    <mat-select [(value)]="fineness" (valueChange)="updateData()">
+      <mat-option [value]="'month'">{{ 'month' }}</mat-option>
+      <mat-option [value]="'year'">{{ 'year' }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</p>
+<div [hidden]="statisticSelection !== 'common'">
+  <mat-grid-list *ngIf="loaded && specificationDataContainer !== undefined" cols="5" rowHeight="2:1"
+                 [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Overall case instances</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="caseInstances"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label"></div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Avg. demand for capacity</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="capacityDemand"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [dataLabelFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label">
+
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Avg. case instances per weekday</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="avgCasesPerWeekday"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label">
+
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Cost</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="costs"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label">
+
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container scrollbar">
+        <div class="statistic-title">Associated ressources</div>
+        <div class="ngx-charts-small-text">
+          <div style="display:block;">
+            <p *ngFor="let keyValue of associatedParticipants | keyvalue, let i = index">
+              <mat-form-field>
+                <mat-label>{{" - " + keyValue.key}}</mat-label>
+                <mat-select>
+                  <mat-option
+                    *ngFor="let participant of keyValue.value">{{participant.firstname + " " + participant.lastname}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <br>
+            </p>
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+<div [hidden]="statisticSelection !== 'success'">
+  <mat-grid-list *ngIf="loaded && specificationDataContainer !== undefined" cols="5" rowHeight="2:1"
+                 [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Success</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="successValues"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label">
+            {{successful}} cases were successful. {{unsucessful}} cases were unsuccessful.
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Success rate</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-line-chart
+              [animations]="false"
+              [results]="successLine"
+              [xAxis]="true"
+              [xAxisLabel]="'Time period'"
+              [yAxis]="true"
+              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
+              [yScaleMax]="100"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-line-chart>
+          </div>
+          <div class="statistic-label">
+
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Deadline accuracy</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="deadlineValues"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label">
+            {{deadlineNotExceeded}} cases met the deadline. {{deadlineExceeded}} cases did not.
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">SLA met rate</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-line-chart
+              [animations]="false"
+              [results]="slaLine"
+              [xAxis]="true"
+              [xAxisLabel]="'Time period'"
+              [yAxis]="true"
+              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [yScaleMax]="100"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-line-chart>
+          </div>
+          <div class="statistic-label">
+
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+<div [hidden]="statisticSelection !== 'performance'">
+  <mat-grid-list *ngIf="loaded && specificationDataContainer !== undefined" cols="5" rowHeight="2:1"
+                 [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Avg. case duration</div>
+        <div class="statistic-body ngx-charts-extra-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-line-chart
+              [animations]="false"
+              [results]="casePerformance"
+              [xAxis]="true"
+              [yAxis]="true"
+              [yAxisLabel]="'Case duration'"
+              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-line-chart>
+          </div>
+          <div class="statistic-label">
+
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Performance distribution</div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <ngx-charts-bar-vertical-stacked
+              [animations]="false"
+              [barPadding]="1"
+              [results]="casePerformanceDistribution"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showDataLabel]="false"
+              [roundDomains]="true"
+              [scheme]="'ocean'">
+              >
+            </ngx-charts-bar-vertical-stacked>
+          </div>
+          <div class="statistic-label">
+            0% {{casePerformanceDistributionMin}} represents the fastest and 100% {{casePerformanceDistributionMax}} the
+            longest case run time.
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

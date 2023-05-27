@@ -4,6 +4,7 @@
 import {CaseStatistic} from "./case-statistic.entity";
 import {TaskStatistic} from "./task-statistic.entity";
 import {Participant} from "../entities/participant.entity";
+import {AssociatedParticipants} from "./associated-participants.entity";
 
 
 export interface SpecificationStatistic {
@@ -13,7 +14,8 @@ export interface SpecificationStatistic {
   key: string;
   caseStatisticDTOS : CaseStatistic[];
   taskStatisticDTOS : TaskStatistic[];
-  participants: Participant[];
+  eventAssociatedParticipants: AssociatedParticipants[];
+  roleAssociatedParticipants: AssociatedParticipants[];
   avgCaseCompletionTime : number;
   successfulCases : number;
   unsuccessfulCases : number;

@@ -10,6 +10,7 @@ public class CaseStatisticDTO implements Serializable {
     private String caseid;
     private boolean cancelled;
     private List<TaskTimingDTO> taskTimingDTOS = new ArrayList<>();
+    private List<TaskTimingDTO> queue = new ArrayList<>();
     private long start = 0;
     private long end = 0;
     private long age = 0;
@@ -108,5 +109,13 @@ public class CaseStatisticDTO implements Serializable {
 
     public void setResourceTime(long resourceTime) {
         this.resourceTime = resourceTime;
+    }
+
+    public List<TaskTimingDTO> getQueue() {
+        return queue;
+    }
+
+    public void setQueue(List<TaskTimingDTO> queue) {
+        this.queue = queue;
     }
 }

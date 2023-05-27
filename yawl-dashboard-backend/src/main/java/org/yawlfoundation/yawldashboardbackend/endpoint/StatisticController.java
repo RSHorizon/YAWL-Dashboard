@@ -7,16 +7,13 @@ import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionSpecificationDao;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
 import org.yawlfoundation.yawldashboardbackend.dto.*;
-import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
 import org.yawlfoundation.yawldashboardbackend.model.ExtensionTask;
-import org.yawlfoundation.yawldashboardbackend.model.SpecificationId;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.*;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.*;
 
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,6 +49,7 @@ public class StatisticController {
                                                                    @PathVariable("uri") String uri) {
         // *** Gather all needed data in advance
         YSpecificationID specId = new YSpecificationID(specificationID, specversion, uri);
+
         // Retrieve speckey from specId
         List<Specification> specifications = interfaceEManager.getAllSpecifications();
         String speckey = specifications.stream().filter(c -> c.getUri().equals(uri)
@@ -67,7 +65,8 @@ public class StatisticController {
         for (Participant participant : resourceManager.getParticipants()) {
             participantsInformationMap.put(participant.getId(), participant);
         }
-        Set<String> relatedParticipantIDs = new HashSet<>();
+        Map<String, Set<Participant>> eventRelatedParticipants = new HashMap<>();
+        Map<String, Set<Participant>> roleRelatedParticipants = new HashMap<>();
         // Map all resource events to separate case objects
         List<CaseDTO> cases = new ArrayList<>();
         mapEventsToCases(events, cases, speckey);
@@ -91,11 +90,13 @@ public class StatisticController {
             newTaskStatistic.setAutoOffer(existingTask.isAutoOffer());
             newTaskStatistic.setAutoAllocate(existingTask.isAutoAllocate());
             newTaskStatistic.setAutoStart(existingTask.isAutoStart());
+            newTaskStatistic.setMinimalOrder(existingTask.getOrder());
+            newTaskStatistic.setName(existingTask.getName());
             newTaskStatistic.setDemandedRoles(roles.stream().filter(role ->
                     existingTask.getDemandedRoles().contains(role.getId())).collect(Collectors.toSet()));
             newTaskStatistic.setDemandedCapabilities(capabilities.stream().filter(capability ->
                     existingTask.getDemandedCapabilities().contains(capability.getName())).collect(Collectors.toSet()));
-            newTaskStatistic.setDemandedPosition(positions.stream().filter(position ->
+            newTaskStatistic.setDemandedPositions(positions.stream().filter(position ->
                     existingTask.getDemandedPositions().contains(position.getTitle())).collect(Collectors.toSet()));
             extensionTasks.forEach(extensionTask -> {
                 if(extensionTask.getTaskid().equals(existingTask.getId())){
@@ -108,7 +109,7 @@ public class StatisticController {
             taskTimings.put(existingTask.getId(), new HashMap<>());
         }
         StatisticEventRepairService.fixTaskOrder(cases, smallestDecompositionOrders, allExistingTasks, caseStatisticMap,
-                taskTimings, relatedParticipantIDs);
+                taskTimings, eventRelatedParticipants, participantsInformationMap);
 
         SpecificationStatisticDTO specificationStatistic = new SpecificationStatisticDTO(specificationID, specversion, uri);
         // Specification performance
@@ -123,12 +124,24 @@ public class StatisticController {
         specificationStatistic.setSpeckey(speckey);
         specificationStatistic.setCaseStatisticDTOS(new ArrayList<>(caseStatisticMap.values()));
         specificationStatistic.setTaskStatisticDTOS(taskStatistics);
-        specificationStatistic.getParticipants().addAll(
-                relatedParticipantIDs.stream()
-                        .map(participantsInformationMap::get).filter(Objects::nonNull)
-                        .collect(Collectors.toList())
-        );
-
+        List<AssociatedParticipants> eventAssociatedParticipantsList = eventRelatedParticipants.entrySet()
+                .stream().map(entry -> new AssociatedParticipants(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+        Map<String, Set<Participant>> roleRelatedMap = new HashMap<>();
+        eventRelatedParticipants.entrySet()
+                .stream().filter(entry -> entry.getKey().equals("start") || entry.getKey().equals("complete")).forEach(entry ->{
+                    entry.getValue().forEach(participant -> {
+                        participant.getRoles().forEach(role -> {
+                            if(!roleRelatedMap.containsKey(role.getName())){
+                                roleRelatedMap.put(role.getName(), new HashSet<>());
+                            }
+                            roleRelatedMap.get(role.getName()).add(participant);
+                        });
+                    });
+                });
+        List<AssociatedParticipants> roleAssociatedParticipantsList = roleRelatedMap.entrySet()
+                .stream().map(entry -> new AssociatedParticipants(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+        specificationStatistic.setEventAssociatedParticipants(eventAssociatedParticipantsList);
+        specificationStatistic.setRoleAssociatedParticipants(roleAssociatedParticipantsList);
         return specificationStatistic;
     }
 
@@ -243,6 +256,7 @@ public class StatisticController {
                         if (taskTimingDTO.getStartTimestamp() == 0L) {
                             queueTime = now - creationTimestamp;
                             if (!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()) {
+                                relatedCaseDTO.getQueue().add(taskTimingDTO);
                                 relatedCaseDTO.incQueuedWorkitemsCount();
                             }
                         } else {
@@ -316,7 +330,7 @@ public class StatisticController {
                         associatedRoles.replace(role.getName(), associatedRoles.get(role.getName()) + 1);
                     });
                     participantsInformationMap.get(participantKey).getPositions().forEach(position -> {
-                        Map<String, Integer> associatedPositions = taskStatistic.getAssociatedPosition();
+                        Map<String, Integer> associatedPositions = taskStatistic.getAssociatedPositions();
                         if(!associatedPositions.containsKey(position.getTitle())){
                             associatedPositions.put(position.getTitle(), 0);
                         }

@@ -2,13 +2,14 @@
  * @author Robin Steinwarz
  */
 import {Participant} from "../entities/participant.entity";
+import {AssociatedParticipants} from "./associated-participants.entity";
 
 export interface TaskTiming {
   taskid: string;
   caseid: string;
   decompositionOrder: string;
   participantsIds: string[];
-  participants: Participant;
+  participants: Map<String, Set<String>>;
   status: string;
   latestEventTimestamp: number;
   automated: boolean;

@@ -7,7 +7,9 @@ import {Position} from "../entities/position.entity";
 
 export interface TaskStatistic {
   taskid: string;
+  name: string;
   decompositionOrder: string;
+  minimalOrder: string
   avgQueueTime: number;
   avgCompletionTime: number;
   avgTimeToReach: number;
@@ -15,7 +17,7 @@ export interface TaskStatistic {
   participants: Map<String, Set<String>>;
   demandedRoles: Set<Role>;
   demandedCapabilities: Set<Capability>;
-  demandedPosition: Set<Position>;
+  demandedPositions: Set<Position>;
   associatedRoles: Map<String, number>;
   associatedCapabilities: Map<String, number>;
   associatedPositions: Map<String, number>;
@@ -27,3 +29,4 @@ export interface TaskStatistic {
   maxQueueAge: number;
   maxTaskAge: number;
 }
+

@@ -13,6 +13,7 @@ import java.util.Set;
 
 public class Task {
     String id;
+    String name;
     String order;
     String specificationId;
     String specversion;
@@ -118,5 +119,13 @@ public class Task {
 
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

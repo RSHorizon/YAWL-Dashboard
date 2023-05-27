@@ -114,6 +114,16 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
         }
     }
 
+    @Override
+    public String getMergedXESLog(YSpecificationID specID){
+        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
+            String result = connection.getMergedXESLog(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), true, handle.getRawHandle());
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String getJsonFromXML(String xml) {
         try {
             XmlMapper xmlMapper = new XmlMapper();

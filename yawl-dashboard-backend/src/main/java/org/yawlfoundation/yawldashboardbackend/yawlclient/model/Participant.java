@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @author Philipp Thomas
  */
-public class Participant {
+public class Participant implements Comparable<Participant> {
 
 	private String id;
 	private String username;
@@ -33,7 +33,6 @@ public class Participant {
 	private String notes;
 	private String description;
 	private boolean admin;
-
 	private List<Role> roles = new ArrayList<>();
 	private List<Capability> capabilities = new ArrayList<>();
 	private List<Position> positions = new ArrayList<>();
@@ -130,5 +129,10 @@ public class Participant {
 
 	public void setPositions(List<Position> positions) {
 		this.positions = positions;
+	}
+
+	@Override
+	public int compareTo(Participant o) {
+		return CharSequence.compare(this.id, o.id);
 	}
 }

@@ -4,6 +4,7 @@ import {TaskTiming} from "./task-timing.entity";
  */
 export interface CaseStatistic {
   taskTimingDTOS: TaskTiming[];
+  queue: TaskTiming[];
   caseid : string;
   cancelled : boolean;
   start : number;
@@ -12,4 +13,5 @@ export interface CaseStatistic {
   resourceTime: number;
   queuedWorkitemsCount : number;
   runningWorkitemsCount: number;
+
 }

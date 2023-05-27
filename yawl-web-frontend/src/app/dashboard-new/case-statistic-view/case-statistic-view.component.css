@@ -1,3 +1,4 @@
+
 .mat-grid-tile {
   border-radius: 2px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 3px;
@@ -11,8 +12,7 @@
 }
 
 .statistic-title {
-  padding: .5em;
-  width: 100%;
+  margin: 8px;
   font-weight: bold;
   font-size: 9px;
   color: #00000087;
@@ -20,7 +20,7 @@
 
 .statistic-body {
   width: 100%;
-  height: calc(100% - 1.5em);
+  height: 100%;
   display:flex;
   flex-flow: column;
   justify-content: center;
@@ -43,6 +43,26 @@
   text-align: center
 }
 
+.scrollbar{
+  overflow-y: auto;
+}
+
 .mat-form-field{
   margin-left: 2em;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  border-radius: 4px;
+  border: 1px solid #efeeee;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  background: #c0cad5;
 }

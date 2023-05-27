@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  AfterViewInit, ChangeDetectorRef,
   Component,
   OnInit,
   ViewChild
@@ -40,9 +40,6 @@ export class SpecificationViewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit(): void {
     this.specificationDataService.getSpecificationsData().subscribe(specificationDataContainers => {
       this.dataSource.data = specificationDataContainers;
       this.specificationDataContainer = specificationDataContainers;
@@ -64,6 +61,10 @@ export class SpecificationViewComponent implements OnInit, AfterViewInit {
         }
       };
     });
+  }
+
+  ngAfterViewInit(): void {
+
   }
 
 

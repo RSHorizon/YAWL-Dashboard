@@ -16,5 +16,5 @@ export interface Participant {
   roles: Role[];
   capabilities: Capability[];
   positions: Position[];
-
 }
+

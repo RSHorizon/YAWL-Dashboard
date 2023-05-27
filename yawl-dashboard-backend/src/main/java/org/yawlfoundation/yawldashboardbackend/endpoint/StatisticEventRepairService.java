@@ -13,9 +13,10 @@ public class StatisticEventRepairService {
 
     protected static void fixTaskOrder(List<CaseDTO> cases, Map<String, String> smallestDecompositionOrders,
                                        List<Task> allExistingTasks,
-                              Map<String, CaseStatisticDTO> caseStatisticMap,
-                              Map<String, Map<String, TaskTimingDTO>> taskTimings,
-                              Set<String> relatedParticipantIDs) {
+                                       Map<String, CaseStatisticDTO> caseStatisticMap,
+                                       Map<String, Map<String, TaskTimingDTO>> taskTimings,
+                                       Map<String, Set<Participant>> eventRelatedParticipants,
+                                       Map<String, Participant> participantsInformationMap) {
         for (CaseDTO caseInstance : cases) {
             // Initiate case statistic per case and get it
             caseStatisticMap.put(caseInstance.getId(), new CaseStatisticDTO(caseInstance.getId()));
@@ -29,7 +30,10 @@ public class StatisticEventRepairService {
                 // Misc
                 String eventDecompositionOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
                 updateSmallestDecompositionOrder(event, eventDecompositionOrder, smallestDecompositionOrders);
-                relatedParticipantIDs.add(event.getResourceid());
+                if (!eventRelatedParticipants.containsKey(event.getEventtype())) {
+                    eventRelatedParticipants.put(event.getEventtype(), new HashSet<>());
+                }
+                eventRelatedParticipants.get(event.getEventtype()).add(participantsInformationMap.get(event.getResourceid()));
                 // Update baseline
                 if (!baseline.containsKey(event.getTaskid())) {
                     baseline.put(event.getTaskid(), null);
@@ -42,7 +46,7 @@ public class StatisticEventRepairService {
                 String[] resourceEvents = {"offer", "unoffer", "allocate"};
                 String[] cancelEvents = {"cancelled_by_case", "cancel"};
                 boolean notExcluded = !localExcluded.contains(eventDecompositionOrder);
-                if(Arrays.asList(resourceEvents).contains(event.getEventtype())){
+                if (Arrays.asList(resourceEvents).contains(event.getEventtype())) {
                     if (baseline.get(event.getTaskid()) == null && notExcluded) {
                         baseline.replace(event.getTaskid(), eventDecompositionOrder);
                         localBaselineEvents.add(event);
@@ -52,17 +56,17 @@ public class StatisticEventRepairService {
                     } else {
                         localExcluded.add(eventDecompositionOrder);
                     }
-                } else if(event.getEventtype().equals("start") && notExcluded){
+                } else if (event.getEventtype().equals("start") && notExcluded) {
                     localBaselineEvents.forEach(baseLineEvent -> {
                         baseLineEvent.setCaseid(event.getCaseid());
                     });
-                }else if(event.getEventtype().equals("complete") && notExcluded){
+                } else if (event.getEventtype().equals("complete") && notExcluded) {
                     localBaselineEvents.forEach(baseLineEvent -> {
                         baseLineEvent.setCaseid(event.getCaseid());
                     });
                     baseline.replace(event.getTaskid(), null);
                     localBaselineEvents.clear();
-                }else if(Arrays.asList(cancelEvents).contains(event.getEventtype()) && notExcluded){
+                } else if (Arrays.asList(cancelEvents).contains(event.getEventtype()) && notExcluded) {
                     baseline.replace(event.getTaskid(), null);
                     localBaselineEvents.clear();
                 }
@@ -82,12 +86,13 @@ public class StatisticEventRepairService {
                 }
                 TaskTimingDTO taskTiming = timingMap.get(eventIdentifier);
                 // Relate participant to tasktiming
+
                 Map<String, Set<String>> participantsMap = taskTiming.getParticipants();
-                if(!event.getResourceid().equals("") && !participantsMap.containsKey(event.getResourceid())){
+                if (!event.getResourceid().equals("") && !participantsMap.containsKey(event.getResourceid())) {
                     participantsMap.put(event.getResourceid(), new HashSet<>());
                 }
                 Set<String> participantHadEvents = participantsMap.get(event.getResourceid());
-                if(participantHadEvents == null){
+                if (participantHadEvents == null) {
                     participantHadEvents = new HashSet<>();
                 }
                 // Handle events
@@ -160,17 +165,20 @@ public class StatisticEventRepairService {
             // Case event handling
             for (Event event : caseInstance.getCaseEvents()) {
                 long eventTimestamp = Long.parseLong(event.getTimestamp());
-                relatedParticipantIDs.add(event.getResourceid());
+                if (!eventRelatedParticipants.containsKey(event.getEventtype())) {
+                    eventRelatedParticipants.put(event.getEventtype(), new HashSet<>());
+                }
+                eventRelatedParticipants.get(event.getEventtype()).add(participantsInformationMap.get(event.getResourceid()));
                 switch (event.getEventtype()) {
                     case "CaseCancel":
                         caseStatisticDTO.setEnd(eventTimestamp);
                         caseStatisticDTO.setCancelled(true);
-                        for(Task task: allExistingTasks){
+                        for (Task task : allExistingTasks) {
                             Collection<TaskTimingDTO> allTaskTimings = taskTimings.get(task.getId()).values();
-                            for(TaskTimingDTO taskTiming : allTaskTimings){
-                                if(taskTiming.getCaseid().equals(caseInstance.getId())
+                            for (TaskTimingDTO taskTiming : allTaskTimings) {
+                                if (taskTiming.getCaseid().equals(caseInstance.getId())
                                         && !(taskTiming.getStatus().equals("Completed")
-                                            || taskTiming.getStatus().equals("Cancelled"))){
+                                        || taskTiming.getStatus().equals("Cancelled"))) {
                                     taskTiming.setCancelled(true);
                                     setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Cancelled");
                                 }
@@ -189,20 +197,20 @@ public class StatisticEventRepairService {
         }
     }
 
-    private static void setLatestEventTimestampAndStatus(long eventTimestamp, TaskTimingDTO taskTiming, String status){
+    private static void setLatestEventTimestampAndStatus(long eventTimestamp, TaskTimingDTO taskTiming, String status) {
         if (eventTimestamp > taskTiming.getLatestEventTimestamp()) {
             taskTiming.setLatestEventTimestamp(eventTimestamp);
             taskTiming.setStatus(status);
         }
     }
 
-    private static void setStartTimestamp(long eventTimestamp, CaseStatisticDTO caseStatistic){
+    private static void setStartTimestamp(long eventTimestamp, CaseStatisticDTO caseStatistic) {
         if (caseStatistic.getStart() == 0) {
             caseStatistic.setStart(eventTimestamp);
         }
     }
 
-    private static void updateSmallestDecompositionOrder(Event event, String eventDecompositionOrder, Map<String, String> smallestDecompositionOrders){
+    private static void updateSmallestDecompositionOrder(Event event, String eventDecompositionOrder, Map<String, String> smallestDecompositionOrders) {
         // If a start or complete Event (or others) appears, check whether
         // it has a smaller decompositionOrder then currently known for the task
         if (!smallestDecompositionOrders.containsKey(event.getTaskid())) {

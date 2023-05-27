@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
@@ -10,6 +10,7 @@ import {Participant} from "../../yawl/resources/entities/participant.entity";
 import * as d3 from 'd3';
 import {CurveGenerator, Path} from "d3";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
+import {StatisticUtils} from "../../util/statistic-utils";
 
 @Component({
   selector: 'app-specification-statistic-view',
@@ -18,24 +19,21 @@ import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 })
 export class SpecificationStatisticViewComponent implements OnInit {
 
-  statisticSelection = "performance";
-  statisticResourceSelection = "role";
   specificationDataContainers: SpecificationDataContainer[] | undefined;
-  legendPiePosition: LegendPosition = LegendPosition.Below;
-
-  d3ViewVar = d3;
-  loaded = false;
-
-  // Config
   range = new FormGroup({
     start: new FormControl<Date | null>(new Date(Date.UTC(new Date(Date.now()).getFullYear() - 2, 0))),
     end: new FormControl<Date | null>(new Date(Date.now())),
   });
+  d3ViewVar = d3;
+  formatUtils = new FormatUtils();
+
+  // Config
+  loaded = false;
   fineness = 'month';
+  statisticSelection = "performance";
+  statisticResourceSelection = "role";
   statisticTicks: { year: number, month: number }[] = [];
-  monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  legendPiePosition: LegendPosition = LegendPosition.Below;
   casesInRange = 0;
 
   // Performance
@@ -65,14 +63,14 @@ export class SpecificationStatisticViewComponent implements OnInit {
   associativeDemandForPositions: Object[] = [];
 
   constructor(private _liveAnnouncer: LiveAnnouncer,
-              private specificationDataService: SpecificationDataService) {
+              private specificationDataService: SpecificationDataService,) {
   }
 
 
   ngOnInit(): void {
     this.specificationDataService.getSpecificationsData().subscribe(specificationDataContainers => {
       this.specificationDataContainers = specificationDataContainers;
-      this.statisticTicks = this.calculateStatisticticks();
+      this.statisticTicks = StatisticUtils.calculateStatisticTicks(this.range, this.fineness);
       this.processIncidentFreeRate();
       this.processCaseInstancesAndCapacityDemand();
       this.processDeadlineAccuracy();
@@ -85,7 +83,6 @@ export class SpecificationStatisticViewComponent implements OnInit {
       this.processAutomationPercentage();
       this.processAutomationCandidates();
       this.processResourceAvailability();
-      //this.processResourceDemand();
       this.processRelativeResourcePropertiesDemand();
       this.loaded = true;
     });
@@ -95,7 +92,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
     if (this.range.value.start === null || this.range.value.end === null) {
       return;
     }
-    this.statisticTicks = this.calculateStatisticticks();
+    this.statisticTicks = StatisticUtils.calculateStatisticTicks(this.range, this.fineness);
     this.processIncidentFreeRate();
     this.processCaseInstancesAndCapacityDemand();
     this.processDeadlineAccuracy();
@@ -108,19 +105,21 @@ export class SpecificationStatisticViewComponent implements OnInit {
     this.processAutomationPercentage();
     this.processAutomationCandidates();
     this.processResourceAvailability();
-    //this.processResourceDemand();
     this.processRelativeResourcePropertiesDemand();
   }
 
   selectStatistic(val: any) {
     this.statisticSelection = val;
+    // Update statistic graphics after they become unhidden
+    // Prevents misaligned ngx charts
+    window.dispatchEvent(new Event('resize'));
   }
 
   processCasesInRange(): void {
     this.casesInRange = 0;
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-        if (this.timestampIsInDateRange(caseStatistic.start)) {
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
           this.casesInRange++;
         }
       })
@@ -133,7 +132,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
     let allUnsuccessfulCases = 0;
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-        if (this.timestampIsInDateRange(caseStatistic.start)) {
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
           if (caseStatistic.cancelled) {
             allUnsuccessfulCases++;
           } else {
@@ -157,7 +156,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
     let deadlineExceeded = 0;
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-        if (this.timestampIsInDateRange(caseStatistic.start)) {
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
           if (specificationDataContainer.extensionSpecification.specificationTimeLimit === 0) {
             deadlineNotExceeded++;
           } else {
@@ -184,17 +183,17 @@ export class SpecificationStatisticViewComponent implements OnInit {
     let allStarts: Map<string, Map<string, { count: number, capacityDemand: number }>> = new Map();
 
     this.statisticTicks.forEach((tick) => {
-      let yearMonthID = tick.year + "." + this.monthNames[tick.month];
+      let yearMonthID = tick.year + "." + StatisticUtils.monthNames[tick.month];
       allStarts.set(yearMonthID, new Map());
     })
 
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       let label = specificationDataContainer.specificationInformation.uri + " " + specificationDataContainer.specificationInformation.version
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-        if (this.timestampIsInDateRange(caseStatistic.start)) {
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
           let date = new Date(caseStatistic.start);
           let month = (this.fineness === 'month') ? date.getMonth() : 0;
-          let yearMonthID = date.getFullYear() + "." + this.monthNames[month];
+          let yearMonthID = date.getFullYear() + "." + StatisticUtils.monthNames[month];
           let exactMonth = allStarts.get(yearMonthID);
           if (!exactMonth!.has(label)) {
             exactMonth!.set(label, {count: 0, capacityDemand: 0});
@@ -241,7 +240,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
     this.longestCases = [];
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       let caseStatistic: CaseStatistic | undefined = specificationDataContainer.specificationStatistic.caseStatisticDTOS
-        .filter((caseStatistic) => this.timestampIsInDateRange(caseStatistic.start))
+        .filter((caseStatistic) => StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range))
         .sort(
           (a: CaseStatistic, b: CaseStatistic) => {
             return (a.age < b.age) ? 1 : -1;
@@ -263,7 +262,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       let ages: number[] = [];
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-        if (this.timestampIsInDateRange(caseStatistic.start) && !caseStatistic.cancelled) {
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range) && !caseStatistic.cancelled) {
           ages.push(caseStatistic.age);
         }
       })
@@ -285,13 +284,13 @@ export class SpecificationStatisticViewComponent implements OnInit {
       };
       let map: Map<string, number[]> = new Map;
       this.statisticTicks.forEach(tick => {
-        let label = tick.year + ((this.fineness === 'month') ? " " + this.monthNames[tick.month] : "");
+        let label = tick.year + ((this.fineness === 'month') ? " " + StatisticUtils.monthNames[tick.month] : "");
         map.set(label, []);
       })
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-        if (this.timestampIsInDateRange(caseStatistic.start)) {
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
           let startDate = new Date(caseStatistic.start);
-          let label = startDate.getFullYear() + ((this.fineness === 'month') ? " " + this.monthNames[startDate.getMonth()] : "");
+          let label = startDate.getFullYear() + ((this.fineness === 'month') ? " " + StatisticUtils.monthNames[startDate.getMonth()] : "");
           map.get(label)!.push(caseStatistic.age);
         }
       })
@@ -495,7 +494,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
           }
           capabilitiesDemand.set(capability.name, capabilitiesDemand.get(capability.name)! + 1);
         });
-        taskStatistic.demandedPosition.forEach(position => {
+        taskStatistic.demandedPositions.forEach(position => {
           if (!positionsDemand.has(position.title)) {
             positionsDemand.set(position.title, 0);
           }
@@ -619,53 +618,4 @@ export class SpecificationStatisticViewComponent implements OnInit {
     }
     this.associativeDemandForPositions.push(associativePositionsElement);
   }
-
-  formatPieChartTimestampLabel(val: any) {
-    return val.data.label + "<br> " + new FormatUtils().applyPastTimeFormatForTimestampWithDays(val.value);
-  }
-
-  pastTimeFormat(val: any) {
-    return new FormatUtils().applyPastTimeFormatForTimestampWithDays(val);
-  }
-
-  percentageFormat(val: any) {
-    return val.toLocaleString() + '%';
-  }
-
-  timestampIsInDateRange(timestamp: number): boolean {
-    let start = this.range.value.start?.getTime();
-    let end = this.range.value.end?.getTime();
-
-    if (timestamp > start! && timestamp < end!) {
-      return true;
-    }
-    return false;
-  }
-
-  calculateStatisticticks(): { year: number, month: number }[] {
-    let start = this.range.value.start!;
-    let end = this.range.value.end!;
-    let startYear = start.getFullYear();
-    let startMonth = start.getMonth();
-    let endYear = end.getFullYear();
-    let endMonth = end.getMonth();
-    let dates: { year: number, month: number }[] = [];
-
-    if (this.fineness === 'month') {
-      for (let i = startYear; i <= endYear; i++) {
-        let startMonthIndex = (i === startYear) ? startMonth : 0;
-        let endMonthIndex = (i != endYear) ? 11 : endMonth;
-        for (let j = startMonthIndex; j <= endMonthIndex; j++) {
-          dates.push({year: i, month: j});
-        }
-      }
-    } else {
-      for (let i = startYear; i <= endYear; i++) {
-        dates.push({year: i, month: 0});
-      }
-    }
-    return dates;
-  }
-
-
 }

@@ -66,7 +66,7 @@ class SpecificationController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public void testRoute() {
-        YSpecificationID specId = new YSpecificationID("UID_5a1f1378-30d4-428c-abcc-955360d51983", "0.29", "ThesisProcessV3");
+        YSpecificationID specId = new YSpecificationID("UID_5a1f1378-30d4-428c-abcc-955360d51983", "0.34", "ThesisProcessV3");
         YSpecificationID worklet = new YSpecificationID("UID_e6626c72-29c2-4439-b330-1ce2bd1ebd52", "0.1", "EmergencyNotEnoughCopiesWorklet");
         //resourceLogManager.getSpecificationEvents(new YSpecificationID("UID_e63327e0-099f-4eae-b622-5fc30c467f46", "0.79", "ReiseangebotEntwicklung"));
         List<Event> events = resourceLogManager.getSpecificationEvents(specId);
@@ -86,7 +86,7 @@ class SpecificationController {
         //workItemManager.getSpecificationDefinitionById(specId);
         List<Participant> participants = resourceManager.getParticipants();
         List<Specification> specifications = interfaceEManager.getAllSpecifications();
-
+        String things100 = resourceLogManager.getMergedXESLog(specId);
         System.out.println("Test completed.");
     }
 
@@ -104,6 +104,7 @@ class SpecificationController {
         return workItemManager.getSpecificationById(new YSpecificationID(specificationID, specversion, uri));
     }
 
+    /*
     @RequestMapping(value = "/api/specification/{uri}/{specificationID}/{specversion}/definition",
             method = RequestMethod.GET)
     @ResponseBody
@@ -112,7 +113,7 @@ class SpecificationController {
                                          @PathVariable("specversion") String specversion,
                                          @PathVariable("uri") String uri) {
         return workItemManager.getSpecificationDefinitionById(new YSpecificationID(specificationID, specversion, uri));
-    }
+    }*/
 
 
     @RequestMapping(value = "/api/specification/extension", method = RequestMethod.GET)
