@@ -52,11 +52,15 @@ public class StatisticController {
 
         // Retrieve speckey from specId
         List<Specification> specifications = interfaceEManager.getAllSpecifications();
-        String speckey = specifications.stream().filter(c -> c.getUri().equals(uri)
+        List<Specification> keys = specifications.stream().filter(c -> c.getUri().equals(uri)
                 && c.getSpecversion().equals(specversion)
-                && c.getId().equals(specificationID)).collect(Collectors.toList()).get(0).getKey();
-        if (speckey == null) {
+                && c.getId().equals(specificationID)).collect(Collectors.toList());
+        String speckey = "";
+        if (keys.size() == 0) {
             System.out.println("ERROR - specification key not found in loaded YAWL specifications.");
+            return null;
+        }else{
+            speckey = keys.get(0).getKey();
         }
 
         // Retrieve all resource events and information
@@ -189,13 +193,14 @@ public class StatisticController {
             caseStartTimestamps.add(caseStatisticDTO.getStart());
             if (caseStatisticDTO.isCancelled()) {
                 unsuccessful++;
-                continue;
             }
             casesImpactingCompletionTimeCount++;
             if (caseStatisticDTO.getEnd() != 0) {
                 caseStatisticDTO.setAge(caseStatisticDTO.getEnd() - caseStatisticDTO.getStart());
                 avgCaseCompletionTime += caseStatisticDTO.getEnd() - caseStatisticDTO.getStart();
-                successful++;
+                if(!caseStatisticDTO.isCancelled()){
+                    successful++;
+                }
             } else {
                 caseStatisticDTO.setAge(new Date().getTime() - caseStatisticDTO.getStart());
                 avgCaseCompletionTime += new Date().getTime() - caseStatisticDTO.getStart();
@@ -343,23 +348,23 @@ public class StatisticController {
         specificationStatistic.setAutomationPercentage(automatedTasks / taskStatistics.size());
 
         // Avg. Time to reach of task
-        taskStatistics = taskStatistics.stream().sorted().collect(Collectors.toList());
-        String currentDecomposition = "";
+        taskStatistics = taskStatistics.stream().sorted(Comparator.comparing(TaskStatisticDTO::getMinimalOrder)).collect(Collectors.toList());
+        String currentOrder = "";
         long additiveAvgTimeToReach = 0;
         long additiveAvgTimeToReachStep = 0;
         int additiveAvgTimeToReachStepCounter = 0;
         for (TaskStatisticDTO taskStatisticDTO : taskStatistics) {
-            if (currentDecomposition == null || taskStatisticDTO == null) {
+            if (currentOrder == null || taskStatisticDTO == null) {
                 continue;
             }
             // TimeToReach
-            if (!currentDecomposition.equals(taskStatisticDTO.getDecompositionOrder())) {
+            if (!currentOrder.equals(taskStatisticDTO.getMinimalOrder())) {
                 if (additiveAvgTimeToReachStepCounter != 0) {
                     additiveAvgTimeToReach += additiveAvgTimeToReachStep / additiveAvgTimeToReachStepCounter;
                     additiveAvgTimeToReachStep = 0;
                     additiveAvgTimeToReachStepCounter = 0;
                 }
-                currentDecomposition = taskStatisticDTO.getDecompositionOrder();
+                currentOrder = taskStatisticDTO.getMinimalOrder();
                 taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
                 additiveAvgTimeToReachStep += taskStatisticDTO.getAvgQueueTime() + taskStatisticDTO.getAvgCompletionTime();
                 additiveAvgTimeToReachStepCounter++;

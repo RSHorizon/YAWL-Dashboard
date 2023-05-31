@@ -30,13 +30,13 @@ public class ExtensionSpecification {
     private Boolean core;
 
     @Column(name = "specificationTimeLimit")
-    private Integer specificationTimeLimit;
+    private Long specificationTimeLimit;
 
-    public Integer getSpecificationTimeLimit() {
+    public Long getSpecificationTimeLimit() {
         return specificationTimeLimit;
     }
 
-    public void setSpecificationTimeLimit(Integer specificationTimeLimit) {
+    public void setSpecificationTimeLimit(Long specificationTimeLimit) {
         this.specificationTimeLimit = specificationTimeLimit;
     }
 

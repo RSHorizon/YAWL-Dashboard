@@ -109,6 +109,9 @@ export class SpecificationService {
   }
 
   private handleError(error: any): Observable<any> {
+    if(error.message !== undefined){
+      throw new Error(error.message);
+    }
     let errMsg = (error.json().message)
       ? error.json().message
       : error.status ? `${error.status} - ${error.statusText}` : 'Server error';

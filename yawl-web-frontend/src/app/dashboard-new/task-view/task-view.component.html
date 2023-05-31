@@ -96,7 +96,7 @@
       Task time limit
     </th>
     <td mat-cell *matCellDef="let element">
-      <app-timestampform [daySelectionActive]="true" [(timestamp)]="element.maxTaskAge"></app-timestampform>
+      <app-timestampform [monthSelectionActive]="true" [(timestamp)]="element.maxTaskAge"></app-timestampform>
     </td>
   </ng-container>
 
@@ -107,7 +107,7 @@
       Task queue time limit
     </th>
     <td mat-cell *matCellDef="let element">
-      <app-timestampform [daySelectionActive]="true" [(timestamp)]="element.maxQueueAge"></app-timestampform>
+      <app-timestampform [monthSelectionActive]="true" [(timestamp)]="element.maxQueueAge"></app-timestampform>
     </td>
   </ng-container>
 

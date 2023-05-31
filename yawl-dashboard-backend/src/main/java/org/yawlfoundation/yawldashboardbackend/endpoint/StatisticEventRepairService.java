@@ -43,7 +43,7 @@ public class StatisticEventRepairService {
                 List<Event> localBaselineEvents = baselineEvents.get(event.getTaskid());
                 Set<String> localExcluded = excluded.get(event.getTaskid());
                 // Handle baseline Events
-                String[] resourceEvents = {"offer", "unoffer", "allocate"};
+                String[] resourceEvents = {"offer", "unoffer", "allocate", "deallocate"};
                 String[] cancelEvents = {"cancelled_by_case", "cancel"};
                 boolean notExcluded = !localExcluded.contains(eventDecompositionOrder);
                 if (Arrays.asList(resourceEvents).contains(event.getEventtype())) {
@@ -60,7 +60,7 @@ public class StatisticEventRepairService {
                     localBaselineEvents.forEach(baseLineEvent -> {
                         baseLineEvent.setCaseid(event.getCaseid());
                     });
-                } else if (event.getEventtype().equals("complete") && notExcluded) {
+                } else if ((event.getEventtype().equals("complete") || event.getEventtype().equals("released")) && notExcluded) {
                     localBaselineEvents.forEach(baseLineEvent -> {
                         baseLineEvent.setCaseid(event.getCaseid());
                     });
@@ -75,6 +75,12 @@ public class StatisticEventRepairService {
             // Fill timings, where one timing is identified by its taskid and caseId
             // and set initial start and end dates for cases
             for (Event event : caseInstance.getTaskEvents()) {
+                String[] allowedEvents = {"offer", "unoffer", "allocate", "deallocate", "start", "autotask_start",
+                        "complete", "released", "autotask_complete", "cancel", "cancelled_by_case", "timer_expired",
+                        "suspended", "resumed"};
+                if (!Arrays.asList(allowedEvents).contains(event.getEventtype())) {
+                    continue;
+                }
                 // Initialize timing objects
                 long eventTimestamp = Long.parseLong(event.getTimestamp());
                 Map<String, TaskTimingDTO> timingMap = taskTimings.get(event.getTaskid());
@@ -127,6 +133,7 @@ public class StatisticEventRepairService {
                         caseStatisticDTO.setEnd(0);
                         break;
                     case "complete":
+                    case "released":
                         taskTiming.setEndTimestamp(eventTimestamp);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
                         participantHadEvents.add("Complete");

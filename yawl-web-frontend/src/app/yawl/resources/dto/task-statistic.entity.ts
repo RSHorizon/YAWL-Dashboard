@@ -28,5 +28,6 @@ export interface TaskStatistic {
   costResourceHour: number;
   maxQueueAge: number;
   maxTaskAge: number;
+  color?: string
 }
 

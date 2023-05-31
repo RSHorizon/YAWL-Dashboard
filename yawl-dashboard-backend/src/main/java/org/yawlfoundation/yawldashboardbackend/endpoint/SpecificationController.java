@@ -174,7 +174,7 @@ class SpecificationController {
     public void storeSpecificationTimeLimit(@PathVariable("specificationID") String specificationID,
                                             @PathVariable("specversion") String specversion,
                                             @PathVariable("uri") String uri,
-                                            @RequestParam("specificationTimeLimit") Integer specificationTimeLimit) {
+                                            @RequestParam("specificationTimeLimit") Long specificationTimeLimit) {
         extensionSpecificationDao.setSpecificationTimeLimit(specificationID, specversion, uri, specificationTimeLimit);
     }
 
@@ -236,7 +236,7 @@ class SpecificationController {
         newExtensionSpecification.setSpecversion(specversion);
         newExtensionSpecification.setUri(uri);
         newExtensionSpecification.setCore(false);
-        newExtensionSpecification.setSpecificationTimeLimit(0);
+        newExtensionSpecification.setSpecificationTimeLimit(0L);
         extensionSpecificationDao.save(newExtensionSpecification);
 
         List<ExtensionTask> extensionTasks = new ArrayList<>();

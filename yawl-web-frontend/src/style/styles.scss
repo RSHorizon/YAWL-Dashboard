@@ -292,7 +292,7 @@ app-root {
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  min-height: 64px;
+  height: 64px;
   font-size: 20px;
   font-weight: 400;
   font-family: Roboto, Helvetica, sans-serif;
@@ -308,6 +308,7 @@ app-root {
 }
 
 .toolbar-title {
+  color: rgba(255,255,255,0.9)
 }
 
 
@@ -368,12 +369,18 @@ app-root {
   color: #FFFFFF;
 }
 
+.app-content-simple{
+  padding-top: .5em;
+  padding-left: calc(60px + 1em);
+  padding-right: 1em;
+}
 
 .app-content {
   box-sizing: border-box;
   width: 100%;
-  padding-top: 20px;
-  padding-right: 10px;
+  padding-top: .5em;
+  padding-left: calc(60px + 1em);
+  padding-right: 1em;
 }
 
 
@@ -385,7 +392,7 @@ sidebar {
   height: 100%;
   transform: translate3d(-268px, 0, 0);
   z-index: 5;
-  width: 230px;
+  width: 55px;
   overflow: hidden;
   opacity: 0;
   filter: alpha(opacity=0);
@@ -419,11 +426,15 @@ sidebar {
   -webkit-box-align: center;
 
   background: $primary-color;
-  color: #FFFFFF;
 
+  color: rgba(255,255,255,0.9);
   font-size: 20px;
   font-weight: 400;
   font-family: Roboto, Helvetica, sans-serif;
+}
+
+.toolbar-title{
+  margin-left: calc(60px);
 }
 
 @media (max-width: 1200px) {
@@ -447,15 +458,9 @@ sidebar {
     visibility: visible;
     background-color: rgba(0, 0, 0, 0.6);
   }
-
 }
 
 @media (min-width: 1200px) {
-
-  .app-content {
-    padding-left: 280px;
-    width: calc(100% - 30px);
-  }
 
   sidebar {
     transform: translate3d(0, 0, 0) !important;
@@ -466,6 +471,10 @@ sidebar {
 
   .sidebar-toggle-button {
     display: none !important;
+  }
+
+  .toolbar-title{
+    margin-left: calc(60px);
   }
 }
 
@@ -1209,7 +1218,7 @@ mat-card.without-padding {
 }
 
 .logout-button {
-  color: white;
+  color: rgba(255,255,255,0.9);
   font-size: 1.0em;
   padding: 10px 26px;
   border-radius: 4px;

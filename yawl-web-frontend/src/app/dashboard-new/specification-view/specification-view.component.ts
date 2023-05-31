@@ -4,7 +4,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {faPencil, faArrowsToEye} from '@fortawesome/free-solid-svg-icons';
+import {faPencil, faArrowsToEye, faSquare} from '@fortawesome/free-solid-svg-icons';
 import {MatSort, Sort} from "@angular/material/sort";
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {MatTableDataSource} from "@angular/material/table";
@@ -24,12 +24,13 @@ import {ExtensionSpecificationService} from "../../yawl/resources/services/exten
 export class SpecificationViewComponent implements OnInit, AfterViewInit {
   faPencil = faPencil
   faArrowsToEye = faArrowsToEye
+  faSquare=faSquare
   specificationsURL = env.remoteUIUrl;
 
   // @ts-ignore
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
-  displayedColumns: string[] = ['uri', 'specversion', 'documentation', 'activeCasesCount', 'core', 'actions'];
+  displayedColumns: string[] = ['color', 'uri', 'specversion', 'documentation', 'casesCount', 'activeCasesCount', 'actions'];
   dataSource: MatTableDataSource<SpecificationDataContainer> = new MatTableDataSource<SpecificationDataContainer>();
 
   specificationDataContainer: SpecificationDataContainer[] | undefined = undefined;
@@ -43,28 +44,29 @@ export class SpecificationViewComponent implements OnInit, AfterViewInit {
     this.specificationDataService.getSpecificationsData().subscribe(specificationDataContainers => {
       this.dataSource.data = specificationDataContainers;
       this.specificationDataContainer = specificationDataContainers;
-      this.dataSource.sort = this.sort;
-      this.dataSource.sortingDataAccessor = (row, key) => {
-        switch (key) {
-          case 'uri':
-            return row.specificationInformation.uri;
-          case 'specversion':
-            return row.specificationInformation.specversion;
-          case 'documentation':
-            return row.specificationInformation.description;
-          case 'activeCaseCount':
-            return row.specificationInformation.activeCasesCount;
-          case 'core':
-            return row.extensionSpecification.core;
-          default:
-            return row.specificationInformation.specversion;
-        }
-      };
     });
   }
 
   ngAfterViewInit(): void {
-
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (row, key) => {
+      switch (key) {
+        case 'uri':
+          return row.specificationInformation.uri;
+        case 'specversion':
+          return row.specificationInformation.specversion;
+        case 'documentation':
+          return row.specificationInformation.description;
+        case 'casesCount':
+          return row.specificationStatistic.caseStatisticDTOS.length;
+        case 'activeCasesCount':
+          return row.specificationInformation.activeCasesCount;
+        case 'core':
+          return row.extensionSpecification.core;
+        default:
+          return row.specificationInformation.specversion;
+      }
+    };
   }
 
 
@@ -94,7 +96,7 @@ export class SpecificationViewComponent implements OnInit, AfterViewInit {
     const isAsc = sort.direction === 'asc';
     if (sort.direction === '') {
       this.dataSource?.data.sort((a: SpecificationDataContainer, b: SpecificationDataContainer) =>
-        this.compare(a.specificationInformation.specversion, b.specificationInformation.specversion, false));
+        this.compare(a.specificationInformation.uri, b.specificationInformation.uri, true));
     }
     return;
   }

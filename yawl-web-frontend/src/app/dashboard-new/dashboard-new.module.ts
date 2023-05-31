@@ -25,6 +25,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatNativeDateModule} from "@angular/material/core";
 import { CaseStatisticViewComponent } from './case-statistic-view/case-statistic-view.component';
 import { TaskStatisticViewComponent } from './task-statistic-view/task-statistic-view.component';
+import { ChartCapsuleComponent } from './chart-capsule/chart-capsule.component';
 
 /**
  * @author Robin Steinwarz
@@ -41,24 +42,25 @@ import { TaskStatisticViewComponent } from './task-statistic-view/task-statistic
     TimestampformComponent,
     SpecificationStatisticViewComponent,
     CaseStatisticViewComponent,
-    TaskStatisticViewComponent
+    TaskStatisticViewComponent,
+    ChartCapsuleComponent
   ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(dashboardRoutesConfig),
-    LayoutModule,
-    MatSlideToggleModule,
-    MaterialSharedModule,
-    MatNativeDateModule,
-    FontAwesomeModule,
-    BrowserModule,
-    MatSortModule,
-    MatTableModule,
-    MatGridListModule,
-    ReactiveFormsModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    NgxChartsModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(dashboardRoutesConfig),
+        LayoutModule,
+        MatSlideToggleModule,
+        MaterialSharedModule,
+        MatNativeDateModule,
+        FontAwesomeModule,
+        BrowserModule,
+        MatSortModule,
+        MatTableModule,
+        MatGridListModule,
+        ReactiveFormsModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        NgxChartsModule
+    ]
 })
 export class DashboardNewModule { }

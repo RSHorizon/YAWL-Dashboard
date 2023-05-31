@@ -13,5 +13,5 @@ export interface CaseStatistic {
   resourceTime: number;
   queuedWorkitemsCount : number;
   runningWorkitemsCount: number;
-
+  color?: string
 }

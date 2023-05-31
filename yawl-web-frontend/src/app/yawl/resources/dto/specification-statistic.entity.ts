@@ -22,4 +22,5 @@ export interface SpecificationStatistic {
   caseOccurrencesPerDayOfWeek: number[];
   avgResourceTimePerWeekSummed : number;
   automationPercentage: number;
+  color?: string
 }

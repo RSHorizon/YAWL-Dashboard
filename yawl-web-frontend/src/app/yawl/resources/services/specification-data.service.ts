@@ -8,6 +8,8 @@ import {StatisticService} from "./statistic.service";
 import {AsyncSubject, forkJoin} from "rxjs";
 import {ExtensionSpecification} from "../dto/extension-specification.entity";
 import {ParticipantService} from "./participant.service";
+import {ColorUtils} from "../../../util/color-util";
+import {StatisticUtils} from "../../../util/statistic-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -75,6 +77,13 @@ export class SpecificationDataService {
           observables.push(statisticObservable);
           statisticObservable.subscribe(specificationStatistic => {
               specificationDataContainer.specificationStatistic = specificationStatistic;
+              specificationDataContainer.specificationStatistic.color = ColorUtils.getColorMix();
+              specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
+                caseStatistic.color = ColorUtils.getColorMix();
+              })
+              specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
+                taskStatistic.color = ColorUtils.getColorMix();
+              })
             })
 
           let participantObservable = this.participantService.findAll();
@@ -89,7 +98,9 @@ export class SpecificationDataService {
             forkJoin(observables).subscribe(() => {
               this.loading = undefined;
               this.dataHasBeenLoaded = true;
-              subject.next(this.specificationDataContainers);
+              subject.next(this.specificationDataContainers.sort((a: SpecificationDataContainer, b: SpecificationDataContainer) => {
+                return a.specificationInformation.uri.localeCompare(b.specificationInformation.uri)
+              }));
               subject.complete();
             })
           }

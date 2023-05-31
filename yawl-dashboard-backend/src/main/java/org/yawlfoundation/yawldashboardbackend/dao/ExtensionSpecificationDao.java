@@ -19,6 +19,6 @@ public interface ExtensionSpecificationDao extends JpaRepository<ExtensionSpecif
 
     @Modifying
     @Query(value = "UPDATE extension_specifications e SET e.specification_time_limit = ?4 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3", nativeQuery = true)
-    void setSpecificationTimeLimit(String specificationID, String version, String uri, Integer specificationTimeLimit);
+    void setSpecificationTimeLimit(String specificationID, String version, String uri, Long specificationTimeLimit);
 
 }

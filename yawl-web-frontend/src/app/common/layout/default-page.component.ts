@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotifierService } from 'angular-notifier';
 import { SessionService } from '../session/session.service';
+import {faChartLine} from '@fortawesome/free-solid-svg-icons';
 
 //import { ExtensionSpecificationService } from '../../dashboard/dashboard.service';
 import {subscribeOn, Subscription} from "rxjs";
@@ -21,6 +22,7 @@ export class DefaultPageComponent implements OnInit {
   faArrowRightFromBracket=faArrowRightFromBracket
   faBars=faBars
   faGaugeHigh=faGaugeHigh
+  faChartLine=faChartLine
   faCompass=faCompass
   faBell=faBell
   faSitemap=faSitemap

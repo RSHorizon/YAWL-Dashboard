@@ -1,4 +1,5 @@
 import {FormGroup} from "@angular/forms";
+import {CaseStatistic} from "../yawl/resources/dto/case-statistic.entity";
 
 /**
  * @author Robin Steinwarz
@@ -9,6 +10,11 @@ export class StatisticUtils {
   static monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+
+  static notCancelledAndCompleted(caseStatistic: CaseStatistic): boolean{
+    return !caseStatistic.cancelled && caseStatistic.end !== 0;
+  }
+
 
   static timestampIsInDateRange(timestamp: number, range: FormGroup): boolean {
     let start = range.value.start?.getTime();
@@ -39,12 +45,12 @@ export class StatisticUtils {
         let startMonthIndex = (i === startYear) ? startMonth : 0;
         let endMonthIndex = (i != endYear) ? 11 : endMonth;
         for (let j = startMonthIndex; j <= endMonthIndex; j++) {
-          dates.push({year: i, month: j});
+          dates.push({year: new Date(i,1,0).getTime(), month: new Date(i,j + 1,0).getTime()});
         }
       }
     } else {
       for (let i = startYear; i <= endYear; i++) {
-        dates.push({year: i, month: 0});
+        dates.push({year: new Date(i,1,0).getTime(), month: 0});
       }
     }
     this.tickBuffer.set(bufferLabel, dates);

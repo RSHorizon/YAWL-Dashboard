@@ -39,111 +39,61 @@
 </p>
 
 <div [hidden]="statisticSelection !== 'performance'">
-  <mat-grid-list *ngIf="loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+  <mat-grid-list cols="5" rowHeight="2:1" [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Avg. case duration</div>
-        <div class="statistic-body ngx-charts-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-line-chart
-              [animations]="false"
-              [results]="specPerformanceComparison"
-              [xAxis]="true"
-              [xAxisLabel]="'Time period'"
-              [yAxis]="true"
-              [yAxisLabel]="'Avg. case duration'"
-              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-line-chart>
-          </div>
-          <div class="statistic-label"></div>
+        <div class="statistic-title">How long do our cases run on average?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This graph shows the average runtime of all cases
+                     that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
+                     Cancelled and uncompleted cases excluded."></fa-icon>
+          </span>
         </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile>
-      <div class="statistic-container">
-        <div class="statistic-title">Overall case success rate</div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-horizontal
-              [animations]="false"
-              [roundEdges]="false"
-              [results]="overallSuccessRate"
-              [xAxis]="true"
-              [xAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [dataLabelFormatting]="formatUtils.applyPercentageFormat"
-              [xScaleMin]="10"
-              [xScaleMax]="100"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-horizontal>
+            <app-chart-capsule class="chart-capsule" [type]="'bubble'" [datasets]="specPerformanceComparisonData" [options]="specPerformanceOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Specifications avg. case duration</div>
-        <div class="statistic-body">
-          <div class="statistic-graph">
-            <ngx-charts-pie-chart
-              [animations]="false"
-              [results]="avgSpecificationCaseTime"
-              [legend]="false"
-              [legendTitle]="'Specifications'"
-              [legendPosition]="legendPiePosition"
-              [labels]="false"
-              [doughnut]="true"
-              [tooltipText]="formatUtils.applyPieChartTimestampLabelFormat"
-              [scheme]="'ocean'"
-            ></ngx-charts-pie-chart>
-          </div>
-          <div class="statistic-label"></div>
+        <div class="statistic-title">How severe are our specification outliers?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This graph shows the minimum, maximum and average runtime for all cases of a corresponding specification.
+                      Cancelled and uncompleted cases excluded."></fa-icon>
+          </span>
         </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Specifications case duration outliers</div>
-        <div class="statistic-body">
-          <div class="statistic-graph">
-            <ngx-charts-pie-chart
-              [animations]="false"
-              [results]="longestCases"
-              [legend]="false"
-              [legendTitle]="'Specifications'"
-              [legendPosition]="legendPiePosition"
-              [labels]="false"
-              [doughnut]="true"
-              [tooltipText]="formatUtils.applyPieChartTimestampLabelFormat"
-              [scheme]="'ocean'"
-            ></ngx-charts-pie-chart>
-          </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile>
-      <div class="statistic-container">
-        <div class="statistic-title">Overall deadline accuracy</div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-horizontal
-              [animations]="false"
-              [roundEdges]="false"
-              [results]="overallDeadlineAccuracy"
-              [xAxis]="true"
-              [xAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [dataLabelFormatting]="formatUtils.applyPercentageFormat"
-              [xScaleMax]="100"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-horizontal>
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="specOutlierData.datasets"
+                               [labels]="specOutlierData.labels"
+                               [options]="specOutlierOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2" colspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">How successful are our cases?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This graph shows the overall success and deadline fulfilled ratio for cases
+                     that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
+                     A successful case has not been cancelled. A case has met its deadline if its runtime is shorter
+                     than the specification time limit of its specification. Uncompleted cases excluded."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="overallIndicatorData.datasets"
+                               [labels]="overallIndicatorData.labels"
+                               [options]="overallIndicatorOptions"></app-chart-capsule>
+          </div>
         </div>
       </div>
     </mat-grid-tile>
@@ -153,84 +103,51 @@
 <!------                                CAPACITY                                             ------->
 
 <div [hidden]="statisticSelection !== 'capacity'">
-  <mat-grid-list *ngIf="loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
-    <mat-grid-tile rowspan="2">
+  <mat-grid-list cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Overall case instances</div>
+        <div class="statistic-title">How high is our capacity utilization?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This graph shows the overall capacity utilization for
+                                {{fineness === 'month'? 'monthly' : 'annual'}} periods.
+                                Each capacity utilization value is calculated from the sum of all work item
+                                durations started in the corresponding period. A work item duration is the
+                                time elapsed between start and completion. In the case where a work item was
+                                completed over a period of several days, 8 hours of resource time was allocated
+                                to each day. Cancelled cases and cancelled or automated work items were excluded."></fa-icon>
+          </span>
+        </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="caseInstances"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="capacityUtilizationData.datasets"
+                               [labels]="capacityUtilizationData.labels"
+                               [options]="capacityUtilizationOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
+
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Avg. demand for capacity</div>
+        <div class="statistic-title">Which active bottlenecks do exist?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
+                                 resources spent on average on one of these tasks. This average time is calculated for
+                                 each task by dividing the sum of the time spans between the start and completion of all
+                                 corresponding work items by the number of work items. Automated tasks and cancelled
+                                 work items excluded."></fa-icon>
+          </span>
+        </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="demandForCapacity"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [dataLabelFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="activeBottlenecksData.datasets"
+                               [labels]="activeBottlenecksData.labels"
+                               [options]="activeBottlenecksOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Active Bottlenecks</div>
-        <div class="statistic-body">
-          <div class="statistic-graph">
-            <ngx-charts-pie-chart
-              [animations]="false"
-              [results]="activeBottlenecks"
-              [labels]="false"
-              [doughnut]="true"
-              [scheme]="'ocean'"
-            ></ngx-charts-pie-chart>
-          </div>
-          <div class="statistic-label"></div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile>
-      <div class="statistic-container">
-        <div class="statistic-title">Current amount of resources</div>
-        <div class="statistic-body">
-          <div class="statistic-graph">
-            <ngx-charts-bar-horizontal
-              [animations]="false"
-              [roundEdges]="false"
-              [results]="sumOfResourcesAvailable"
-              [xAxis]="true"
-              [showDataLabel]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-horizontal>
-          </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
@@ -241,259 +158,217 @@
 <!------                                RESOURCES                                             ------->
 
 <div [hidden]="statisticSelection !== 'resources'">
-  <mat-grid-list *ngIf="loaded" cols="5" rowHeight="2:1" [gutterSize]="'8px'">
+  <mat-grid-list cols="5" rowHeight="2:1" [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Specification automation ratio</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How automated are our specifications?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This graph shows the automation ratio for each specification. This ratio is calculated
+                     by dividing the number of automated tasks of a corresponding specification by the number of all its tasks."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-vertical
-              [animations]="false"
-              [barPadding]="1"
-              [results]="automationPercentage"
-              [xAxis]="true"
-              [yAxis]="true"
-              [xAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [dataLabelFormatting]="formatUtils.applyPercentageFormat"
-              [yScaleMax]="100"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [roundEdges]="false"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical>
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="automationRatioData.datasets"
+                               [labels]="automationRatioData.labels"
+                               [options]="automationRatioOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Specification automation candidates</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">Where is further automation effective?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
+                                 resources spent on average on one of these tasks. This average time is calculated for
+                                 each task by dividing the sum of the time spans between the start and completion of all
+                                 corresponding work items by the number of work items. Automated tasks and cancelled
+                                 work items excluded."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="automationCandidates"
-              [xAxis]="true"
-              [yAxis]="true"
-              [dataLabelFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="automationCandidatesData.datasets"
+                               [labels]="automationCandidatesData.labels"
+                               [options]="automationCandidatesOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Overall roles distribution</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How is our role distribution?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows for each role the sum of our resources currently having this role."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="resourceRoles"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="roleDistributionData.datasets"
+                               [labels]="roleDistributionData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Overall capabilities distribution</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How is our capability distribution?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows for each capability the sum of our resources currently possessing this capability."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="resourceCapabilities"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="capabilityDistributionData.datasets"
+                               [labels]="capabilityDistributionData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Overall positions distribution</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How is our position distribution?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows for each position the sum of our resources currently having this position."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="resourcePositions"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="positionDistributionData.datasets"
+                               [labels]="positionDistributionData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Relative specified demand for role</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How is our role distribution according to our specifications?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows for each role the sum of tasks requiring it."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="demandForRoles"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="configuredRolesData.datasets"
+                               [labels]="configuredRolesData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Relative specified demand for capability</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How is our capability distribution according to our specifications?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows for each capability the sum of tasks requiring it."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="demandForCapabilities"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="configuredCapabilitiesData.datasets"
+                               [labels]="configuredCapabilitiesData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Relative specified demand for position</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How is our position distribution according to our specifications?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows for each position the sum of tasks requiring it."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="demandForPositions"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="configuredPositionsData.datasets"
+                               [labels]="configuredPositionsData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
+    <!--- <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Relative observed demand for role</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How did we really utilize roles?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows for each role the sum of tasks requiring it."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="associativeDemandForRoles"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="roleUtilizationData.datasets"
+                               [labels]="roleUtilizationData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Relative observed demand for capability</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How did we really utilize capabilities?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
+                                 resources spent on average on one of these tasks. This average time is calculated for
+                                 each task by dividing the sum of the time spans between the start and completion of all
+                                 corresponding work items by the number of work items. Automated tasks and cancelled
+                                 work items excluded."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="associativeDemandForCapabilities"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="capabilityUtilizationData.datasets"
+                               [labels]="capabilityUtilizationData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Relative observed demand for position</div>
-        <div class="statistic-body ngx-charts-extra-small-text">
+        <div class="statistic-title">How did we really utilize positions?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
+                                 resources spent on average on one of these tasks. This average time is calculated for
+                                 each task by dividing the sum of the time spans between the start and completion of all
+                                 corresponding work items by the number of work items. Automated tasks and cancelled
+                                 work items excluded."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-polar-chart
-              [animations]="false"
-              [results]="associativeDemandForPositions"
-              [xAxis]="true"
-              [yAxis]="true"
-              [gradient]="true"
-              [showGridLines]="true"
-              [roundDomains]="true"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [curve]="d3ViewVar.curveLinearClosed"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-polar-chart>
+            <app-chart-capsule class="chart-capsule" [type]="'radar'"
+                               [datasets]="positionUtilizationData.datasets"
+                               [labels]="positionUtilizationData.labels"
+                               [options]="resourceRadarOptions"></app-chart-capsule>
           </div>
-          <div class="statistic-label"></div>
         </div>
       </div>
-    </mat-grid-tile>
+    </mat-grid-tile> --->
   </mat-grid-list>
 </div>
