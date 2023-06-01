@@ -11,6 +11,7 @@ export class SpecificationStatisticChartConfigurations {
 
   static specPerformanceComparisonOptions(month: boolean): ChartConfiguration<'bubble'>['options']{
     return {
+      animation: false,
       scales: {
         x: {
           type: 'time',
@@ -75,8 +76,74 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
+  static pastBottlenecksOptions(month: boolean): ChartConfiguration<'line'>['options']{
+    return {
+      animation: false,
+      elements: {
+        line: {
+          borderWidth: 1
+        },
+        point: {
+          radius: 0,
+          hitRadius: 1
+        }
+      },
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            unit: 'month',
+            displayFormats: {
+              year: 'yyy MMM',
+              month: 'yyy MMM',
+            }
+          },
+          ticks: {
+            font: {
+              size: 9
+            }
+          }
+        },
+        y: {
+          ticks: {
+            font: {
+              size: 9
+            }
+          },
+          min: 0,
+          title: {
+            display: true,
+            text: 'Work item queue size'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false,
+          labels: {
+            font: {
+              size: 8
+            }
+          }
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function (tooltipItem: TooltipItem<"line">): string | void | string[] {
+              if(!tooltipItem){
+                return "";
+              }
+              return "Queue size " + tooltipItem.raw;
+            }
+          }
+        },
+      }
+    };
+  }
+
   static specIndicatorOptions(month: boolean): ChartConfiguration<'bar'>['options']{
     return {
+      animation: false,
       scales: {
         x: {
           type: 'time',
@@ -135,6 +202,7 @@ export class SpecificationStatisticChartConfigurations {
 
   static specOutlierOptions(month: boolean): ChartConfiguration<'bar'>['options']{
     return {
+      animation: false,
       maintainAspectRatio: false,
       scales: {
         x: {
@@ -190,6 +258,7 @@ export class SpecificationStatisticChartConfigurations {
 
   static capacityUtilizationOptions(month: boolean): ChartConfiguration<'bar'>['options']{
     return {
+      animation: false,
       maintainAspectRatio: false,
       scales: {
         x: {
@@ -249,6 +318,7 @@ export class SpecificationStatisticChartConfigurations {
 
   static activeBottlenecksOptions(month: boolean): ChartConfiguration<'bar'>['options']{
     return {
+      animation: false,
       maintainAspectRatio: false,
       scales: {
         x: {
@@ -266,10 +336,6 @@ export class SpecificationStatisticChartConfigurations {
           ticks: {
             font: {
               size: 9
-            },
-            // Include a dollar sign in the ticks
-            callback: function (value, index, ticks) {
-              return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
             }
           }
         }
@@ -287,7 +353,7 @@ export class SpecificationStatisticChartConfigurations {
               }
               return [" Task: " + tooltipItem.dataset.label,
                 // @ts-ignore
-                "Average resource time: " + FormatUtils.applyPastTimeFormatForTimestampWithDays(tooltipItem.raw)];
+                "Number of active work items: " + tooltipItem.raw];
             }
           }
         },
@@ -297,6 +363,7 @@ export class SpecificationStatisticChartConfigurations {
 
   static automationRatioOptions(month: boolean): ChartConfiguration<'bar'>['options']{
     return {
+      animation: false,
       maintainAspectRatio: false,
       scales: {
         x: {
@@ -345,6 +412,7 @@ export class SpecificationStatisticChartConfigurations {
 
   static automationCandidatesOptions(month: boolean): ChartConfiguration<'bar'>['options']{
     return {
+      animation: false,
       maintainAspectRatio: false,
       scales: {
         x: {
@@ -394,6 +462,7 @@ export class SpecificationStatisticChartConfigurations {
 
   static resourcesRadarOptions(month: boolean): ChartConfiguration<'radar'>['options']{
     return {
+      animation: false,
       maintainAspectRatio: true,
       elements: {
         line: {
@@ -427,6 +496,54 @@ export class SpecificationStatisticChartConfigurations {
         legend: {
           display: false
         }
+      }
+    };
+  }
+
+  static resourceUtilizationRadarOptions(month: boolean): ChartConfiguration<'radar'>['options']{
+    return {
+      animation: false,
+      maintainAspectRatio: true,
+      elements: {
+        line: {
+          borderWidth: 2,
+          borderColor: ColorUtils.getPrimaryColor()
+        },
+        point: {
+          radius: 3,
+          borderColor: ColorUtils.getPrimaryColor()
+        }
+      },
+      scales: {
+        r: {
+          ticks: {
+            font: {
+              size: 7
+            },
+            callback: function (value, index, ticks) {
+              console.log(value);
+              return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
+            }
+          },
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function (tooltipItem: TooltipItem<"radar">): string | void | string[] {
+              if(!tooltipItem){
+                return "";
+              }
+              // @ts-ignore
+              return "Summed resource time: " + FormatUtils.applyPastTimeFormatForTimestampWithDays(tooltipItem.raw);
+            }
+          }
+        },
       }
     };
   }

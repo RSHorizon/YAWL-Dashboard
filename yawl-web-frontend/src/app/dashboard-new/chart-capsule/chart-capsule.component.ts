@@ -18,7 +18,7 @@ import {
   Legend,
   ScriptableContext, ChartDataset, ChartTypeRegistry,
   RadarController,
-  RadialLinearScale, LineElement, Filler
+  RadialLinearScale, LineElement, Filler, LineController
 } from "chart.js";
 import 'chartjs-adapter-date-fns';
 
@@ -39,7 +39,7 @@ export class ChartCapsuleComponent implements OnInit, AfterViewInit, OnChanges {
 
   constructor() {
     Chart.register(Colors, TimeScale, BubbleController, LinearScale, PointElement, Tooltip,
-      CategoryScale, BarController, BarElement, Legend, RadarController, RadialLinearScale, LineElement, Filler);
+      CategoryScale, BarController, BarElement, Legend, RadarController, RadialLinearScale, LineElement, Filler, LineController);
   }
 
   ngOnInit(): void {

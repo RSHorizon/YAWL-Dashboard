@@ -45,14 +45,15 @@
         <div class="statistic-title">How long do our cases run on average?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This graph shows the average runtime of all cases
+                     matTooltip="This chart shows the average runtime of all cases
                      that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
                      Cancelled and uncompleted cases excluded."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <app-chart-capsule class="chart-capsule" [type]="'bubble'" [datasets]="specPerformanceComparisonData" [options]="specPerformanceOptions"></app-chart-capsule>
+            <app-chart-capsule class="chart-capsule" [type]="'bubble'" [datasets]="specPerformanceComparisonData"
+                               [options]="specPerformanceOptions"></app-chart-capsule>
           </div>
         </div>
       </div>
@@ -62,7 +63,7 @@
         <div class="statistic-title">How severe are our specification outliers?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This graph shows the minimum, maximum and average runtime for all cases of a corresponding specification.
+                     matTooltip="This chart shows the minimum, maximum and average runtime for all cases of a corresponding specification.
                       Cancelled and uncompleted cases excluded."></fa-icon>
           </span>
         </div>
@@ -81,7 +82,7 @@
         <div class="statistic-title">How successful are our cases?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This graph shows the overall success and deadline fulfilled ratio for cases
+                     matTooltip="This chart shows the overall success and deadline fulfilled ratio for cases
                      that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
                      A successful case has not been cancelled. A case has met its deadline if its runtime is shorter
                      than the specification time limit of its specification. Uncompleted cases excluded."></fa-icon>
@@ -109,7 +110,7 @@
         <div class="statistic-title">How high is our capacity utilization?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This graph shows the overall capacity utilization for
+                     matTooltip="This chart shows the overall capacity utilization for
                                 {{fineness === 'month'? 'monthly' : 'annual'}} periods.
                                 Each capacity utilization value is calculated from the sum of all work item
                                 durations started in the corresponding period. A work item duration is the
@@ -129,16 +130,34 @@
       </div>
     </mat-grid-tile>
 
-    <mat-grid-tile rowspan="2">
+    <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Which active bottlenecks do exist?
+        <div class="statistic-title">When did we encounter bottlenecks?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
-                                 resources spent on average on one of these tasks. This average time is calculated for
-                                 each task by dividing the sum of the time spans between the start and completion of all
-                                 corresponding work items by the number of work items. Automated tasks and cancelled
-                                 work items excluded."></fa-icon>
+                     matTooltip="This chart shows the queue size for each hour in the specified time window. The
+                                 queue size is the sum of all offered or allocated, but not started work items
+                                 at a given hour. Please note that the maximum time span for this table is 4 years."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <app-chart-capsule class="chart-capsule" [type]="'line'"
+                               [datasets]="pastBottlenecksData.datasets"
+                               [labels]="pastBottlenecksData.labels"
+                               [options]="pastBottlenecksOptions"></app-chart-capsule>
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
+
+    <mat-grid-tile rowspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">Where do we currently encounter bottlenecks?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows the sum of offered or allocated work items of a certain type
+                                  waiting to be processed."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
@@ -164,7 +183,7 @@
         <div class="statistic-title">How automated are our specifications?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This graph shows the automation ratio for each specification. This ratio is calculated
+                     matTooltip="This chart shows the automation ratio for each specification. This ratio is calculated
                      by dividing the number of automated tasks of a corresponding specification by the number of all its tasks."></fa-icon>
           </span>
         </div>
@@ -308,12 +327,17 @@
         </div>
       </div>
     </mat-grid-tile>
-    <!--- <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
+    <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
         <div class="statistic-title">How did we really utilize roles?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This chart shows for each role the sum of tasks requiring it."></fa-icon>
+                     matTooltip="This chart shows the summed resource time for each role for all work items in all
+                     specifications. This time can be an indication of which role was needed most for our processes.
+                     The resource times of all work items contribute to this time, where the resource that started
+                     the work item had the corresponding role. The resource time is calculated from the time that
+                     elapsed between the start and completion of a work item. In the case that a work item took longer
+                     than two days to complete, each work day contributes 8 hours of resource time."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
@@ -321,7 +345,7 @@
             <app-chart-capsule class="chart-capsule" [type]="'radar'"
                                [datasets]="roleUtilizationData.datasets"
                                [labels]="roleUtilizationData.labels"
-                               [options]="resourceRadarOptions"></app-chart-capsule>
+                               [options]="resourceUtilizationRadarOptions"></app-chart-capsule>
           </div>
         </div>
       </div>
@@ -331,11 +355,12 @@
         <div class="statistic-title">How did we really utilize capabilities?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
-                                 resources spent on average on one of these tasks. This average time is calculated for
-                                 each task by dividing the sum of the time spans between the start and completion of all
-                                 corresponding work items by the number of work items. Automated tasks and cancelled
-                                 work items excluded."></fa-icon>
+                     matTooltip="This chart shows the summed resource time for each capability for all work items in all
+                     specifications. This time can be an indication of which capability was needed most for our processes.
+                     The resource times of all work items contribute to this time, where the resource that started
+                     the work item had the corresponding capability. The resource time is calculated from the time that
+                     elapsed between the start and completion of a work item. In the case that a work item took longer
+                     than two days to complete, each work day contributes 8 hours of resource time."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
@@ -343,7 +368,7 @@
             <app-chart-capsule class="chart-capsule" [type]="'radar'"
                                [datasets]="capabilityUtilizationData.datasets"
                                [labels]="capabilityUtilizationData.labels"
-                               [options]="resourceRadarOptions"></app-chart-capsule>
+                               [options]="resourceUtilizationRadarOptions"></app-chart-capsule>
           </div>
         </div>
       </div>
@@ -353,11 +378,12 @@
         <div class="statistic-title">How did we really utilize positions?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
-                                 resources spent on average on one of these tasks. This average time is calculated for
-                                 each task by dividing the sum of the time spans between the start and completion of all
-                                 corresponding work items by the number of work items. Automated tasks and cancelled
-                                 work items excluded."></fa-icon>
+                     matTooltip="This chart shows the summed resource time for each position for all work items in all
+                     specifications. This time can be an indication of which position was needed most for our processes.
+                     The resource times of all work items contribute to this time, where the resource that started
+                     the work item had the corresponding position. The resource time is calculated from the time that
+                     elapsed between the start and completion of a work item. In the case that a work item took longer
+                     than two days to complete, each work day contributes 8 hours of resource time."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
@@ -365,10 +391,10 @@
             <app-chart-capsule class="chart-capsule" [type]="'radar'"
                                [datasets]="positionUtilizationData.datasets"
                                [labels]="positionUtilizationData.labels"
-                               [options]="resourceRadarOptions"></app-chart-capsule>
+                               [options]="resourceUtilizationRadarOptions"></app-chart-capsule>
           </div>
         </div>
       </div>
-    </mat-grid-tile> --->
+    </mat-grid-tile>
   </mat-grid-list>
 </div>

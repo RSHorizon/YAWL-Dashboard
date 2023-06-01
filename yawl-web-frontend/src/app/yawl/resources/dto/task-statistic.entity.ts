@@ -21,6 +21,9 @@ export interface TaskStatistic {
   associatedRoles: Map<String, number>;
   associatedCapabilities: Map<String, number>;
   associatedPositions: Map<String, number>;
+  totalTimeSpentWithRoles: Map<String, number>;
+  totalTimeSpentWithCapabilities: Map<String, number>;
+  totalTimeSpentWithPositions: Map<String, number>;
   automated: boolean;
   autoOffer: boolean;
   autoAllocate: boolean;

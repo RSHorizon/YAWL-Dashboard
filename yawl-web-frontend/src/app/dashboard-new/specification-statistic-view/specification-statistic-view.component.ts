@@ -70,8 +70,11 @@ export class SpecificationStatisticViewComponent implements OnInit {
   // Capacity
   capacityUtilizationOptions = SpecificationStatisticChartConfigurations.capacityUtilizationOptions(this.fineness === 'month');
   capacityUtilizationData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
-  activeBottlenecksOptions = SpecificationStatisticChartConfigurations.capacityUtilizationOptions(this.fineness === 'month');
+  activeBottlenecksOptions = SpecificationStatisticChartConfigurations.activeBottlenecksOptions(this.fineness === 'month');
   activeBottlenecksData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
+  pastBottlenecksOptions = SpecificationStatisticChartConfigurations.pastBottlenecksOptions(this.fineness === 'month');
+  pastBottlenecksData: ChartConfiguration<'line'>['data'] = {labels: [], datasets: []};
+
 
   // Resources
   automationRatioOptions = SpecificationStatisticChartConfigurations.automationRatioOptions(this.fineness === 'month');
@@ -80,6 +83,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
   automationCandidatesData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
 
   resourceRadarOptions = SpecificationStatisticChartConfigurations.resourcesRadarOptions(this.fineness === 'month');
+  resourceUtilizationRadarOptions = SpecificationStatisticChartConfigurations.resourceUtilizationRadarOptions(this.fineness === 'month');
   roleDistributionData: ChartConfiguration<'radar'>['data'] = {labels: [], datasets: []};
   capabilityDistributionData: ChartConfiguration<'radar'>['data'] = {labels: [], datasets: []};
   positionDistributionData: ChartConfiguration<'radar'>['data'] = {labels: [], datasets: []};
@@ -109,6 +113,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
       this.processAutomation();
       this.processResourceRadars();
       this.processBottlenecks();
+      this.processPastBottlenecks();
       this.loaded = true;
     });
   }
@@ -328,37 +333,10 @@ export class SpecificationStatisticViewComponent implements OnInit {
             if (!taskTiming.automated && !taskTiming.cancelled && taskTiming.status === 'Completed'
               && taskTiming.endTimestamp !== 0) {
               let startDate = new Date(taskTiming.startTimestamp);
-              let endDate = new Date(taskTiming.endTimestamp);
-              let totalDays = Math.ceil((taskTiming.endTimestamp - taskTiming.startTimestamp) / (1000 * 3600 * 24));
-              let resourceTime = 0;
-              if (totalDays <= 1) {
-                resourceTime = taskTiming.endTimestamp - taskTiming.startTimestamp;
-              } else {
-                // die Zeit bis 20 Uhr
-                let startDayEnd = 20;
-                let hoursStart = startDate.getHours();
-                if (hoursStart < startDayEnd) {
-                  resourceTime += (startDayEnd * 60 * 60 * 1000) - ((hoursStart * 60 * 60 * 1000) + (startDate.getMinutes() * 60 * 1000) + (startDate.getSeconds() * 1000));
-                }
-
-                // die Zeit von 8Uhr
-                let endDayStart = 8;
-                let hoursEnd = endDate.getHours();
-                if (hoursEnd > endDayStart) {
-                  resourceTime += ((hoursEnd * 60 * 60 * 1000) + (endDate.getMinutes() * 60 * 1000) + (endDate.getSeconds() * 1000)) - (endDayStart * 60 * 60 * 1000);
-                }
-
-                if (totalDays > 2) {
-                  resourceTime += (totalDays - 2) * (8 * 60 * 60 * 1000);
-                }
-              }
               let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
-              if (resourceTime < 0) {
-                resourceTime = 0;
-              }
               let label = specificationDataContainer.specificationInformation.uri + " " + specificationDataContainer.specificationInformation.specversion;
               let period = dataMap.get(tick)!;
-              period.get(label)!.capacity.push(resourceTime);
+              period.get(label)!.capacity.push(taskTiming.resourceTime);
             }
           })
         }
@@ -390,7 +368,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
   processBottlenecks(): void {
     this.activeBottlenecksData.datasets = [];
     this.activeBottlenecksData.labels = [];
-    let taskMap: Map<string, {color: string, queueCount: number[]}> = new Map();
+    let taskMap: Map<string, { color: string, queueCount: number[] }> = new Map();
     this.specificationDataContainers?.forEach((specificationDataContainer, key) => {
       let label = [specificationDataContainer.specificationInformation.uri,
         specificationDataContainer.specificationInformation.specversion];
@@ -424,13 +402,72 @@ export class SpecificationStatisticViewComponent implements OnInit {
     this.activeBottlenecksData.datasets = this.activeBottlenecksData.datasets.sort((a, b) => a.label!.localeCompare(b.label!));
   }
 
+  processPastBottlenecks(): void {
+    // Jahr, Monat, Tag, Stunde
+    let taskTimingsSorted: {timestamp: number, taskid: string, change: number}[] = [];
+    this.specificationDataContainers?.forEach((specificationDataContainer) => {
+      specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)){
+          caseStatistic.taskTimingDTOS.forEach(taskTiming => {
+            if(!taskTiming.automated){
+              let created = (taskTiming.offeredTimestamp === 0)? taskTiming.allocatedTimestamp: taskTiming.offeredTimestamp;
+              if(created !== 0 && taskTiming.startTimestamp !== 0){
+                taskTimingsSorted.push({timestamp : created, taskid: taskTiming.taskid, change: 1});
+                taskTimingsSorted.push({timestamp : taskTiming.startTimestamp, taskid: taskTiming.taskid, change: -1});
+              }
+            }
+          })
+        }
+      })
+    });
+    taskTimingsSorted.sort((a, b) => (a.timestamp < b.timestamp)? -1 : 1 )
+
+    this.pastBottlenecksData.labels = [];
+    let yDataArray: number[] = [];
+
+    let start = this.range.value.start?.getTime();
+    let end = this.range.value.end?.getTime();
+    let tick = 1000 * 60 * 60; // hours
+    if(start !== 0 && start !== undefined && end !== 0 && end !== undefined){
+      // Zeiträum größer als 4 Jahre unzulässig
+      if(end - start > (1000 * 60 * 60 * 24 * 29 * 12 * 4) ){
+        end = Date.now();
+        start = end - (1000 * 60 * 60 * 24 * 29 * 12 * 4);
+      }
+      let taskTimestampIndex = 0;
+      let generalTickIndex = 0;
+      let status: Map<string, number> = new Map();
+      for(let timeIndex = start; timeIndex < end; timeIndex += tick){
+        generalTickIndex++;
+        while(taskTimestampIndex < taskTimingsSorted.length
+              && taskTimingsSorted[taskTimestampIndex].timestamp < timeIndex){
+          if(!status.has(taskTimingsSorted[taskTimestampIndex].taskid)){
+            status.set(taskTimingsSorted[taskTimestampIndex].taskid, 0);
+          }
+          status.set(taskTimingsSorted[taskTimestampIndex].taskid, status.get(taskTimingsSorted[taskTimestampIndex].taskid)! + taskTimingsSorted[taskTimestampIndex].change);
+          taskTimestampIndex++;
+        }
+        this.pastBottlenecksData.labels.push(timeIndex)
+        let count = 0;
+        status.forEach(stat => {
+          count += stat
+        })
+        yDataArray.push(count);
+      }
+    }
+    this.pastBottlenecksData.datasets = [];
+    this.pastBottlenecksData.datasets.push({
+      data: yDataArray
+    })
+  }
+
   processAutomation(): void {
     this.automationCandidatesData.datasets = [];
     this.automationCandidatesData.labels = [];
     let ratioLabels: string[][] = [];
     let colors: string[] = [];
     let ratios: number[] = [];
-    let taskMap: Map<string, {color: string, avgTime: number[]}> = new Map();
+    let taskMap: Map<string, { color: string, avgTime: number[] }> = new Map();
     this.specificationDataContainers?.forEach((specificationDataContainer, key) => {
       ratioLabels.push([specificationDataContainer.specificationInformation.uri,
         specificationDataContainer.specificationInformation.specversion]);
@@ -442,8 +479,8 @@ export class SpecificationStatisticViewComponent implements OnInit {
 
       specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
         if (!taskStatistic.automated) {
-          if(!taskMap.has(taskStatistic.taskid)){
-            taskMap.set(taskStatistic.taskid, {color: taskStatistic.color!, avgTime: [0,0,0]});
+          if (!taskMap.has(taskStatistic.taskid)) {
+            taskMap.set(taskStatistic.taskid, {color: taskStatistic.color!, avgTime: [0, 0, 0]});
           }
           taskMap.get(taskStatistic.taskid)!.avgTime[key] = taskStatistic.avgCompletionTime;
         }
@@ -504,9 +541,9 @@ export class SpecificationStatisticViewComponent implements OnInit {
     let rolesDemand: Map<string, number> = new Map([...roles.keys()].map(key => [key, 0]));
     let capabilitiesDemand: Map<string, number> = new Map([...capabilities.keys()].map(key => [key, 0]));
     let positionsDemand: Map<string, number> = new Map([...positions.keys()].map(key => [key, 0]));
-    let associativeRolesDemand: Map<string, number> = new Map([...roles.keys()].map(key => [key, 0]));
-    let associativeCapabilitiesDemand: Map<string, number> = new Map([...capabilities.keys()].map(key => [key, 0]));
-    let associativePositionsDemand: Map<string, number> = new Map([...positions.keys()].map(key => [key, 0]));
+    let totalTimeSpentWithRoles: Map<string, number> = new Map([...roles.keys()].map(key => [key, 0]));
+    let totalTimeSpentWithCapabilities: Map<string, number> = new Map([...capabilities.keys()].map(key => [key, 0]));
+    let totalTimeSpentWithPositions: Map<string, number> = new Map([...positions.keys()].map(key => [key, 0]));
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       taskCount += specificationDataContainer.specificationStatistic.taskStatisticDTOS.length;
       specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
@@ -528,28 +565,28 @@ export class SpecificationStatisticViewComponent implements OnInit {
           }
           positionsDemand.set(position.title, positionsDemand.get(position.title)! + 1);
         });
-        if (taskStatistic.associatedRoles !== undefined && Object.keys(taskStatistic.associatedRoles).length !== 0) {
-          Object.entries(taskStatistic.associatedRoles).forEach((keyValue) => {
-            if (!associativeRolesDemand.has(keyValue[0])) {
-              associativeRolesDemand.set(keyValue[0], 0);
+        if (taskStatistic.totalTimeSpentWithRoles !== undefined && Object.keys(taskStatistic.totalTimeSpentWithRoles).length !== 0) {
+          Object.entries(taskStatistic.totalTimeSpentWithRoles).forEach((keyValue) => {
+            if (!totalTimeSpentWithRoles.has(keyValue[0])) {
+              totalTimeSpentWithRoles.set(keyValue[0], 0);
             }
-            associativeRolesDemand.set(keyValue[0], associativeRolesDemand.get(keyValue[0])! + 1);
+            totalTimeSpentWithRoles.set(keyValue[0], totalTimeSpentWithRoles.get(keyValue[0])! + keyValue[1]);
           })
         }
-        if (taskStatistic.associatedCapabilities !== undefined && Object.keys(taskStatistic.associatedCapabilities).length !== 0) {
-          Object.entries(taskStatistic.associatedCapabilities).forEach((keyValue) => {
-            if (!associativeCapabilitiesDemand.has(keyValue[0])) {
-              associativeCapabilitiesDemand.set(keyValue[0], 0);
+        if (taskStatistic.totalTimeSpentWithCapabilities !== undefined && Object.keys(taskStatistic.totalTimeSpentWithCapabilities).length !== 0) {
+          Object.entries(taskStatistic.totalTimeSpentWithCapabilities).forEach((keyValue) => {
+            if (!totalTimeSpentWithCapabilities.has(keyValue[0])) {
+              totalTimeSpentWithCapabilities.set(keyValue[0], 0);
             }
-            associativeCapabilitiesDemand.set(keyValue[0], associativeCapabilitiesDemand.get(keyValue[0])! + 1);
+            totalTimeSpentWithCapabilities.set(keyValue[0], totalTimeSpentWithCapabilities.get(keyValue[0])! + keyValue[1]);
           })
         }
-        if (taskStatistic.associatedPositions !== undefined && Object.keys(taskStatistic.associatedPositions).length !== 0) {
-          Object.entries(taskStatistic.associatedPositions).forEach((keyValue) => {
-            if (!associativePositionsDemand.has(keyValue[0])) {
-              associativePositionsDemand.set(keyValue[0], 0);
+        if (taskStatistic.totalTimeSpentWithPositions !== undefined && Object.keys(taskStatistic.totalTimeSpentWithPositions).length !== 0) {
+          Object.entries(taskStatistic.totalTimeSpentWithPositions).forEach((keyValue) => {
+            if (!totalTimeSpentWithPositions.has(keyValue[0])) {
+              totalTimeSpentWithPositions.set(keyValue[0], 0);
             }
-            associativePositionsDemand.set(keyValue[0], associativePositionsDemand.get(keyValue[0])! + 1);
+            totalTimeSpentWithPositions.set(keyValue[0], totalTimeSpentWithPositions.get(keyValue[0])! + keyValue[1]);
           })
         }
       })
@@ -558,214 +595,67 @@ export class SpecificationStatisticViewComponent implements OnInit {
     // Distributions
     this.roleDistributionData.labels = Array.from(roles.keys());
     this.roleDistributionData.datasets = [];
-    this.roleDistributionData.datasets.push({ label: "Quantity", data: Array.from(roles.values()), fill: true,
+    this.roleDistributionData.datasets.push({
+      label: "Quantity", data: Array.from(roles.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
     this.capabilityDistributionData.labels = Array.from(capabilities.keys());
     this.capabilityDistributionData.datasets = [];
-    this.capabilityDistributionData.datasets.push({label: "Quantity", data: Array.from(capabilities.values()), fill: true,
+    this.capabilityDistributionData.datasets.push({
+      label: "Quantity", data: Array.from(capabilities.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
     this.positionDistributionData.labels = Array.from(positions.keys());
     this.positionDistributionData.datasets = [];
-    this.positionDistributionData.datasets.push({label: "Quantity", data: Array.from(positions.values()), fill: true,
+    this.positionDistributionData.datasets.push({
+      label: "Quantity", data: Array.from(positions.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
     // Configurations
     this.configuredRolesData.labels = Array.from(rolesDemand.keys());
     this.configuredRolesData.datasets = [];
-    this.configuredRolesData.datasets.push({ label: "Quantity", data: Array.from(rolesDemand.values()), fill: true,
+    this.configuredRolesData.datasets.push({
+      label: "Quantity", data: Array.from(rolesDemand.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
     this.configuredCapabilitiesData.labels = Array.from(capabilitiesDemand.keys());
     this.configuredCapabilitiesData.datasets = [];
-    this.configuredCapabilitiesData.datasets.push({label: "Quantity", data: Array.from(capabilitiesDemand.values()), fill: true,
+    this.configuredCapabilitiesData.datasets.push({
+      label: "Quantity", data: Array.from(capabilitiesDemand.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
     this.configuredPositionsData.labels = Array.from(positionsDemand.keys());
     this.configuredPositionsData.datasets = [];
-    this.configuredPositionsData.datasets.push({label: "Quantity", data: Array.from(positionsDemand.values()), fill: true,
+    this.configuredPositionsData.datasets.push({
+      label: "Quantity", data: Array.from(positionsDemand.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
     // Utilizations
-    this.roleUtilizationData.labels = Array.from(associativeRolesDemand.keys());
+    this.roleUtilizationData.labels = Array.from(totalTimeSpentWithRoles.keys());
     this.roleUtilizationData.datasets = [];
-    this.roleUtilizationData.datasets.push({ label: "Quantity", data: Array.from(associativeRolesDemand.values()), fill: true,
+    this.roleUtilizationData.datasets.push({
+      label: "Quantity", data: Array.from(totalTimeSpentWithRoles.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
-    this.capabilityUtilizationData.labels = Array.from(associativeCapabilitiesDemand.keys());
+    this.capabilityUtilizationData.labels = Array.from(totalTimeSpentWithCapabilities.keys());
     this.capabilityUtilizationData.datasets = [];
-    this.capabilityUtilizationData.datasets.push({label: "Quantity", data: Array.from(associativeCapabilitiesDemand.values()), fill: true,
+    this.capabilityUtilizationData.datasets.push({
+      label: "Quantity", data: Array.from(totalTimeSpentWithCapabilities.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
 
-    this.positionUtilizationData.labels = Array.from(associativePositionsDemand.keys());
+    this.positionUtilizationData.labels = Array.from(totalTimeSpentWithPositions.keys());
     this.positionUtilizationData.datasets = [];
-    this.positionUtilizationData.datasets.push({label: "Quantity", data: Array.from(associativePositionsDemand.values()), fill: true,
+    this.positionUtilizationData.datasets.push({
+      label: "Quantity", data: Array.from(totalTimeSpentWithPositions.values()), fill: true,
       backgroundColor: ColorUtils.getTransparentColor(ColorUtils.getMuchLighterColor(ColorUtils.getPrimaryColor()))
     });
   }
-
-  /*
-  processRelativeResourcePropertiesDemand(): void {
-    this.demandForRoles = [];
-    this.demandForCapabilities = [];
-    this.demandForPositions = [];
-    this.associativeDemandForRoles = [];
-    this.associativeDemandForCapabilities = [];
-    this.associativeDemandForPositions = [];
-
-    let taskCount = 0;
-    let rolesDemand: Map<string, number> = new Map();
-    let capabilitiesDemand: Map<string, number> = new Map();
-    let positionsDemand: Map<string, number> = new Map();
-    let associativeRolesDemand: Map<string, number> = new Map();
-    let associativeCapabilitiesDemand: Map<string, number> = new Map();
-    let associativePositionsDemand: Map<string, number> = new Map();
-    this.specificationDataContainers?.forEach(specificationDataContainer => {
-      taskCount += specificationDataContainer.specificationStatistic.taskStatisticDTOS.length;
-      specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
-        taskStatistic.demandedRoles.forEach(role => {
-          if (!rolesDemand.has(role.name)) {
-            rolesDemand.set(role.name, 0);
-          }
-          rolesDemand.set(role.name, rolesDemand.get(role.name)! + 1);
-        });
-        taskStatistic.demandedCapabilities.forEach(capability => {
-          if (!capabilitiesDemand.has(capability.name)) {
-            capabilitiesDemand.set(capability.name, 0);
-          }
-          capabilitiesDemand.set(capability.name, capabilitiesDemand.get(capability.name)! + 1);
-        });
-        taskStatistic.demandedPositions.forEach(position => {
-          if (!positionsDemand.has(position.title)) {
-            positionsDemand.set(position.title, 0);
-          }
-          positionsDemand.set(position.title, positionsDemand.get(position.title)! + 1);
-        });
-        if (taskStatistic.associatedRoles !== undefined && Object.keys(taskStatistic.associatedRoles).length !== 0) {
-          Object.entries(taskStatistic.associatedRoles).forEach((keyValue) => {
-            if (!associativeRolesDemand.has(keyValue[0])) {
-              associativeRolesDemand.set(keyValue[0], 0);
-            }
-            associativeRolesDemand.set(keyValue[0], associativeRolesDemand.get(keyValue[0])! + keyValue[1]);
-          })
-        }
-        if (taskStatistic.associatedCapabilities !== undefined && Object.keys(taskStatistic.associatedCapabilities).length !== 0) {
-          Object.entries(taskStatistic.associatedCapabilities).forEach((keyValue) => {
-            if (!associativeCapabilitiesDemand.has(keyValue[0])) {
-              associativeCapabilitiesDemand.set(keyValue[0], 0);
-            }
-            associativeCapabilitiesDemand.set(keyValue[0], associativeCapabilitiesDemand.get(keyValue[0])! + keyValue[1]);
-          })
-        }
-        if (taskStatistic.associatedPositions !== undefined && Object.keys(taskStatistic.associatedPositions).length !== 0) {
-          Object.entries(taskStatistic.associatedPositions).forEach((keyValue) => {
-            if (!associativePositionsDemand.has(keyValue[0])) {
-              associativePositionsDemand.set(keyValue[0], 0);
-            }
-            associativePositionsDemand.set(keyValue[0], associativePositionsDemand.get(keyValue[0])! + keyValue[1]);
-          })
-        }
-      })
-    });
-
-    let rolesElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "Roles",
-      series: []
-    }
-    rolesDemand.forEach((count, label) => {
-      rolesElement.series.push({
-        name: label,
-        value: ((count / taskCount) * 100).toFixed(2)
-      })
-    })
-    if (rolesDemand.size === 0) {
-      rolesElement.series.push({name: "No data available", value: "0"})
-    }
-    this.demandForRoles.push(rolesElement);
-
-    let capabilitiesElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "Capabilities",
-      series: []
-    }
-    capabilitiesDemand.forEach((count, label) => {
-      capabilitiesElement.series.push({
-        name: label,
-        value: ((count / taskCount) * 100).toFixed(2)
-      })
-    })
-    if (capabilitiesDemand.size === 0) {
-      capabilitiesElement.series.push({name: "No data available", value: "0"})
-    }
-    this.demandForCapabilities.push(capabilitiesElement);
-
-    let positionsElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "Positions",
-      series: []
-    }
-    positionsDemand.forEach((count, label) => {
-      positionsElement.series.push({
-        name: label,
-        value: ((count / taskCount) * 100).toFixed(2)
-      })
-    })
-    if (positionsDemand.size === 0) {
-      positionsElement.series.push({name: "No data available", value: "0"})
-    }
-    this.demandForPositions.push(positionsElement);
-
-
-    let associativeRolesElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "Roles",
-      series: []
-    }
-    associativeRolesDemand.forEach((count, label) => {
-      associativeRolesElement.series.push({
-        name: label,
-        value: ((count / taskCount) * 100).toFixed(2)
-      })
-    })
-    if (associativeRolesDemand.size === 0) {
-      associativeRolesElement.series.push({name: "No data available", value: "0"})
-    }
-    this.associativeDemandForRoles.push(associativeRolesElement);
-
-    let associativeCapabilitiesElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "Capabilities",
-      series: []
-    }
-    associativeCapabilitiesDemand.forEach((count, label) => {
-      associativeCapabilitiesElement.series.push({
-        name: label,
-        value: ((count / taskCount) * 100).toFixed(2)
-      })
-    })
-    if (associativeCapabilitiesDemand.size === 0) {
-      associativeCapabilitiesElement.series.push({name: "No data available", value: "0"})
-    }
-    this.associativeDemandForCapabilities.push(associativeCapabilitiesElement);
-
-    let associativePositionsElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "Positions",
-      series: []
-    }
-    associativePositionsDemand.forEach((count, label) => {
-      associativePositionsElement.series.push({
-        name: label,
-        value: ((count / taskCount) * 100).toFixed(2)
-      })
-    })
-    if (associativePositionsDemand.size === 0) {
-      associativePositionsElement.series.push({name: "No data available", value: "0"})
-    }
-    this.associativeDemandForPositions.push(associativePositionsElement);
-  }*/
 }

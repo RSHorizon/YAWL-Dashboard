@@ -22,6 +22,7 @@ public class TaskTimingDTO {
     private long allocatedTimestamp = 0L;
     private long startTimestamp = 0L;
     private long endTimestamp = 0L;
+    private long resourceTime = 0L;
 
     public TaskTimingDTO(String taskid, String caseid, String decompositionOrder) {
         this.taskid = taskid;
@@ -131,5 +132,13 @@ public class TaskTimingDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getResourceTime() {
+        return resourceTime;
+    }
+
+    public void setResourceTime(long resourceTime) {
+        this.resourceTime = resourceTime;
     }
 }

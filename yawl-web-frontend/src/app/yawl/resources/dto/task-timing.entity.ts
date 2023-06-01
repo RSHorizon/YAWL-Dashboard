@@ -18,5 +18,6 @@ export interface TaskTiming {
   allocatedTimestamp: number;
   startTimestamp: number;
   endTimestamp: number;
+  resourceTime: number;
 
 }

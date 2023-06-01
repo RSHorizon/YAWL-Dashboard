@@ -292,6 +292,67 @@ public class StatisticController {
                             avgQueueTimeCounter.incrementAndGet();
                             creationTimestamps.add(creationTimestamp);
                         }
+
+                        Long resourceTime = 0L;
+                        if(taskTimingDTO.getStartTimestamp() != 0L && taskTimingDTO.getEndTimestamp() != 0L){
+                            Long totalDays = (taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp()) / (1000 * 3600 * 24);
+                            Date startDate = new Date(taskTimingDTO.getStartTimestamp());
+                            Date endDate = new Date(taskTimingDTO.getEndTimestamp());
+                            if (totalDays <= 1) {
+                                resourceTime = taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp();
+                            } else {
+                                // die Zeit bis 20 Uhr
+                                int startDayEnd = 20;
+                                int hoursStart = startDate.getHours();
+                                if (hoursStart < startDayEnd) {
+                                    resourceTime += (startDayEnd * 60 * 60 * 1000) - ((hoursStart * 60 * 60 * 1000) + (startDate.getMinutes() * 60 * 1000) + (startDate.getSeconds() * 1000));
+                                }
+
+                                // die Zeit von 8Uhr
+                                int endDayStart = 8;
+                                int hoursEnd = endDate.getHours();
+                                if (hoursEnd > endDayStart) {
+                                    resourceTime += ((hoursEnd * 60 * 60 * 1000) + (endDate.getMinutes() * 60 * 1000) + (endDate.getSeconds() * 1000)) - (endDayStart * 60 * 60 * 1000);
+                                }
+
+                                if (totalDays > 2) {
+                                    resourceTime += (totalDays - 2) * (8 * 60 * 60 * 1000);
+                                }
+                            }
+                        }
+                        taskTimingDTO.setResourceTime(resourceTime);
+
+                        if(resourceTime != 0){
+                            for(Map.Entry<String, Set<String>> entries : taskTimingDTO.getParticipants().entrySet()){
+                                if(entries.getValue().contains("Start")){
+                                    Participant participant = participantsInformationMap.get(entries.getKey());
+
+                                    for(Role role : participant.getRoles()){
+                                        Map<String, Long> totalTimeSpentWithRoles = taskStatistic.getTotalTimeSpentWithRoles();
+                                        if(!totalTimeSpentWithRoles.containsKey(role.getName())){
+                                            totalTimeSpentWithRoles.put(role.getName(), 0L);
+                                        }
+                                        totalTimeSpentWithRoles.replace(role.getName(), totalTimeSpentWithRoles.get(role.getName()) + resourceTime);
+                                    }
+
+                                    for(Capability capability : participant.getCapabilities()){
+                                        Map<String, Long> totalTimeSpentWithCapabilities = taskStatistic.getTotalTimeSpentWithCapabilities();
+                                        if(!totalTimeSpentWithCapabilities.containsKey(capability.getName())){
+                                            totalTimeSpentWithCapabilities.put(capability.getName(), 0L);
+                                        }
+                                        totalTimeSpentWithCapabilities.replace(capability.getName(), totalTimeSpentWithCapabilities.get(capability.getName()) + resourceTime);
+                                    }
+
+                                    for(Position position : participant.getPositions()){
+                                        Map<String, Long> totalTimeSpentWithPositions = taskStatistic.getTotalTimeSpentWithPositions();
+                                        if(!totalTimeSpentWithPositions.containsKey(position.getTitle())){
+                                            totalTimeSpentWithPositions.put(position.getTitle(), 0L);
+                                        }
+                                        totalTimeSpentWithPositions.replace(position.getTitle(), totalTimeSpentWithPositions.get(position.getTitle()) + resourceTime);
+                                    }
+                                }
+                            }
+                        }
                     });
 
             if (avgQueueTimeCounter.get() != 0) {

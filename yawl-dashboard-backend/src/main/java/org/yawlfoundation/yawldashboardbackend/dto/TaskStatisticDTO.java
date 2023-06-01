@@ -21,6 +21,12 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
     private Map<String, Integer> associatedRoles = new HashMap<>();
     // <Position_name, occurrences>
     private Map<String, Integer> associatedPositions = new HashMap<>();
+
+    private Map<String, Long> totalTimeSpentWithCapabilities = new HashMap<>();
+    // <Role_name, occurrences>
+    private Map<String, Long> totalTimeSpentWithRoles = new HashMap<>();
+    // <Position_name, occurrences>
+    private Map<String, Long> totalTimeSpentWithPositions = new HashMap<>();
     private String decompositionOrder = "";
     private String minimalOrder = "";
     private long avgCompletionTime = 0;
@@ -252,5 +258,30 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public Map<String, Long> getTotalTimeSpentWithCapabilities() {
+        return totalTimeSpentWithCapabilities;
+    }
+
+    public void setTotalTimeSpentWithCapabilities(Map<String, Long> totalTimeSpentWithCapabilities) {
+        this.totalTimeSpentWithCapabilities = totalTimeSpentWithCapabilities;
+    }
+
+    public Map<String, Long> getTotalTimeSpentWithRoles() {
+        return totalTimeSpentWithRoles;
+    }
+
+    public void setTotalTimeSpentWithRoles(Map<String, Long> totalTimeSpentWithRoles) {
+        this.totalTimeSpentWithRoles = totalTimeSpentWithRoles;
+    }
+
+    public Map<String, Long> getTotalTimeSpentWithPositions() {
+        return totalTimeSpentWithPositions;
+    }
+
+    public void setTotalTimeSpentWithPositions(Map<String, Long> totalTimeSpentWithPositions) {
+        this.totalTimeSpentWithPositions = totalTimeSpentWithPositions;
     }
 }
