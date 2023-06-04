@@ -10,6 +10,7 @@ export class StatisticUtils {
   static monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+  static weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   static notCancelledAndCompleted(caseStatistic: CaseStatistic): boolean{
     return !caseStatistic.cancelled && caseStatistic.end !== 0;
@@ -74,5 +75,12 @@ export class StatisticUtils {
     } else if (!series && array.length === 0){
       array.push(emptyNormalStatistic);
     }
+  }
+
+  static changeMap(map: Map<string, number>, id: string, change: number){
+    if (!map.has(id)) {
+      map.set(id, 0);
+    }
+    map.set(id, map.get(id)! + change);
   }
 }

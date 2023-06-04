@@ -1,7 +1,6 @@
 <p>
   <mat-button-toggle-group (valueChange)="selectStatistic($event)" appearance="legacy">
-    <mat-button-toggle value="common" [checked]="true">Common</mat-button-toggle>
-    <mat-button-toggle value="success">Success</mat-button-toggle>
+    <mat-button-toggle value="general" [checked]="true">General</mat-button-toggle>
     <mat-button-toggle value="performance">Performance</mat-button-toggle>
   </mat-button-toggle-group>
 
@@ -28,222 +27,125 @@
     </mat-select>
   </mat-form-field>
 </p>
-<div [hidden]="statisticSelection !== 'common'">
-  <mat-grid-list *ngIf="loaded && specificationDataContainer !== undefined" cols="5" rowHeight="2:1"
+<div [hidden]="statisticSelection !== 'general'">
+  <mat-grid-list cols="5" rowHeight="2:1"
                  [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Overall case instances</div>
-        <div class="statistic-body ngx-charts-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="caseInstances"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
-          </div>
-          <div class="statistic-label"></div>
+        <div class="statistic-title">How are our case starts distributed over weekdays?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows the sum of cases for this process
+                     that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
+                     In addition, the sum of case starts is distributed among the days of the week. Thus, it is possible
+                     to determine when this case is usually started in the week."></fa-icon>
+          </span>
         </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Avg. demand for capacity</div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="capacityDemand"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [dataLabelFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
-          </div>
-          <div class="statistic-label">
-
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="weekDayOccurrencesData.datasets"
+                               [labels]="weekDayOccurrencesData.labels"
+                               [options]="weekDayOccurrencesOptions"></app-chart-capsule>
           </div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Avg. case instances per weekday</div>
+        <div class="statistic-title">What are the costs of this process?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows the actual sum of costs for cases
+                     started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
+                     Also, all costs for each period are divided and summarized into costs for individual task types.
+                     Thus, on the one hand, it is possible to determine the costs for each period and,
+                     on the other hand, it is easy to see which task type was for example particularly expensive."></fa-icon>
+          </span>
+        </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="avgCasesPerWeekday"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
-          </div>
-          <div class="statistic-label">
-
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="costsData.datasets"
+                               [labels]="costsData.labels"
+                               [options]="costsOptions"></app-chart-capsule>
           </div>
         </div>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile rowspan="2">
+    <mat-grid-tile rowspan="2" colspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">Cost</div>
+        <div class="statistic-title">When do our resources work on this process?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows sums of participants for each day of the specified time window.
+                     Participants take part in the sum of a specific day
+                     if they have processed at least one work item on that day.
+                     Please note that the maximum time span for this chart is 4 years."></fa-icon>
+          </span>
+        </div>
         <div class="statistic-body ngx-charts-small-text">
           <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="costs"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
-          </div>
-          <div class="statistic-label">
-
+            <app-chart-capsule class="chart-capsule" [type]="'line'"
+                               [datasets]="resourceUtilizationData.datasets"
+                               [labels]="resourceUtilizationData.labels"
+                               [options]="resourceUtilizationOptions"></app-chart-capsule>
           </div>
         </div>
       </div>
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container scrollbar">
-        <div class="statistic-title">Associated ressources</div>
+        <div class="statistic-title">Who is collaborating in this process?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="These lists of roles show all resources with this corresponding role, that processed
+                                 work items of this process. This is the case, when a resource started a work item
+                                 of this process."></fa-icon>
+          </span></div>
         <div class="ngx-charts-small-text">
-          <div style="display:block;">
-            <p *ngFor="let keyValue of associatedParticipants | keyvalue, let i = index">
-              <mat-form-field>
-                <mat-label>{{" - " + keyValue.key}}</mat-label>
-                <mat-select>
-                  <mat-option
-                    *ngFor="let participant of keyValue.value">{{participant.firstname + " " + participant.lastname}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <br>
-            </p>
+          <div class="statistic-text-lists">
+            <mat-expansion-panel *ngFor="let keyValue of associatedParticipants | keyvalue, let i = index">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{keyValue.key}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <span class="statistic-small-list-text" *ngFor="let participant of keyValue.value, let j = index">{{(j > 0)? ", " + participant.firstname + " " + participant.lastname : participant.firstname + " " + participant.lastname}}</span>
+            </mat-expansion-panel>
           </div>
         </div>
       </div>
     </mat-grid-tile>
   </mat-grid-list>
 </div>
-<div [hidden]="statisticSelection !== 'success'">
-  <mat-grid-list *ngIf="loaded && specificationDataContainer !== undefined" cols="5" rowHeight="2:1"
-                 [gutterSize]="'8px'">
-    <mat-grid-tile rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Success</div>
-        <div class="statistic-body ngx-charts-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="successValues"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
-          </div>
-          <div class="statistic-label">
-            {{successful}} cases were successful. {{unsucessful}} cases were unsuccessful.
-          </div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Success rate</div>
-        <div class="statistic-body ngx-charts-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-line-chart
-              [animations]="false"
-              [results]="successLine"
-              [xAxis]="true"
-              [xAxisLabel]="'Time period'"
-              [yAxis]="true"
-              [yAxisTickFormatting]="formatUtils.applyPercentageFormat"
-              [yScaleMax]="100"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-line-chart>
-          </div>
-          <div class="statistic-label">
 
-          </div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">Deadline accuracy</div>
-        <div class="statistic-body ngx-charts-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-bar-vertical-stacked
-              [animations]="false"
-              [barPadding]="1"
-              [results]="deadlineValues"
-              [xAxis]="true"
-              [yAxis]="true"
-              [showDataLabel]="false"
-              [roundDomains]="true"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-bar-vertical-stacked>
-          </div>
-          <div class="statistic-label">
-            {{deadlineNotExceeded}} cases met the deadline. {{deadlineExceeded}} cases did not.
-          </div>
-        </div>
-      </div>
-    </mat-grid-tile>
-    <mat-grid-tile rowspan="2">
-      <div class="statistic-container">
-        <div class="statistic-title">SLA met rate</div>
-        <div class="statistic-body ngx-charts-small-text">
-          <div class="statistic-graph">
-            <ngx-charts-line-chart
-              [animations]="false"
-              [results]="slaLine"
-              [xAxis]="true"
-              [xAxisLabel]="'Time period'"
-              [yAxis]="true"
-              [yAxisTickFormatting]="formatUtils.applyPastTimeFormatForTimestampWithDays"
-              [yScaleMax]="100"
-              [scheme]="'ocean'">
-              >
-            </ngx-charts-line-chart>
-          </div>
-          <div class="statistic-label">
+<!--- PERFORMANCE -->
 
-          </div>
-        </div>
-      </div>
-    </mat-grid-tile>
-  </mat-grid-list>
-</div>
 <div [hidden]="statisticSelection !== 'performance'">
-  <mat-grid-list *ngIf="loaded && specificationDataContainer !== undefined" cols="5" rowHeight="2:1"
+  <mat-grid-list cols="5" rowHeight="2:1"
                  [gutterSize]="'8px'">
+    <mat-grid-tile rowspan="2" colspan="2">
+      <div class="statistic-container">
+        <div class="statistic-title">How successful are our cases?
+          <span class="statistic-title-info">
+            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This chart shows the overall success and deadline fulfilled ratio for cases
+                     that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
+                     A successful case has not been cancelled. A case has met its deadline if its runtime is shorter
+                     than the specification time limit of its process. Uncompleted cases excluded."></fa-icon>
+          </span>
+        </div>
+        <div class="statistic-body ngx-charts-small-text">
+          <div class="statistic-graph">
+            <app-chart-capsule class="chart-capsule" [type]="'bar'"
+                               [datasets]="overallIndicatorData.datasets"
+                               [labels]="overallIndicatorData.labels"
+                               [options]="overallIndicatorOptions"></app-chart-capsule>
+          </div>
+        </div>
+      </div>
+    </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
         <div class="statistic-title">Avg. case duration</div>

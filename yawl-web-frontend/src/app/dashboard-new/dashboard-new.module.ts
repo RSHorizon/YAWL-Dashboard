@@ -26,6 +26,7 @@ import {MatNativeDateModule} from "@angular/material/core";
 import { CaseStatisticViewComponent } from './case-statistic-view/case-statistic-view.component';
 import { TaskStatisticViewComponent } from './task-statistic-view/task-statistic-view.component';
 import { ChartCapsuleComponent } from './chart-capsule/chart-capsule.component';
+import {MatExpansionModule} from "@angular/material/expansion";
 
 /**
  * @author Robin Steinwarz
@@ -60,7 +61,8 @@ import { ChartCapsuleComponent } from './chart-capsule/chart-capsule.component';
         ReactiveFormsModule,
         FormsModule,
         BrowserAnimationsModule,
-        NgxChartsModule
+        NgxChartsModule,
+        MatExpansionModule
     ]
 })
 export class DashboardNewModule { }

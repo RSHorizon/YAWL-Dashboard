@@ -2,7 +2,6 @@ import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@a
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
-import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
 import {LegendPosition} from "@swimlane/ngx-charts";
 import {FormatUtils} from "../../util/format-util";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,28 +9,9 @@ import {Participant} from "../../yawl/resources/entities/participant.entity";
 import * as d3 from 'd3';
 import {StatisticUtils} from "../../util/statistic-utils";
 import {faCircleInfo} from '@fortawesome/free-solid-svg-icons';
-import {
-  Chart,
-  ChartConfiguration,
-  Colors,
-  TimeScale,
-  BubbleController,
-  BubbleDataPoint,
-  BubbleControllerDatasetOptions,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  TooltipItem,
-  TooltipModel,
-  BarController,
-  CategoryScale,
-  BarElement,
-  Legend,
-  ScriptableContext, ChartDataset, ChartTypeRegistry
-} from "chart.js";
-import 'chartjs-adapter-date-fns';
 import {SpecificationStatisticChartConfigurations} from "./specification-statistic-chart-configurations";
 import {ColorUtils} from "../../util/color-util";
+import { ChartConfiguration, ScriptableContext } from 'chart.js';
 
 
 @Component({
@@ -46,7 +26,6 @@ export class SpecificationStatisticViewComponent implements OnInit {
     start: new FormControl<Date | null>(new Date(Date.UTC(new Date(Date.now()).getFullYear() - 2, 0))),
     end: new FormControl<Date | null>(new Date(Date.now())),
   });
-  d3ViewVar = d3;
   formatUtils = new FormatUtils();
 
 
@@ -56,7 +35,6 @@ export class SpecificationStatisticViewComponent implements OnInit {
   statisticSelection = "performance";
   statisticResourceSelection = "role";
   statisticTicks: { year: number, month: number }[] = [];
-  legendPiePosition: LegendPosition = LegendPosition.Below;
   casesInRange = 0;
 
   // Performance
@@ -96,8 +74,6 @@ export class SpecificationStatisticViewComponent implements OnInit {
 
   constructor(private _liveAnnouncer: LiveAnnouncer,
               private specificationDataService: SpecificationDataService) {
-    Chart.register(Colors, TimeScale, BubbleController, LinearScale, PointElement, Tooltip,
-      CategoryScale, BarController, BarElement, Legend);
   }
 
 
@@ -435,10 +411,8 @@ export class SpecificationStatisticViewComponent implements OnInit {
         start = end - (1000 * 60 * 60 * 24 * 29 * 12 * 4);
       }
       let taskTimestampIndex = 0;
-      let generalTickIndex = 0;
       let status: Map<string, number> = new Map();
       for(let timeIndex = start; timeIndex < end; timeIndex += tick){
-        generalTickIndex++;
         while(taskTimestampIndex < taskTimingsSorted.length
               && taskTimingsSorted[taskTimestampIndex].timestamp < timeIndex){
           if(!status.has(taskTimingsSorted[taskTimestampIndex].taskid)){

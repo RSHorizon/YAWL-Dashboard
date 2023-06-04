@@ -19,7 +19,11 @@
   <ng-container matColumnDef="decompositionOrder">
     <th mat-header-cell *matHeaderCellDef mat-sort-header="decompositionOrder"
         sortActionDescription="Sort by decomposition order">
-      Order
+      Order <fa-icon class="info" [fixedWidth]="true" [icon]="faCircleInfo"
+                     matTooltip="This property describes for each task when this task can appear in a process for the first time.
+                     For this reason it is used for sorting the tasks. Each number of this property describes the
+                     horizontal sorting of the task in the specification relatively to a parent process.
+                     A point represents the descent into a subprocess and corresponds to the vertical sorting."></fa-icon>
     </th>
     <td mat-cell *matCellDef="let element">{{element.minimalOrder}}</td>
   </ng-container>
@@ -28,7 +32,7 @@
   <ng-container matColumnDef="avgOccurrencesPerWeek">
     <th mat-header-cell *matHeaderCellDef mat-sort-header="avgOccurrencesPerWeek"
         sortActionDescription="Sort by avg. occurrences per week">
-      Avg. occurrences per week
+      Overall avg. occurrences per week
     </th>
     <td mat-cell *matCellDef="let element">
       <div style="display:flex; font-size:13px;">

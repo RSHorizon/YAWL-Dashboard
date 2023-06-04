@@ -60,10 +60,10 @@
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How severe are our specification outliers?
+        <div class="statistic-title">How severe are our process outliers?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This chart shows the minimum, maximum and average runtime for all cases of a corresponding specification.
+                     matTooltip="This chart shows the minimum, maximum and average runtime for all cases of a corresponding process.
                       Cancelled and uncompleted cases excluded."></fa-icon>
           </span>
         </div>
@@ -85,7 +85,7 @@
                      matTooltip="This chart shows the overall success and deadline fulfilled ratio for cases
                      that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
                      A successful case has not been cancelled. A case has met its deadline if its runtime is shorter
-                     than the specification time limit of its specification. Uncompleted cases excluded."></fa-icon>
+                     than the specification time limit of its process. Uncompleted cases excluded."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
@@ -137,7 +137,7 @@
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the queue size for each hour in the specified time window. The
                                  queue size is the sum of all offered or allocated, but not started work items
-                                 at a given hour. Please note that the maximum time span for this table is 4 years."></fa-icon>
+                                 at a given hour. Please note that the maximum time span for this chart is 4 years."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
@@ -180,11 +180,11 @@
   <mat-grid-list cols="5" rowHeight="2:1" [gutterSize]="'8px'">
     <mat-grid-tile rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How automated are our specifications?
+        <div class="statistic-title">How automated are our processes?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This chart shows the automation ratio for each specification. This ratio is calculated
-                     by dividing the number of automated tasks of a corresponding specification by the number of all its tasks."></fa-icon>
+                     matTooltip="This chart shows the automation ratio for each process. This ratio is calculated
+                     by dividing the number of automated tasks of a corresponding process by the number of all its tasks."></fa-icon>
           </span>
         </div>
         <div class="statistic-body ngx-charts-small-text">
@@ -202,7 +202,7 @@
         <div class="statistic-title">Where is further automation effective?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
-                     matTooltip="This chart shows all tasks for each specification and illustrates how much time our
+                     matTooltip="This chart shows all tasks for each process and illustrates how much time our
                                  resources spent on average on one of these tasks. This average time is calculated for
                                  each task by dividing the sum of the time spans between the start and completion of all
                                  corresponding work items by the number of work items. Automated tasks and cancelled
@@ -275,7 +275,7 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='role'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our role distribution according to our specifications?
+        <div class="statistic-title">How is our role distribution according to our processes?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each role the sum of tasks requiring it."></fa-icon>
@@ -293,7 +293,7 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='capability'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our capability distribution according to our specifications?
+        <div class="statistic-title">How is our capability distribution according to our processes?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each capability the sum of tasks requiring it."></fa-icon>
@@ -311,7 +311,7 @@
     </mat-grid-tile>
     <mat-grid-tile *ngIf="statisticResourceSelection==='position'" rowspan="2">
       <div class="statistic-container">
-        <div class="statistic-title">How is our position distribution according to our specifications?
+        <div class="statistic-title">How is our position distribution according to our processes?
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows for each position the sum of tasks requiring it."></fa-icon>
@@ -333,7 +333,7 @@
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the summed resource time for each role for all work items in all
-                     specifications. This time can be an indication of which role was needed most for our processes.
+                     processes. This time can be an indication of which role was needed most for our processes.
                      The resource times of all work items contribute to this time, where the resource that started
                      the work item had the corresponding role. The resource time is calculated from the time that
                      elapsed between the start and completion of a work item. In the case that a work item took longer
@@ -356,7 +356,7 @@
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the summed resource time for each capability for all work items in all
-                     specifications. This time can be an indication of which capability was needed most for our processes.
+                     processes. This time can be an indication of which capability was needed most for our processes.
                      The resource times of all work items contribute to this time, where the resource that started
                      the work item had the corresponding capability. The resource time is calculated from the time that
                      elapsed between the start and completion of a work item. In the case that a work item took longer
@@ -379,7 +379,7 @@
           <span class="statistic-title-info">
             <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
                      matTooltip="This chart shows the summed resource time for each position for all work items in all
-                     specifications. This time can be an indication of which position was needed most for our processes.
+                     processes. This time can be an indication of which position was needed most for our processes.
                      The resource times of all work items contribute to this time, where the resource that started
                      the work item had the corresponding position. The resource time is calculated from the time that
                      elapsed between the start and completion of a work item. In the case that a work item took longer

@@ -22,6 +22,10 @@ export class ColorUtils {
     return this.colorMix[(this.colorMixIndex++ % this.colorMix.length)]
   }
 
+  static getWeekdayColor(i: number): string {
+    return this.vibrantColor[(i % this.vibrantColor.length)]
+  }
+
   static getLighterColor(color: string){
     return lighten(color, .1);
   }

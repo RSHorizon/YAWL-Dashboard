@@ -1,7 +1,7 @@
 import {AfterContentInit, AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
-import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong} from '@fortawesome/free-solid-svg-icons';
+import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong, faCircleInfo} from '@fortawesome/free-solid-svg-icons';
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {Specification} from "../../yawl/resources/entities/specification.entity";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
@@ -25,7 +25,7 @@ import {Task} from "../../yawl/resources/entities/work-item.entity";
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
   faArrowsToEye=faArrowsToEye;
-
+  faCircleInfo = faCircleInfo;
   @Input("specificationDataContainer")
   specificationDataContainer!: SpecificationDataContainer;
   // @ts-ignore
