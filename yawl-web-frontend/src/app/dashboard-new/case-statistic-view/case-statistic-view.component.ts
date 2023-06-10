@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {FormControl, FormGroup} from "@angular/forms";
 import {MatSort} from "@angular/material/sort";
@@ -7,7 +7,7 @@ import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
 import {StatisticUtils} from "../../util/statistic-utils";
 import {faCircleInfo} from '@fortawesome/free-solid-svg-icons';
-import {ChartConfiguration, ScriptableContext} from "chart.js/dist/types";
+import {ChartConfiguration} from "chart.js/dist/types";
 import {CaseStatisticChartConfigurations} from "./case-statistic-chart-configurations";
 import {ColorUtils} from "../../util/color-util";
 
@@ -404,6 +404,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     });
 
     this.costsData.labels = [];
+    this.costsData.datasets = [];
     let finalMap: Map<string, { name: string, color: string, data: number[] }> = new Map();
     this.specificationDataContainer!.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
       finalMap.set(taskStatistic.taskid, {name: taskStatistic.name, color: taskStatistic.color!, data: []});
@@ -489,7 +490,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
         max: 0, maxColor: "", ages: []});
     })
     this.specificationDataContainer?.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-      if (!caseStatistic.cancelled && caseStatistic.end !== 0 &&
+      if (StatisticUtils.notCancelledAndCompleted(caseStatistic) &&
         StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
         let label = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0)
@@ -545,7 +546,8 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     this.casePerformanceDistribution = [];
     let casePerformanceSorted: { name: string, age: number }[] = [];
     this.specificationDataContainer?.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-      if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
+      if (StatisticUtils.notCancelledAndCompleted(caseStatistic) &&
+        StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         casePerformanceSorted.push({name: caseStatistic.caseid, age: caseStatistic.age});
       }
     });
@@ -562,7 +564,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
           [60, {duration: min+.6*diff, performance:[]}], [70, {duration: min+.7*diff, performance:[]}], [80, {duration: min+.8*diff, performance:[]}],
           [90, {duration: min+.9*diff, performance:[]}], [100, {duration: max, performance:[]}]]);
       casePerformanceSorted.forEach(caseElement => {
-        let fraction = (Math.round((Math.abs((1 - (max - caseElement.age)) / diff)) * 10) * 10);
+        let fraction = (Math.round((Math.abs((1 - (max - caseElement.age) / diff))) * 10) * 10);
         if (diff === 0) {
           fraction = 100;
         }

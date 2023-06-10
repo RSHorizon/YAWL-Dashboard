@@ -233,12 +233,10 @@ public class StatisticController {
             AtomicLong avgCompletionTime = new AtomicLong();
             AtomicLong avgCompletionTimeCounter = new AtomicLong();
 
-            taskTimings.get(taskStatistic.getTaskid()).values().stream()
-                    .filter(taskTimingDTO -> !taskTimingDTO.isCancelled())
+            taskTimings.get(taskStatistic.getTaskid()).values()
                     .forEach(taskTimingDTO -> {
                         CaseStatisticDTO relatedCaseDTO = caseStatisticMap.get(taskTimingDTO.getCaseid());
-                        long creationTimestamp, queueTime, completionTime = 0;
-
+                        taskTimingDTO.setName(taskStatistic.getName());
                         taskStatistic.setParticipants(Stream.of(taskStatistic.getParticipants(), taskTimingDTO.getParticipants())
                                 .flatMap(map -> map.entrySet().stream())
                                 .collect(Collectors.toMap(
@@ -251,55 +249,32 @@ public class StatisticController {
                                 )));
                         taskStatistic.setAutomated(taskTimingDTO.isAutomated());
 
-                        // one of the offered or allocated times must be set
+                        long creationTimestamp, queueTime, completionTime = 0, resourceTime = 0;
+                        long cancelledEndTime = (taskTimingDTO.isCancelled()
+                                && taskTimingDTO.getStartTimestamp() != 0L
+                                && taskTimingDTO.getLatestEventTimestamp() != 0L
+                                && taskTimingDTO.getLatestEventTimestamp() > taskTimingDTO.getStartTimestamp())?
+                                taskTimingDTO.getLatestEventTimestamp() : 0;
+
+                        // Creation
                         if (taskTimingDTO.getOfferedTimestamp() == 0L || taskTimingDTO.getAllocatedTimestamp() == 0L) {
                             creationTimestamp = Math.max(taskTimingDTO.getOfferedTimestamp(), taskTimingDTO.getAllocatedTimestamp());
                         } else {
                             creationTimestamp = Math.min(taskTimingDTO.getOfferedTimestamp(), taskTimingDTO.getAllocatedTimestamp());
                         }
-
-                        if (taskTimingDTO.getStartTimestamp() == 0L) {
-                            queueTime = now - creationTimestamp;
-                            if (!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()) {
-                                relatedCaseDTO.getQueue().add(taskTimingDTO);
-                                relatedCaseDTO.incQueuedWorkitemsCount();
-                            }
-                        } else {
-                            queueTime = taskTimingDTO.getStartTimestamp() - creationTimestamp;
-                            if (taskTimingDTO.getEndTimestamp() == 0L) {
-                                completionTime = now - taskTimingDTO.getStartTimestamp();
-                                if (!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()) {
-                                    relatedCaseDTO.incRunningWorkitemsCount();
-                                }
-                            } else {
-                                completionTime = taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp();
-                            }
-                            if (!relatedCaseDTO.isCancelled() && !taskTimingDTO.isAutomated()) {
-                                relatedCaseDTO.setResourceTime(relatedCaseDTO.getResourceTime() + completionTime);
-                            }
-
-                            avgCompletionTime.addAndGet(completionTime);
-                            avgCompletionTimeCounter.incrementAndGet();
+                        if(taskTimingDTO.isAutomated() && creationTimestamp == 0L){
+                            creationTimestamp = taskTimingDTO.getStartTimestamp();
                         }
+                        taskTimingDTO.setCreated(creationTimestamp);
 
-                        if (taskTimingDTO.getOfferedTimestamp() == 0L && taskTimingDTO.getAllocatedTimestamp() == 0L) {
-                            // this is the case fot autotasks
-                            if (taskTimingDTO.getStartTimestamp() != 0L) {
-                                creationTimestamps.add(taskTimingDTO.getStartTimestamp());
-                            }
-                        } else {
-                            avgQueueTime.addAndGet(queueTime);
-                            avgQueueTimeCounter.incrementAndGet();
-                            creationTimestamps.add(creationTimestamp);
-                        }
-
-                        Long resourceTime = 0L;
-                        if(taskTimingDTO.getStartTimestamp() != 0L && taskTimingDTO.getEndTimestamp() != 0L){
-                            Long totalDays = (taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp()) / (1000 * 3600 * 24);
+                        // Resource Time
+                        if(taskTimingDTO.getStartTimestamp() != 0L && (taskTimingDTO.getEndTimestamp() != 0L || cancelledEndTime != 0)){
+                            Long end = (taskTimingDTO.getEndTimestamp() != 0L)? taskTimingDTO.getEndTimestamp(): cancelledEndTime;
+                            Long totalDays = (end - taskTimingDTO.getStartTimestamp()) / (1000 * 3600 * 24);
                             Date startDate = new Date(taskTimingDTO.getStartTimestamp());
-                            Date endDate = new Date(taskTimingDTO.getEndTimestamp());
+                            Date endDate = new Date(end);
                             if (totalDays <= 1) {
-                                resourceTime = taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp();
+                                resourceTime = end - taskTimingDTO.getStartTimestamp();
                             } else {
                                 // die Zeit bis 20 Uhr
                                 int startDayEnd = 20;
@@ -322,6 +297,54 @@ public class StatisticController {
                         }
                         taskTimingDTO.setResourceTime(resourceTime);
 
+                        // Queue time, Completion time, Case resource time
+                        if(taskTimingDTO.isCancelled()){
+                            if(taskTimingDTO.getStartTimestamp() == 0L){
+                                queueTime = taskTimingDTO.getLatestEventTimestamp() - creationTimestamp;
+                            }else{
+                                queueTime = taskTimingDTO.getStartTimestamp() - creationTimestamp;
+                                completionTime = taskTimingDTO.getLatestEventTimestamp() - taskTimingDTO.getStartTimestamp();
+                            }
+                        } else if (taskTimingDTO.getStartTimestamp() == 0L) {
+                            queueTime = now - creationTimestamp;
+                            if (!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()) {
+                                relatedCaseDTO.getQueue().add(taskTimingDTO);
+                                relatedCaseDTO.incQueuedWorkitemsCount();
+                            }
+                        } else {
+                            queueTime = taskTimingDTO.getStartTimestamp() - creationTimestamp;
+                            if (taskTimingDTO.getEndTimestamp() == 0L) {
+                                completionTime = now - taskTimingDTO.getStartTimestamp();
+                                if (!taskTimingDTO.isAutomated() && !taskTimingDTO.isCancelled()) {
+                                    relatedCaseDTO.incRunningWorkitemsCount();
+                                }
+                            } else {
+                                completionTime = taskTimingDTO.getEndTimestamp() - taskTimingDTO.getStartTimestamp();
+                            }
+                            if (!relatedCaseDTO.isCancelled() && !taskTimingDTO.isAutomated()) {
+                                relatedCaseDTO.setResourceTime(relatedCaseDTO.getResourceTime() + resourceTime);
+                            }
+
+                            avgCompletionTime.addAndGet(completionTime);
+                            avgCompletionTimeCounter.incrementAndGet();
+                        }
+                        taskTimingDTO.setQueueTime(queueTime);
+                        taskTimingDTO.setCompletionTime(completionTime);
+                        taskTimingDTO.setAge(queueTime + completionTime);
+
+                        // Avg. queue time, Creation timestamps
+                        if (!taskTimingDTO.isCancelled() && creationTimestamp == 0L) {
+                            // this is the case for auto tasks
+                            if (taskTimingDTO.getStartTimestamp() != 0L) {
+                                creationTimestamps.add(taskTimingDTO.getStartTimestamp());
+                            }
+                        } else if(!taskTimingDTO.isCancelled()){
+                            avgQueueTime.addAndGet(queueTime);
+                            avgQueueTimeCounter.incrementAndGet();
+                            creationTimestamps.add(creationTimestamp);
+                        }
+
+                        // Total resource time for role, capabilities and positions
                         if(resourceTime != 0){
                             for(Map.Entry<String, Set<String>> entries : taskTimingDTO.getParticipants().entrySet()){
                                 if(entries.getValue().contains("Start")){

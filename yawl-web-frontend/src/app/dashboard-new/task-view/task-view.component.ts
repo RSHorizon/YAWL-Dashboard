@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {
@@ -17,32 +17,32 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
 @Component({
   selector: 'app-task-view',
   templateUrl: './task-view.component.html',
-  styleUrls: ['./task-view.component.css']
+  styleUrls: ['./task-view.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
   faArrowsToEye = faArrowsToEye;
   faCircleInfo = faCircleInfo;
   faSquare = faSquare;
-  @Input("specificationDataContainer")
-  specificationDataContainer!: SpecificationDataContainer;
-  // @ts-ignore
-  @ViewChild(MatSort) sort: MatSort;
-  displayedColumns: string[] = ['color','name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
-  // @ts-ignore
-  dataSource: MatTableDataSource | undefined;
+
+  @Input("specificationDataContainer") specificationDataContainer!: SpecificationDataContainer;
+  @ViewChild(MatSort) sort: MatSort | undefined;
+  displayedColumns: string[] = ['color', 'name', 'decompositionOrder', 'avgOccurrencesPerWeek',
+    'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
+  dataSource: MatTableDataSource<TaskStatistic> = new MatTableDataSource<TaskStatistic>();
   specificTaskStatisticSelection = '';
 
   constructor(private specificationService: SpecificationService,
               private notifierService: NotifierService) {
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+  ngOnInit(): void {
+    this.dataSource.data = this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS;
   }
 
-  ngOnInit(): void {
-    this.dataSource = new MatTableDataSource(this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS);
-    this.dataSource.sortingDataAccessor = (row: TaskStatistic, key: any) => {
+  ngAfterViewInit(): void {
+    this.dataSource!.sort = this.sort!;
+    this.dataSource!.sortingDataAccessor = (row: TaskStatistic, key: any) => {
       switch (key) {
         case 'name':
           return row.name;
@@ -64,6 +64,9 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
           return row.minimalOrder;
       }
     };
+    if(this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS.length > 0){
+      this.specificTaskStatisticSelection = this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS[0].taskid;
+    }
   }
 
   selectSpecificTaskStatistic(taskid: string) {
@@ -83,7 +86,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSource!.filter = filterValue.trim().toLowerCase();
   }
 
   announceSortChange(sort: Sort) {

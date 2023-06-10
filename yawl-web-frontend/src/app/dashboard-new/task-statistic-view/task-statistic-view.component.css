@@ -3,7 +3,9 @@
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 3px;
 }
 
-.mat-form-field{
-  margin-left: 2em;
+.statistic-filter{
+  padding: 0;
+  margin: 2em 0 0;
+
 }
 

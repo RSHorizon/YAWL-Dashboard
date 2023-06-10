@@ -1,32 +1,32 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {FormatUtils} from "../../util/format-util";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+
 /**
  * @author Robin Steinwarz
  */
 @Component({
   selector: 'app-timestampform',
   templateUrl: './timestampform.component.html',
-  styleUrls: ['./timestampform.component.css']
+  styleUrls: ['./timestampform.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimestampformComponent implements OnInit, OnChanges {
-
-  @Input()  monthSelectionActive: boolean = false;
-
-  @Input()  timestamp: number| undefined;
+  @Input() monthSelectionActive: boolean = false;
+  @Input() timestamp: number | undefined;
   @Output() timestampChange = new EventEmitter<number>();
-
   @Output() timestampChanged = new EventEmitter<number>();
-  months: number= 0;
-  days: number= 0;
-  hours: number= 0;
-  minutes: number= 0;
-
-  monthNumbers = Array(25).fill(0).map((x,i)=>i);
-  dayNumbers = Array(30).fill(0).map((x,i)=>i);
-  hourNumbers = Array(24).fill(0).map((x,i)=>i);
-  minuteNumbers = Array(60).fill(0).map((x,i)=>i);
-
-  constructor() {}
+  months: number = 0;
+  days: number = 0;
+  hours: number = 0;
+  minutes: number = 0;
 
   ngOnInit(): void {
     this.applyPastTimeFormatForTimestamp();
@@ -36,24 +36,24 @@ export class TimestampformComponent implements OnInit, OnChanges {
     this.applyPastTimeFormatForTimestamp();
   }
 
-  applyPastTimeFormatForTimestamp(){
-    if(this.timestamp === undefined){
+  applyPastTimeFormatForTimestamp() {
+    if (this.timestamp === undefined) {
       return;
     }
 
     let monthMs = this.timestamp;
-    let daysMs = monthMs % (1000 * 60 * 60 * 24 * 29)
-    let hoursMs = daysMs % (1000 * 60 * 60 * 24)
-    let minutesMs = hoursMs % (1000 * 60 * 60)
+    let daysMs = monthMs % (2505600000)
+    let hoursMs = daysMs % (86400000)
+    let minutesMs = hoursMs % (3600000)
 
-    this.months = Math.floor(monthMs / (1000 * 60 * 60 * 24 * 29))
-    this.days = Math.floor(daysMs / (1000 * 60 * 60 * 24))
-    this.hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    this.minutes = Math.floor( minutesMs / (1000 * 60))
+    this.months = Math.floor(monthMs / 2505600000)
+    this.days = Math.floor(daysMs / 86400000)
+    this.hours = Math.floor(hoursMs / 3600000)
+    this.minutes = Math.floor(minutesMs / 60000)
   }
 
-  change(){
-    let newTimestamp: number = (this.months * (1000 * 60 * 60 * 24 * 29) + this.days * (1000 * 60 * 60 * 24)) + (this.hours * (1000 * 60 * 60)) + (this.minutes * (1000 * 60));
+  change() {
+    let newTimestamp: number = (this.months * (2505600000) + this.days * 86400000) + (this.hours * 3600000) + (this.minutes * 60000);
     this.timestampChange.emit(newTimestamp);
     this.timestampChanged.emit(newTimestamp);
   }

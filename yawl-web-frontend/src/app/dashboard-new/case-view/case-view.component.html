@@ -154,7 +154,7 @@
     </table>
   </div>
 
-  <div *ngIf="specificationDataContainer !== undefined" [hidden]="!isTaskView()">
+  <div *ngIf="specificationDataContainer !== undefined && isTaskView()">
     <app-task-view [specificationDataContainer]="specificationDataContainer"></app-task-view>
   </div>
 

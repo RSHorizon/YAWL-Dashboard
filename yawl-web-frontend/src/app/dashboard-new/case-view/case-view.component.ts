@@ -1,27 +1,19 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {faPencil, faArrowLeft, faArrowsToEye, faArrowLeftLong, faSquare} from '@fortawesome/free-solid-svg-icons';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {faPencil, faArrowsToEye, faArrowLeftLong, faSquare} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute} from "@angular/router";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
-import {ExtensionSpecification} from "../../yawl/resources/dto/extension-specification.entity";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {WorkitemQueueDialogComponent} from "../workitem-queue-dialog/workitem-queue-dialog.component";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {WorkitemsDialogComponent} from "../workitems-dialog/workitems-dialog.component";
 import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
-import {ExtensionTask} from "../../yawl/resources/dto/extension-task.entity";
-import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
-import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
 import {env} from "../../../environments/environment";
 import {NotifierService} from "angular-notifier";
 import {ExtensionSpecificationService} from "../../yawl/resources/services/extension-specification.service";
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
-import {FormControl, FormGroup} from "@angular/forms";
-import {Role} from "../../yawl/resources/entities/role.entity";
-import {Participant} from "../../yawl/resources/entities/participant.entity";
-import {ColorUtils} from "../../util/color-util";
 
 /**
  * @author Robin Steinwarz
@@ -57,8 +49,6 @@ export class CaseViewComponent implements OnInit {
   specificationDataContainer: SpecificationDataContainer | undefined;
   cases: CaseStatistic[] | undefined = undefined;
   specificationTimeLimit: number = 0;
-
-  colores = ColorUtils.colorMix2;
 
   constructor(public dialog: MatDialog,
               private specificationDataService: SpecificationDataService,

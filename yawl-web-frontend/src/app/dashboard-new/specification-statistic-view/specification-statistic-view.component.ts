@@ -95,15 +95,17 @@ export class SpecificationStatisticViewComponent implements OnInit {
   }
 
   updateData(): void {
-    if (this.range.value.start === null || this.range.value.end === null) {
+    if (this.range.value.start === null || this.range.value.end === null
+        || this.range.value.start === undefined || this.range.value.end === undefined
+        || this.range.value.start > this.range.value.end) {
       return;
     }
     this.statisticTicks = StatisticUtils.calculateStatisticTicks(this.range, this.fineness);
-    this.processSpecPerformanceComparison();
     this.processCasesInRange();
+    this.processCapacityUtilization();
+    this.processSpecPerformanceComparison();
     this.processIndicatorRate();
     this.processSpecificationOutliers();
-    this.processCapacityUtilization();
     this.processAutomation();
 
     this.specPerformanceOptions = SpecificationStatisticChartConfigurations.specPerformanceComparisonOptions(this.fineness === 'month');
@@ -242,10 +244,10 @@ export class SpecificationStatisticViewComponent implements OnInit {
     let max: number[] = [];
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       if (specificationDataContainer.specificationStatistic.caseStatisticDTOS.length !== 0) {
-        let avgAge = 0;
-        let counter = 0;
-        let minAge = Number.MAX_VALUE;
-        let maxAge = 0;
+        let avgAge: number = 0;
+        let counter: number = 0;
+        let minAge: number = Number.MAX_VALUE;
+        let maxAge: number = 0;
         specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach((caseStatistic, key) => {
           if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)
             && StatisticUtils.notCancelledAndCompleted(caseStatistic)) {
@@ -263,15 +265,18 @@ export class SpecificationStatisticViewComponent implements OnInit {
           specificationDataContainer.specificationInformation.specversion]);
         colors.push(specificationDataContainer.specificationStatistic.color!);
         avg.push((avgAge / counter) || 0);
-        min.push(minAge);
         max.push(maxAge);
+        if(minAge !== Number.MAX_VALUE){
+          min.push(minAge)
+        }else{
+          min.push(0)
+        }
       }
     });
 
     let backgroundFunction = function (context: ScriptableContext<"bar">) {
       return colors[context.dataIndex];
     };
-
     this.specOutlierData.labels = labels;
     this.specOutlierData.datasets = [];
     this.specOutlierData.datasets.push({
@@ -307,7 +312,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
           && !caseStatistic.cancelled) {
           caseStatistic.taskTimingDTOS.forEach(taskTiming => {
             if (!taskTiming.automated && !taskTiming.cancelled && taskTiming.status === 'Completed'
-              && taskTiming.endTimestamp !== 0) {
+              && taskTiming.endTimestamp !== 0 && StatisticUtils.timestampIsInDateRange(taskTiming.startTimestamp, this.range)) {
               let startDate = new Date(taskTiming.startTimestamp);
               let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
               let label = specificationDataContainer.specificationInformation.uri + " " + specificationDataContainer.specificationInformation.specversion;
@@ -330,7 +335,6 @@ export class SpecificationStatisticViewComponent implements OnInit {
         finalDataMap.get(label)!.capacity.push(capacityUtilization);
       })
     });
-
     this.capacityUtilizationData.datasets = [];
     finalDataMap.forEach(finalDataMapInstance => {
       this.capacityUtilizationData.datasets.push({

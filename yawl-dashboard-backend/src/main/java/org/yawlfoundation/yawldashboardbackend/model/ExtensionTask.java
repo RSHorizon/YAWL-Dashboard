@@ -27,35 +27,35 @@ public class ExtensionTask {
     private String taskid;
 
     @Column(name = "costResourceHour")
-    private Integer costResourceHour;
+    private Long costResourceHour;
 
     @Column(name = "maxTaskAge")
-    private Integer maxTaskAge;
+    private Long maxTaskAge;
 
     @Column(name = "maxQueueAge")
-    private Integer maxQueueAge;
+    private Long maxQueueAge;
 
-    public Integer getCostResourceHour() {
+    public Long getCostResourceHour() {
         return costResourceHour;
     }
 
-    public void setCostResourceHour(Integer costResourceHour) {
+    public void setCostResourceHour(Long costResourceHour) {
         this.costResourceHour = costResourceHour;
     }
 
-    public Integer getMaxTaskAge() {
+    public Long getMaxTaskAge() {
         return maxTaskAge;
     }
 
-    public void setMaxTaskAge(Integer maxTaskAge) {
+    public void setMaxTaskAge(Long maxTaskAge) {
         this.maxTaskAge = maxTaskAge;
     }
 
-    public Integer getMaxQueueAge() {
+    public Long getMaxQueueAge() {
         return maxQueueAge;
     }
 
-    public void setMaxQueueAge(Integer maxQueueAge) {
+    public void setMaxQueueAge(Long maxQueueAge) {
         this.maxQueueAge = maxQueueAge;
     }
 

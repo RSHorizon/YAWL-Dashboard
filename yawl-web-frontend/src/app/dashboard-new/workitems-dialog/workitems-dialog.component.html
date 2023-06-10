@@ -20,7 +20,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by workitem name">
         Workitem
       </th>
-      <td mat-cell *matCellDef="let element"> {{computeName(element)}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
     </ng-container>
 
     <!-- Decomposition-->
@@ -45,15 +45,15 @@
         Queue time
       </th>
       <td mat-cell
-          *matCellDef="let element">{{formatUtils.applyPastTimeFormatForTimestampWithDays(computeQueueTime(element))}}</td>
+          *matCellDef="let element">{{formatUtils.applyPastTimeFormatForTimestampWithDays(element.queueTime)}}</td>
     </ng-container>
 
-    <!-- Age Column -->
-    <ng-container matColumnDef="age">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by age">
-        Age
+    <!-- CompletionTime Column -->
+    <ng-container matColumnDef="completionTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by completionTime">
+        Completion time
       </th>
-      <td mat-cell *matCellDef="let element">{{formatUtils.applyPastTimeFormatForTimestampWithDays(computeAge(element))}}</td>
+      <td mat-cell *matCellDef="let element">{{formatUtils.applyPastTimeFormatForTimestampWithDays(element.completionTime)}}</td>
     </ng-container>
 
     <!-- Resources Column -->
@@ -76,7 +76,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdue">
         Overdue
       </th>
-      <td mat-cell *matCellDef="let element">{{formatUtils.applyIsOverdueFormat(computeAge(element), getOverdueLimit(element))}}</td>
+      <td mat-cell *matCellDef="let element">{{formatUtils.applyIsOverdueFormat(element.age, getOverdueLimit(element))}}</td>
     </ng-container>
 
     <!-- Expand -->
@@ -100,36 +100,36 @@
              [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
           <mat-grid-list rowHeight="70px" cols="6">
             <mat-grid-tile>
-              <mat-form-field *ngIf="isInQueue(element)" class="grid-form" appearance="fill" disabled>
+              <mat-form-field *ngIf="element.status === 'Offered' || element.status === 'Allocated'" class="grid-form" appearance="fill" disabled>
                 <mat-label>Max queue time</mat-label>
                 <input matInput disabled
-                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(computeMaxQueueTime(element))}}">
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskstatisticMap.get(element.taskid)!.maxQueueAge)}}">
               </mat-form-field>
-              <mat-form-field *ngIf="!isInQueue(element)" class="grid-form" appearance="fill" disabled>
+              <mat-form-field *ngIf="!(element.status === 'Offered' || element.status === 'Allocated')" class="grid-form" appearance="fill" disabled>
                 <mat-label>Max task time</mat-label>
                 <input matInput disabled
-                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(computeMaxTaskTime(element))}}">
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskstatisticMap.get(element.taskid)!.maxTaskAge)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. queue time</mat-label>
                 <input matInput disabled
-                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(computeAvgQueueTime(element))}}">
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskstatisticMap.get(element.taskid)!.avgQueueTime)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. completion time</mat-label>
                 <input matInput disabled
-                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(computeAvgCompletionTime(element))}}">
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskstatisticMap.get(element.taskid)!.avgCompletionTime)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. time to reach</mat-label>
                 <input matInput disabled
-                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(computeAvgTimeToReach(element))}}">
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskstatisticMap.get(element.taskid)!.avgTimeToReach)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile rowspan="2" colspan="2">
@@ -142,7 +142,7 @@
             <mat-grid-tile colspan="2">
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Created</mat-label>
-                <input matInput disabled value="{{formatUtils.applyDatetimeFormat(computeCreationTimestamp(element))}}">
+                <input matInput disabled value="{{formatUtils.applyDatetimeFormat(element.created)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile colspan="2">

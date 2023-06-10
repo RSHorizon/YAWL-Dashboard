@@ -1,29 +1,23 @@
 <!-- @author Robin Steinwarz--->
-<mat-form-field *ngIf="monthSelectionActive" style="width:45px !important">
-  <mat-label>months</mat-label>
-  <mat-select [(value)]="months" (selectionChange)="change()">
-    <mat-option *ngFor="let month of monthNumbers" [value]="month">{{month}}</mat-option>
-  </mat-select>
+
+<mat-form-field [hidden]="!monthSelectionActive" style="width:45px !important">
+  <mat-label>Months</mat-label>
+  <input matInput type="number" min="0" max="120" (change)="change()" [(ngModel)]="months" />
 </mat-form-field>
 
 <mat-form-field style="width:45px !important">
-  <mat-label>days</mat-label>
-  <mat-select [(value)]="days" (selectionChange)="change()">
-    <mat-option *ngFor="let day of dayNumbers" [value]="day">{{day}}</mat-option>
-  </mat-select>
+  <mat-label>Days</mat-label>
+  <input matInput type="number" min="0" max="29" (change)="change()" [(ngModel)]="days"/>
 </mat-form-field>
 
 <mat-form-field style="width:45px !important">
-  <mat-label>hours</mat-label>
-  <mat-select [(value)]="hours" (selectionChange)="change()">
-    <mat-option *ngFor="let number of hourNumbers" [value]="number">{{number}}</mat-option>
-  </mat-select>
+  <mat-label>Hours</mat-label>
+  <input matInput type="number" min="0" max="23" (change)="change()" [(ngModel)]="hours"/>
 </mat-form-field>
 
 <mat-form-field style="width:45px !important">
-  <mat-label>minutes</mat-label>
-  <mat-select [(value)]="minutes" (selectionChange)="change()">
-    <mat-option *ngFor="let number of minuteNumbers" [value]="number">{{number}}</mat-option>
-  </mat-select>
+  <mat-label>Minutes</mat-label>
+  <input matInput type="number" min="0" max="59" (change)="change()" [(ngModel)]="minutes"/>
 </mat-form-field>
+
 

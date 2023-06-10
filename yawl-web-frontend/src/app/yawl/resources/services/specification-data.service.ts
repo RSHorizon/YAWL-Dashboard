@@ -78,6 +78,7 @@ export class SpecificationDataService {
           statisticObservable.subscribe(specificationStatistic => {
               specificationDataContainer.specificationStatistic = specificationStatistic;
               specificationDataContainer.specificationStatistic.color = ColorUtils.getColorMix();
+              specificationDataContainer.specificationStatistic.taskStatisticDTOS.sort((a,b) => a.minimalOrder.localeCompare(b.minimalOrder))
               specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
                 taskStatistic.color = ColorUtils.getColor2Mix();
               })

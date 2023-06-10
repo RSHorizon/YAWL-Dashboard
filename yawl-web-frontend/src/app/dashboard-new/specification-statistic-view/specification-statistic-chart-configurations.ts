@@ -579,7 +579,12 @@ export class SpecificationStatisticChartConfigurations {
               return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
             }
           },
-          beginAtZero: true
+          beginAtZero: true,
+          pointLabels:{
+            font: {
+              size: 6
+            }
+          },
         }
       },
       plugins: {

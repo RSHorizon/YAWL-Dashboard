@@ -133,10 +133,13 @@ public class StatisticEventRepairService {
                         caseStatisticDTO.setEnd(0);
                         break;
                     case "complete":
-                    case "released":
                         taskTiming.setEndTimestamp(eventTimestamp);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
                         participantHadEvents.add("Complete");
+                    case "released":
+                        taskTiming.setEndTimestamp(eventTimestamp);
+                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
+                        participantHadEvents.add("Released");
                         break;
                     case "autotask_complete":
                         taskTiming.setEndTimestamp(eventTimestamp);

@@ -17,19 +17,19 @@ public interface ExtensionTaskDao extends JpaRepository<ExtensionTask, String> {
 
     @Modifying
     @Query(value = "UPDATE extension_tasks e SET e.cost_resource_hour = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
-    void setCostResourceHour(String specificationID, String version, String uri, String taskid, Integer costResourceHour);
+    void setCostResourceHour(String specificationID, String version, String uri, String taskid, Long costResourceHour);
 
     @Modifying
     @Query(value = "UPDATE extension_tasks e SET e.max_task_age = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
-    void setMaxTaskAge(String specificationID, String version, String uri, String taskid, Integer maxTaskAge);
+    void setMaxTaskAge(String specificationID, String version, String uri, String taskid, Long maxTaskAge);
 
     @Modifying
     @Query(value = "UPDATE extension_tasks e SET e.max_queue_age = ?5 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
-    void setMaxQueueAge(String specificationID, String version, String uri, String taskid, Integer maxQueueAge);
+    void setMaxQueueAge(String specificationID, String version, String uri, String taskid, Long maxQueueAge);
 
     @Modifying
     @Query(value = "UPDATE extension_tasks e SET e.cost_resource_hour = ?5, e.max_task_age = ?6, e.max_queue_age = ?7 WHERE e.specification_id = ?1 AND e.specversion = ?2 AND e.uri = ?3 AND e.taskid = ?4", nativeQuery = true)
-    void setAttributes(String specificationID, String version, String uri, String taskid, Integer costResourceHour, Integer maxTaskAge, Integer maxQueueAge);
+    void setAttributes(String specificationID, String version, String uri, String taskid, Long costResourceHour, Long maxTaskAge, Long maxQueueAge);
 
 
 }

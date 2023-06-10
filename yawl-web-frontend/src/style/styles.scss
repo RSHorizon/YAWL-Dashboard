@@ -68,33 +68,10 @@ $input-border: 2 solid #999;
 $gutter-width: 80%;
 
 
-/* ***********************************************************
- * Charts
- * **********************************************************/
 
-.ngx-charts-small-text {
-  .ngx-charts {
-    text {
-      font-size: 8px !important;
-    }
-  }
+.mat-form-field-space {
+  margin-left: 2em;
 }
-
-.ngx-charts-extra-small-text {
-  .ngx-charts {
-    text {
-      font-size: 6px !important;
-    }
-  }
-}
-
-.ngx-charts {
-  .polar-chart .pie-label-line{
-    stroke: rgba(60, 99, 145, 0.54) !important;
-  }
-}
-
-
 
 /* ***********************************************************
  * Forms
@@ -144,109 +121,6 @@ mat-toolbar .ng-fa-icon {
   height:75px;
 }
 
-/* ***********************************************************
- * Notifier
- * **********************************************************/
-
-
-.notifier__container * {
-  box-sizing: border-box;
-}
-.notifier__container-list {
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-left: 0;
-  list-style-type: none;
-}
-.notifier__notification {
-  display: flex;
-  align-items: center;
-  position: fixed;
-  visibility: hidden;
-  z-index: 10000;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-.notifier__notification--material {
-  border-radius: 3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  cursor: default;
-  padding-top: 6px;
-  padding-right: 13px;
-  padding-bottom: 5px;
-  padding-left: 13px;
-}
-.notifier__notification--material .notifier__notification-message {
-  display: inline-block;
-  margin-top: 0;
-  margin-bottom: 0;
-  vertical-align: top;
-  line-height: 20px;
-  font-size: 12px;
-}
-.notifier__notification--material .notifier__notification-button {
-  display: inline-block;
-  transition: opacity 0.2s ease;
-  opacity: 0.5;
-  margin-right: -10px;
-  margin-left: 10px;
-  outline: none;
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: 6px;
-  width: 32px;
-  height: 32px;
-  vertical-align: top;
-}
-.notifier__notification--material .notifier__notification-button:hover, .notifier__notification--material .notifier__notification-button:focus {
-  opacity: 1;
-}
-.notifier__notification--material .notifier__notification-button:active {
-  transform: scale(0.82);
-  opacity: 1;
-}
-
-.notifier__notification--default {
-  background-color: #444;
-  color: #fff;
-}
-.notifier__notification--default .notifier__notification-button-icon {
-  fill: #fff;
-}
-
-.notifier__notification--error {
-  background-color: #91504A;
-  color: #fff;
-}
-.notifier__notification--error .notifier__notification-button-icon {
-  fill: #fff;
-}
-
-.notifier__notification--info {
-  background-color: #5e7ea4;
-  color: #fff;
-}
-.notifier__notification--info .notifier__notification-button-icon {
-  fill: #fff;
-}
-
-.notifier__notification--success {
-  background-color: #009688;
-  color: #fff;
-}
-.notifier__notification--success .notifier__notification-button-icon {
-  fill: #fff;
-}
-
-.notifier__notification--warning {
-  background-color: #AC912D;
-  color: #fff;
-}
-.notifier__notification--warning .notifier__notification-button-icon {
-  fill: #fff;
-}
 
 
 /* ***********************************************************

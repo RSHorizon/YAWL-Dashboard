@@ -1,11 +1,10 @@
 /**
  * @author Robin Steinwarz
  */
-import {Participant} from "../entities/participant.entity";
-import {AssociatedParticipants} from "./associated-participants.entity";
 
 export interface TaskTiming {
   taskid: string;
+  name: string;
   caseid: string;
   decompositionOrder: string;
   participantsIds: string[];
@@ -19,5 +18,8 @@ export interface TaskTiming {
   startTimestamp: number;
   endTimestamp: number;
   resourceTime: number;
-
+  age: number;
+  queueTime: number;
+  completionTime: number;
+  created: number;
 }

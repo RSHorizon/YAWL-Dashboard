@@ -23,6 +23,10 @@ public class TaskTimingDTO {
     private long startTimestamp = 0L;
     private long endTimestamp = 0L;
     private long resourceTime = 0L;
+    private long age = 0L;
+    private long completionTime = 0L;
+    private long queueTime = 0L;
+    private long created = 0L;
 
     public TaskTimingDTO(String taskid, String caseid, String decompositionOrder) {
         this.taskid = taskid;
@@ -140,5 +144,37 @@ public class TaskTimingDTO {
 
     public void setResourceTime(long resourceTime) {
         this.resourceTime = resourceTime;
+    }
+
+    public long getAge() {
+        return age;
+    }
+
+    public void setAge(long age) {
+        this.age = age;
+    }
+
+    public long getQueueTime() {
+        return queueTime;
+    }
+
+    public void setQueueTime(long queueTime) {
+        this.queueTime = queueTime;
+    }
+
+    public long getCreated() {
+        return created;
+    }
+
+    public void setCreated(long created) {
+        this.created = created;
+    }
+
+    public long getCompletionTime() {
+        return completionTime;
+    }
+
+    public void setCompletionTime(long completionTime) {
+        this.completionTime = completionTime;
     }
 }

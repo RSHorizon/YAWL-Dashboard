@@ -186,7 +186,7 @@ class SpecificationController {
                                       @PathVariable("specversion") String specversion,
                                       @PathVariable("uri") String uri,
                                       @PathVariable("taskid") String taskid,
-                                      @RequestParam("costResourceHour") Integer costResourceHour) {
+                                      @RequestParam("costResourceHour") Long costResourceHour) {
         extensionTaskDao.setCostResourceHour(specificationID, specversion, uri, taskid, costResourceHour);
     }
 
@@ -198,7 +198,7 @@ class SpecificationController {
                                 @PathVariable("specversion") String specversion,
                                 @PathVariable("uri") String uri,
                                 @PathVariable("taskid") String taskid,
-                                @RequestParam("maxTaskAge") Integer maxTaskAge) {
+                                @RequestParam("maxTaskAge") Long maxTaskAge) {
         extensionTaskDao.setMaxTaskAge(specificationID, specversion, uri, taskid, maxTaskAge);
     }
 
@@ -210,7 +210,7 @@ class SpecificationController {
                                  @PathVariable("specversion") String specversion,
                                  @PathVariable("uri") String uri,
                                  @PathVariable("taskid") String taskid,
-                                 @RequestParam("maxQueueAge") Integer maxQueueAge) {
+                                 @RequestParam("maxQueueAge") Long maxQueueAge) {
         extensionTaskDao.setMaxQueueAge(specificationID, specversion, uri, taskid, maxQueueAge);
     }
 
@@ -218,13 +218,13 @@ class SpecificationController {
             params = "maxQueueAge", method = RequestMethod.POST)
     @ResponseBody
     @Transactional
-    public void storeMaxQueueAge(@PathVariable("specificationID") String specificationID,
+    public void setAllAttributes(@PathVariable("specificationID") String specificationID,
                                  @PathVariable("specversion") String specversion,
                                  @PathVariable("uri") String uri,
                                  @PathVariable("taskid") String taskid,
-                                 @RequestParam("costResourceHour") Integer costResourceHour,
-                                 @RequestParam("maxTaskAge") Integer maxTaskAge,
-                                 @RequestParam("maxQueueAge") Integer maxQueueAge) {
+                                 @RequestParam("costResourceHour") Long costResourceHour,
+                                 @RequestParam("maxTaskAge") Long maxTaskAge,
+                                 @RequestParam("maxQueueAge") Long maxQueueAge) {
         extensionTaskDao.setAttributes(specificationID, specversion, uri, taskid, costResourceHour, maxTaskAge, maxQueueAge);
     }
 
@@ -247,9 +247,9 @@ class SpecificationController {
             extensionTask.setSpecificationId(specificationID);
             extensionTask.setSpecversion(specversion);
             extensionTask.setUri(uri);
-            extensionTask.setCostResourceHour(0);
-            extensionTask.setMaxTaskAge(0);
-            extensionTask.setMaxQueueAge(0);
+            extensionTask.setCostResourceHour(0L);
+            extensionTask.setMaxTaskAge(0L);
+            extensionTask.setMaxQueueAge(0L);
             extensionTaskDao.save(extensionTask);
             extensionTasks.add(extensionTask);
         });
