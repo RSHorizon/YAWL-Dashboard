@@ -2,13 +2,10 @@ import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@a
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
-import {LegendPosition} from "@swimlane/ngx-charts";
 import {FormatUtils} from "../../util/format-util";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
-import * as d3 from 'd3';
 import {StatisticUtils} from "../../util/statistic-utils";
-import {faCircleInfo} from '@fortawesome/free-solid-svg-icons';
 import {SpecificationStatisticChartConfigurations} from "./specification-statistic-chart-configurations";
 import {ColorUtils} from "../../util/color-util";
 import { ChartConfiguration, ScriptableContext } from 'chart.js';
@@ -20,7 +17,6 @@ import { ChartConfiguration, ScriptableContext } from 'chart.js';
   styleUrls: ['./specification-statistic-view.component.css']
 })
 export class SpecificationStatisticViewComponent implements OnInit {
-  faCircleInfo = faCircleInfo;
   specificationDataContainers: SpecificationDataContainer[] | undefined;
   range = new FormGroup({
     start: new FormControl<Date | null>(new Date(Date.UTC(new Date(Date.now()).getFullYear() - 2, 0))),
@@ -147,7 +143,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
         if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)
           && StatisticUtils.notCancelledAndCompleted(caseStatistic)) {
           let startDate = new Date(caseStatistic.start);
-          let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+          let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0).getTime();
           let period = map.get(tick)!;
           period.push(caseStatistic.age);
           if (period.length > maxCaseCountPerPeriod) {
@@ -185,7 +181,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
         if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)
           && caseStatistic.end !== 0) {
           let startDate = new Date(caseStatistic.start);
-          let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+          let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0).getTime();
           if (!successMap.has(tick)) {
             successMap.set(tick, {success: [], sla: []});
           }
@@ -314,7 +310,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
             if (!taskTiming.automated && !taskTiming.cancelled && taskTiming.status === 'Completed'
               && taskTiming.endTimestamp !== 0 && StatisticUtils.timestampIsInDateRange(taskTiming.startTimestamp, this.range)) {
               let startDate = new Date(taskTiming.startTimestamp);
-              let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+              let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth()).getTime() : new Date(startDate.getFullYear(),  0).getTime();
               let label = specificationDataContainer.specificationInformation.uri + " " + specificationDataContainer.specificationInformation.specversion;
               let period = dataMap.get(tick)!;
               period.get(label)!.capacity.push(taskTiming.resourceTime);

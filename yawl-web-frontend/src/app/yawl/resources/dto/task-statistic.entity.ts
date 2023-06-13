@@ -14,6 +14,7 @@ export interface TaskStatistic {
   avgCompletionTime: number;
   avgTimeToReach: number;
   avgOccurrencesPerWeek: number[];
+  avgInstancesPerCase: number;
   participants: Map<String, Set<String>>;
   demandedRoles: Set<Role>;
   demandedCapabilities: Set<Capability>;

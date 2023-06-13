@@ -9,7 +9,6 @@ import {AsyncSubject, forkJoin} from "rxjs";
 import {ExtensionSpecification} from "../dto/extension-specification.entity";
 import {ParticipantService} from "./participant.service";
 import {ColorUtils} from "../../../util/color-util";
-import {StatisticUtils} from "../../../util/statistic-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -27,13 +26,13 @@ export class SpecificationDataService {
   private dataHasBeenLoaded = false;
   // @ts-ignore
   private specificationDataContainers: SpecificationDataContainer[];
-  private loading: AsyncSubject<SpecificationDataContainer[]>| undefined = undefined;
+  private loading: AsyncSubject<SpecificationDataContainer[]> | undefined = undefined;
 
   public getSpecificationsData(): AsyncSubject<SpecificationDataContainer[]> {
     if (!this.dataHasBeenLoaded) {
-      if(this.loading !== undefined){
+      if (this.loading !== undefined) {
         return this.loading;
-      }else{
+      } else {
         return this.refreshSpecificationsData();
       }
     }
@@ -66,8 +65,8 @@ export class SpecificationDataService {
               .getExtensionSpecification(specification.id, specification.specversion, specification.uri);
             observables.push(extensionSpecificationObservable);
             extensionSpecificationObservable.subscribe((extensionSpecification: ExtensionSpecification) => {
-                specificationDataContainer.extensionSpecification = extensionSpecification;
-              });
+              specificationDataContainer.extensionSpecification = extensionSpecification;
+            });
           } else {
             specificationDataContainer.extensionSpecification = extensionSpecification[0];
           }
@@ -76,13 +75,13 @@ export class SpecificationDataService {
             .getSpecificationStatistic(specification.id, specification.specversion, specification.uri);
           observables.push(statisticObservable);
           statisticObservable.subscribe(specificationStatistic => {
-              specificationDataContainer.specificationStatistic = specificationStatistic;
-              specificationDataContainer.specificationStatistic.color = ColorUtils.getColorMix();
-              specificationDataContainer.specificationStatistic.taskStatisticDTOS.sort((a,b) => a.minimalOrder.localeCompare(b.minimalOrder))
-              specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
-                taskStatistic.color = ColorUtils.getColor2Mix();
-              })
+            specificationDataContainer.specificationStatistic = specificationStatistic;
+            specificationDataContainer.specificationStatistic.color = ColorUtils.getColorMix();
+            specificationDataContainer.specificationStatistic.taskStatisticDTOS = specificationDataContainer.specificationStatistic.taskStatisticDTOS.sort((a, b) => a.minimalOrder.localeCompare(b.minimalOrder))
+            specificationDataContainer.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
+              taskStatistic.color = ColorUtils.getColor2Mix();
             })
+          })
 
           let participantObservable = this.participantService.findAll();
           observables.push(participantObservable);
@@ -92,7 +91,7 @@ export class SpecificationDataService {
 
           this.specificationDataContainers!.push(specificationDataContainer);
 
-          if(key === specifications.length - 1){
+          if (key === specifications.length - 1) {
             forkJoin(observables).subscribe(() => {
               this.loading = undefined;
               this.dataHasBeenLoaded = true;

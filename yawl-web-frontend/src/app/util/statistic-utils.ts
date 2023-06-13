@@ -46,12 +46,12 @@ export class StatisticUtils {
         let startMonthIndex = (i === startYear) ? startMonth : 0;
         let endMonthIndex = (i != endYear) ? 11 : endMonth;
         for (let j = startMonthIndex; j <= endMonthIndex; j++) {
-          dates.push({year: new Date(i,1,0).getTime(), month: new Date(i,j + 1,0).getTime()});
+          dates.push({year: new Date(i,0).getTime(), month: new Date(i,j).getTime()});
         }
       }
     } else {
       for (let i = startYear; i <= endYear; i++) {
-        dates.push({year: new Date(i,1,0).getTime(), month: 0});
+        dates.push({year: new Date(i,0).getTime(), month: 0});
       }
     }
     this.tickBuffer.set(bufferLabel, dates);

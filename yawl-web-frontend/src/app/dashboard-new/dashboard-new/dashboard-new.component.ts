@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {faFilePen} from '@fortawesome/free-solid-svg-icons';
 
 /**
  * @author Robin Steinwarz
@@ -10,7 +9,6 @@ import {faFilePen} from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./dashboard-new.component.css']
 })
 export class DashboardNewComponent implements OnInit {
-  faFilePen = faFilePen
 
   constructor() {
   }

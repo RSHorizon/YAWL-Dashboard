@@ -1,13 +1,5 @@
 import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder} from "@angular/forms";
-import {
-  faPencil,
-  faArrowLeftLong,
-  faArrowsToEye,
-  faPlus,
-  faChevronDown,
-  faChevronUp
-} from '@fortawesome/free-solid-svg-icons';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatSort, Sort} from "@angular/material/sort";
@@ -35,15 +27,11 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
     trigger('detailExpand', [
       state('collapsed, void', style({height: '0px', minHeight: '0'})),
       state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+      transition('expanded <=> collapsed', animate('50ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ],
 })
 export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
-  faArrowLeftLong = faArrowLeftLong;
-  faPencil = faPencil;
-  faChevronUp = faChevronUp;
-  faChevronDown = faChevronDown;
   @ViewChild(MatSort) sort: MatSort| undefined;
   dataSource: MatTableDataSource<TaskTiming> = new MatTableDataSource<TaskTiming>();
   displayedColumns: string[] = ['name', 'decompositionOrder', 'status', 'queueTime', 'completionTime', 'participants', 'overdue'];

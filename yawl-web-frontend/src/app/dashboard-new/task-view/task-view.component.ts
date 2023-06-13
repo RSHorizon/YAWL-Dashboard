@@ -1,11 +1,6 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
-import {
-  faArrowsToEye,
-  faCircleInfo,
-  faSquare
-} from '@fortawesome/free-solid-svg-icons';
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {NotifierService} from "angular-notifier";
@@ -21,14 +16,10 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
-  faArrowsToEye = faArrowsToEye;
-  faCircleInfo = faCircleInfo;
-  faSquare = faSquare;
-
   @Input("specificationDataContainer") specificationDataContainer!: SpecificationDataContainer;
   @ViewChild(MatSort) sort: MatSort | undefined;
-  displayedColumns: string[] = ['color', 'name', 'decompositionOrder', 'avgOccurrencesPerWeek',
-    'costResourceHour', 'maxTaskAge', 'maxQueueAge', 'actions'];
+  displayedColumns: string[] = ['color', 'name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'automated',
+    'costResourceHour', 'maxQueueAge', 'maxTaskAge', 'actions'];
   dataSource: MatTableDataSource<TaskStatistic> = new MatTableDataSource<TaskStatistic>();
   specificTaskStatisticSelection = '';
 
@@ -46,6 +37,8 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
       switch (key) {
         case 'name':
           return row.name;
+        case 'automated':
+          return "" + row.automated
         case 'decompositionOrder':
           return row.minimalOrder
         case 'avgQueueTime':
@@ -67,6 +60,9 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
     if(this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS.length > 0){
       this.specificTaskStatisticSelection = this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS[0].taskid;
     }
+    this.dataSource.data.sort((a, b) => {
+      return this.compare(a.name, b.name, true);
+    });
   }
 
   selectSpecificTaskStatistic(taskid: string) {

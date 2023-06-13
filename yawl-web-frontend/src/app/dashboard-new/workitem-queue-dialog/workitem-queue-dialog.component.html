@@ -1,7 +1,8 @@
 <!-- @author Robin Steinwarz--->
 <div class="dialog" style="height: 70vh; overflow-y: auto;">
   <mat-toolbar (click)="close()">
-    <fa-icon [fixedWidth]="true" [icon]="faArrowLeftLong"></fa-icon>
+    <fa-icon [fixedWidth]="true" icon="arrow-left-long"
+             matTooltip="Close the workitem queue modal."></fa-icon>
     <span>Back</span>
     <span class="spacer"></span>
     <span>Workitem queue</span>
@@ -85,12 +86,13 @@
       <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
       <td mat-cell *matCellDef="let element">
         <a [href]="workitemURL" target="_blank">
-          <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
+          <fa-icon [fixedWidth]="true" icon="pencil"
+                   matTooltip="Redirect to the yawl frontend."></fa-icon>
         </a>
         <button mat-icon-button aria-label="expand row"
                 (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
-          <fa-icon *ngIf="expandedElement !== element" [fixedWidth]="true" [icon]="faChevronDown"></fa-icon>
-          <fa-icon *ngIf="expandedElement === element" [fixedWidth]="true" [icon]="faChevronUp"></fa-icon>
+          <fa-icon *ngIf="expandedElement !== element" [fixedWidth]="true" icon="chevron-down"></fa-icon>
+          <fa-icon *ngIf="expandedElement === element" [fixedWidth]="true" icon="chevron-up"></fa-icon>
         </button>
       </td>
     </ng-container>

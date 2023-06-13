@@ -1,5 +1,4 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {faPencil, faArrowsToEye, faArrowLeftLong, faSquare} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute} from "@angular/router";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
 import {MatSort, Sort} from "@angular/material/sort";
@@ -30,10 +29,6 @@ export class CaseViewComponent implements OnInit {
       this.dataSource.sort = this.sort;
     }
   }
-  faPencil = faPencil;
-  faArrowLeftLong = faArrowLeftLong
-  faArrowsToEye = faArrowsToEye;
-  faSquare=faSquare;
 
   // @ts-ignore
   viewType: number = '0';

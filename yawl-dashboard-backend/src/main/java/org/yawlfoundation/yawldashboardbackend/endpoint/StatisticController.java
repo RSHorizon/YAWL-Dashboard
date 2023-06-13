@@ -179,35 +179,36 @@ public class StatisticController {
 
     private void measureSpecificationPerformance(List<CaseDTO> cases, Map<String, CaseStatisticDTO> caseStatisticMap,
                                                  List<Long> caseStartTimestamps, SpecificationStatisticDTO specificationStatistic) {
-        long avgCaseCompletionTime = 0L;
         int successful = 0;
         int unsuccessful = 0;
-        int casesImpactingCompletionTimeCount = 0;
+        long avgCaseCompletionTime = 0L;
+        long avgCaseCompletionTimeCounter = 0L;
 
         for (CaseDTO caseDTOInstance : cases) {
             CaseStatisticDTO caseStatisticDTO = caseStatisticMap.get(caseDTOInstance.getId());
-
+            long age = 0;
             if (caseStatisticDTO.getStart() == 0) {
                 continue;
             }
             caseStartTimestamps.add(caseStatisticDTO.getStart());
-            if (caseStatisticDTO.isCancelled()) {
+            if(caseStatisticDTO.isCancelled()){
+                age = caseStatisticDTO.getEnd() - caseStatisticDTO.getStart();
                 unsuccessful++;
-            }
-            casesImpactingCompletionTimeCount++;
-            if (caseStatisticDTO.getEnd() != 0) {
-                caseStatisticDTO.setAge(caseStatisticDTO.getEnd() - caseStatisticDTO.getStart());
-                avgCaseCompletionTime += caseStatisticDTO.getEnd() - caseStatisticDTO.getStart();
-                if(!caseStatisticDTO.isCancelled()){
-                    successful++;
-                }
+            }else if (caseStatisticDTO.getEnd() != 0) {
+                age = caseStatisticDTO.getEnd() - caseStatisticDTO.getStart();
+                successful++;
             } else {
-                caseStatisticDTO.setAge(new Date().getTime() - caseStatisticDTO.getStart());
-                avgCaseCompletionTime += new Date().getTime() - caseStatisticDTO.getStart();
+                age = new Date().getTime() - caseStatisticDTO.getStart();
+                successful++;
+            }
+            caseStatisticDTO.setAge(age);
+            if(!caseStatisticDTO.isCancelled()){
+                avgCaseCompletionTime += age;
+                avgCaseCompletionTimeCounter++;
             }
         }
-        if (casesImpactingCompletionTimeCount != 0) {
-            avgCaseCompletionTime /= casesImpactingCompletionTimeCount;
+        if (avgCaseCompletionTimeCounter != 0) {
+            avgCaseCompletionTime /= avgCaseCompletionTimeCounter;
         }
 
         // Occurrences per week divided by weeks, where case occurred
@@ -232,6 +233,9 @@ public class StatisticController {
             AtomicLong avgQueueTimeCounter = new AtomicLong();
             AtomicLong avgCompletionTime = new AtomicLong();
             AtomicLong avgCompletionTimeCounter = new AtomicLong();
+            AtomicLong avgResourceTime = new AtomicLong();
+            AtomicLong avgResourceTimeCounter = new AtomicLong();
+            Map<String, Integer> instancesPerCase = new HashMap<>();
 
             taskTimings.get(taskStatistic.getTaskid()).values()
                     .forEach(taskTimingDTO -> {
@@ -248,6 +252,11 @@ public class StatisticController {
                                         }
                                 )));
                         taskStatistic.setAutomated(taskTimingDTO.isAutomated());
+
+                        if(!relatedCaseDTO.isCancelled() && relatedCaseDTO.getEnd() != 0){
+                            instancesPerCase.putIfAbsent(taskTimingDTO.getCaseid(), 0);
+                            instancesPerCase.replace(taskTimingDTO.getCaseid(), instancesPerCase.get(taskTimingDTO.getCaseid()) + 1);
+                        }
 
                         long creationTimestamp, queueTime, completionTime = 0, resourceTime = 0;
                         long cancelledEndTime = (taskTimingDTO.isCancelled()
@@ -294,8 +303,10 @@ public class StatisticController {
                                     resourceTime += (totalDays - 2) * (8 * 60 * 60 * 1000);
                                 }
                             }
+                            taskTimingDTO.setResourceTime(resourceTime);
+                            avgResourceTime.addAndGet(resourceTime);
+                            avgResourceTimeCounter.incrementAndGet();
                         }
-                        taskTimingDTO.setResourceTime(resourceTime);
 
                         // Queue time, Completion time, Case resource time
                         if(taskTimingDTO.isCancelled()){
@@ -378,6 +389,15 @@ public class StatisticController {
                         }
                     });
 
+
+
+            if(instancesPerCase.values().size() > 0){
+                int relevantCasesCount = (int) caseStatisticMap.values().stream()
+                        .filter(a -> !a.isCancelled() && a.getEnd() != 0).count();
+                taskStatistic.setAvgInstancesPerCase((double) instancesPerCase.values().stream().reduce(Integer::sum).get()
+                        / relevantCasesCount);
+            }
+
             if (avgQueueTimeCounter.get() != 0) {
                 // Avg. queue time of task
                 taskStatistic.setAvgQueueTime(avgQueueTime.get() / avgQueueTimeCounter.get());
@@ -385,6 +405,10 @@ public class StatisticController {
             if (avgCompletionTimeCounter.get() != 0) {
                 // Avg. completion time of task
                 taskStatistic.setAvgCompletionTime(avgCompletionTime.get() / avgCompletionTimeCounter.get());
+            }
+            if (avgResourceTimeCounter.get() != 0) {
+                // Avg. completion time of task
+                taskStatistic.setAvgResourceTime(avgResourceTime.get() / avgResourceTimeCounter.get());
             }
             // Avg. occurences/week
             taskStatistic.setAvgOccurrencesPerWeek(StatisticControllerHelper.occurrencesInWeeks(creationTimestamps));
@@ -400,7 +424,7 @@ public class StatisticController {
                 automatedTasks++;
             }
             // Avg. Capacity needed
-            avgResourceTimePerWeekSummed += taskStatistic.getAvgCompletionTime() * taskStatistic.getAvgOccurrencesPerWeek()[7];
+            avgResourceTimePerWeekSummed += taskStatistic.getAvgResourceTime() * taskStatistic.getAvgOccurrencesPerWeek()[7];
             // Associated capabilities and roles
             taskStatistic.getParticipants().forEach((participantKey, events) -> {
                 if(events.contains("Start") || events.contains("Complete")){
@@ -435,26 +459,26 @@ public class StatisticController {
         taskStatistics = taskStatistics.stream().sorted(Comparator.comparing(TaskStatisticDTO::getMinimalOrder)).collect(Collectors.toList());
         String currentOrder = "";
         long additiveAvgTimeToReach = 0;
-        long additiveAvgTimeToReachStep = 0;
-        int additiveAvgTimeToReachStepCounter = 0;
+        List<Long> equalOrdersAvgAges = new ArrayList<>();
         for (TaskStatisticDTO taskStatisticDTO : taskStatistics) {
             if (currentOrder == null || taskStatisticDTO == null) {
                 continue;
             }
-            // TimeToReach
+            long avgTaskAge = Math.round((taskStatisticDTO.getAvgQueueTime() + taskStatisticDTO.getAvgCompletionTime()) * taskStatisticDTO.getAvgInstancesPerCase());
             if (!currentOrder.equals(taskStatisticDTO.getMinimalOrder())) {
-                if (additiveAvgTimeToReachStepCounter != 0) {
-                    additiveAvgTimeToReach += additiveAvgTimeToReachStep / additiveAvgTimeToReachStepCounter;
-                    additiveAvgTimeToReachStep = 0;
-                    additiveAvgTimeToReachStepCounter = 0;
+                if (equalOrdersAvgAges.size() > 0) {
+                    long highestEqualEncounter = equalOrdersAvgAges.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0);
+                    additiveAvgTimeToReach += highestEqualEncounter;
+                    equalOrdersAvgAges = new ArrayList<>();
+                    taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
+                }else{
+                    taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
+                    additiveAvgTimeToReach += avgTaskAge;
                 }
                 currentOrder = taskStatisticDTO.getMinimalOrder();
-                taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
-                additiveAvgTimeToReachStep += taskStatisticDTO.getAvgQueueTime() + taskStatisticDTO.getAvgCompletionTime();
-                additiveAvgTimeToReachStepCounter++;
+                equalOrdersAvgAges.add(avgTaskAge);
             } else {
-                additiveAvgTimeToReachStep += taskStatisticDTO.getAvgQueueTime() + taskStatisticDTO.getAvgCompletionTime();
-                additiveAvgTimeToReachStepCounter++;
+                equalOrdersAvgAges.add(avgTaskAge);
                 taskStatisticDTO.setAvgTimeToReach(additiveAvgTimeToReach);
             }
         }

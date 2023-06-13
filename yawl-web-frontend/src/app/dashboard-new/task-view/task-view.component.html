@@ -6,7 +6,6 @@
 </app-task-statistic-view>
 
 <table *ngIf="specificationDataContainer !== undefined" mat-table [dataSource]="dataSource" matSort id="table"
-       matSortActive="decompositionOrder" matSortDirection="asc"
        (matSortChange)="announceSortChange($event)"
        class="mat-elevation-z8">
 
@@ -16,7 +15,8 @@
       Color
     </th>
     <td mat-cell *matCellDef="let element">
-      <fa-icon [style.color]="element.color" [fixedWidth]="true" [icon]="faSquare"></fa-icon>
+      <fa-icon [style.color]="element.color" [fixedWidth]="true" icon="square"
+               matTooltip="This color is associated with the task."></fa-icon>
     </td>
   </ng-container>
 
@@ -33,7 +33,7 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header="decompositionOrder"
         sortActionDescription="Sort by decomposition order">
       Order
-      <fa-icon class="info" [fixedWidth]="true" [icon]="faCircleInfo"
+      <fa-icon class="info" [fixedWidth]="true" icon="circle-info"
                matTooltip="This property describes for each task when this task can appear in a process for the first time.
                      For this reason it is used for sorting the tasks. Each number of this property describes the
                      horizontal sorting of the task in the specification relatively to a parent process.
@@ -95,6 +95,18 @@
       </div>
     </td>
   </ng-container>
+
+  <!-- Automated -->
+  <ng-container matColumnDef="automated">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="automated"
+        sortActionDescription="Sort by automated">
+      Automated
+    </th>
+    <td mat-cell *matCellDef="let element">
+      {{(element.automated)? 'Yes': 'No'}}
+    </td>
+  </ng-container>
+
   <!-- Avg. cost per resource/h Column -->
   <ng-container matColumnDef="costResourceHour">
     <th mat-header-cell *matHeaderCellDef mat-sort-header="costResourceHour"
@@ -102,19 +114,9 @@
       Avg. cost per hour
     </th>
     <td mat-cell *matCellDef="let element">
-      <mat-form-field class="grid-form" appearance="legacy" disabled [style.width.px]=70>
+      <mat-form-field *ngIf="!element.automated" class="grid-form" appearance="legacy" disabled [style.width.px]=70>
         <input matInput type="number" min="0" [(ngModel)]="element.costResourceHour">
       </mat-form-field>
-    </td>
-  </ng-container>
-
-  <!-- Task time limit Column -->
-  <ng-container matColumnDef="maxTaskAge">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header="maxTaskAge" sortActionDescription="Sort by task time limit">
-      Task time limit
-    </th>
-    <td mat-cell *matCellDef="let element">
-      <app-timestampform [monthSelectionActive]="true" [(timestamp)]="element.maxTaskAge"></app-timestampform>
     </td>
   </ng-container>
 
@@ -125,7 +127,17 @@
       Task queue time limit
     </th>
     <td mat-cell *matCellDef="let element">
-      <app-timestampform [monthSelectionActive]="true" [(timestamp)]="element.maxQueueAge"></app-timestampform>
+      <app-timestampform *ngIf="!element.automated" [monthSelectionActive]="true" [(timestamp)]="element.maxQueueAge"></app-timestampform>
+    </td>
+  </ng-container>
+
+  <!-- Task time limit Column -->
+  <ng-container matColumnDef="maxTaskAge">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="maxTaskAge" sortActionDescription="Sort by task time limit">
+      Task time limit
+    </th>
+    <td mat-cell *matCellDef="let element">
+      <app-timestampform *ngIf="!element.automated" [monthSelectionActive]="true" [(timestamp)]="element.maxTaskAge"></app-timestampform>
     </td>
   </ng-container>
 
@@ -134,9 +146,9 @@
       Actions
     </th>
     <td mat-cell *matCellDef="let element">
-      <button mat-button (click)="saveLimits(element)">save</button>
-      <a style="margin-left: .5em;" href="javascript:" (click)="selectSpecificTaskStatistic(element.taskid)">
-        <fa-icon [fixedWidth]="true" [icon]="faArrowsToEye"></fa-icon>
+      <button *ngIf="!element.automated" mat-button (click)="saveLimits(element)" matTooltip="Save task cost and limits.">save</button>
+      <a *ngIf="!element.automated" style="margin-left: .5em;" href="javascript:" (click)="selectSpecificTaskStatistic(element.taskid)">
+        <fa-icon [fixedWidth]="true" icon="arrows-to-eye" matTooltip="Select task to be able to see its specific statistics."></fa-icon>
       </a>
     </td>
   </ng-container>

@@ -2,9 +2,10 @@
   <mat-form-field>
     <mat-label>Heat map selection</mat-label>
     <mat-select (selectionChange)="updateData()" [formControl]="statisticSelection">
-      <mat-option [value]="'avgCompletionTime'">Avg. completion time</mat-option>
+      <mat-option [value]="'avgCompletionTime'">Avg. resource time</mat-option>
       <mat-option [value]="'avgQueueTime'">Avg. queue time</mat-option>
       <mat-option [value]="'avgTimeToReach'">Avg. time to reach task</mat-option>
+      <mat-option [value]="'avgInstancesPerCase'">Avg. task instances per case</mat-option>
       <mat-option [value]="'cost'">Avg. cost of task</mat-option>
     </mat-select>
   </mat-form-field>
@@ -13,7 +14,16 @@
                [gutterSize]="'8px'">
   <mat-grid-tile colspan="5">
     <div class="statistic-container">
-      <div class="statistic-title">Heat Map</div>
+      <div class="statistic-title">
+        <div class="statistic-title-text">Heat Map</div>
+        <div class="statistic-title-info">
+          <fa-icon [fixedWidth]="true" icon="circle-info"
+                   matTooltip="This heatmap illustrates the differences between several selectable properties of our
+                   tasks. Each square represents a task. They are ordered by their possible first occurrence in the process.
+                   The further to the left a task is in the heatmap, the earlier it can occur in the process.
+                   Tasks stacked vertically mean that they can occur at the same time in the process."></fa-icon>
+        </div>
+      </div>
       <div class="statistic-body ngx-charts-extra-small-text">
         <div class="statistic-graph">
           <ngx-charts-heat-map
@@ -91,7 +101,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How long does the selected task run usually?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart visualizes the average time it takes to complete the selected task ({{specificTaskStatistic}}) for each period.
                                  For the calculation of the average completion time of one period all task instances started
                                  in that period were considered. Cancelled tasks excluded."></fa-icon>
@@ -112,7 +122,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How do our resources perform on average on the selected task?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart visualizes the average time it takes to complete the selected task ({{specificTaskStatistic}} for our resources."></fa-icon>
           </div>
         </div>
@@ -131,7 +141,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">What resources usually take on this task?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart visualizes the number of work items corresponding to the selected task ({{specificTaskStatistic}})
                       that each resource has processed in total."></fa-icon>
           </div>

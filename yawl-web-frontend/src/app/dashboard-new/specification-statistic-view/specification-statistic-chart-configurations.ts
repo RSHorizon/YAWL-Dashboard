@@ -18,12 +18,12 @@ export class SpecificationStatisticChartConfigurations {
           time: {
             unit: (month)?'month': 'year',
             displayFormats: {
-
               year: 'yyy MMM',
               month: 'yyy MMM',
             }
           },
           ticks: {
+            stepSize: 1,
             font: {
               size: 9
             }

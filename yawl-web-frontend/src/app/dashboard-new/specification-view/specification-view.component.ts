@@ -4,7 +4,6 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {faPencil, faArrowsToEye, faSquare} from '@fortawesome/free-solid-svg-icons';
 import {MatSort, Sort} from "@angular/material/sort";
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {MatTableDataSource} from "@angular/material/table";
@@ -22,9 +21,6 @@ import {ExtensionSpecificationService} from "../../yawl/resources/services/exten
   styleUrls: ['./specification-view.component.css']
 })
 export class SpecificationViewComponent implements OnInit, AfterViewInit {
-  faPencil = faPencil
-  faArrowsToEye = faArrowsToEye
-  faSquare=faSquare
   specificationsURL = env.remoteUIUrl;
 
   // @ts-ignore

@@ -45,7 +45,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How long do our cases run on average?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the average runtime of all cases
                      that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
                      Cancelled and uncompleted cases excluded."></fa-icon>
@@ -64,7 +64,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How severe are our process outliers?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the minimum, maximum and average runtime for all cases of a corresponding process.
                       Cancelled and uncompleted cases excluded."></fa-icon>
           </div>
@@ -84,7 +84,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How successful are our cases?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the overall success and deadline fulfilled ratio for cases
                      that were started in the corresponding {{fineness === 'month'? 'monthly' : 'annual'}} period.
                      A successful case has not been cancelled. A case has met its deadline if its runtime is shorter
@@ -113,7 +113,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How high is our capacity utilization?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the overall capacity utilization for
                                 {{fineness === 'month'? 'monthly' : 'annual'}} periods.
                                 Each capacity utilization value is calculated from the sum of all work item
@@ -139,7 +139,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">When did we encounter bottlenecks?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the queue size for each hour in the specified time window. The
                                  queue size is the sum of all offered or allocated, but not started work items
                                  at a given hour. Please note that the maximum time span for this chart is 4 years."></fa-icon>
@@ -161,7 +161,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">Where do we currently encounter bottlenecks?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the sum of offered or allocated work items of a certain type
                                   waiting to be processed."></fa-icon>
           </div>
@@ -189,7 +189,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How automated are our processes?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the automation ratio for each process. This ratio is calculated
                      by dividing the number of automated tasks of a corresponding process by the number of all its tasks."></fa-icon>
           </div>
@@ -209,7 +209,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">Where is further automation effective?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows all tasks for each process and illustrates how much time our
                                  resources spent on average on one of these tasks. This average time is calculated for
                                  each task by dividing the sum of the time spans between the start and completion of all
@@ -232,7 +232,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How is our role distribution?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows for each role the sum of our resources currently having this role."></fa-icon>
           </div>
         </div>
@@ -251,7 +251,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How is our capability distribution?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows for each capability the sum of our resources currently possessing this capability."></fa-icon>
           </div>
         </div>
@@ -270,7 +270,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How is our position distribution?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows for each position the sum of our resources currently having this position."></fa-icon>
           </div>
         </div>
@@ -289,7 +289,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How is our role distribution according to our processes?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows for each role the sum of tasks requiring it."></fa-icon>
           </div>
         </div>
@@ -308,7 +308,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How is our capability distribution according to our processes?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows for each capability the sum of tasks requiring it."></fa-icon>
           </div>
         </div>
@@ -327,7 +327,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How is our position distribution according to our processes?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows for each position the sum of tasks requiring it."></fa-icon>
           </div>
         </div>
@@ -346,7 +346,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How did we really utilize roles?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the summed resource time for each role for all work items in all
                      processes. This time can be an indication of which role was needed most for our processes.
                      The resource times of all work items contribute to this time, where the resource that started
@@ -370,7 +370,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How did we really utilize capabilities?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the summed resource time for each capability for all work items in all
                      processes. This time can be an indication of which capability was needed most for our processes.
                      The resource times of all work items contribute to this time, where the resource that started
@@ -394,7 +394,7 @@
         <div class="statistic-title">
           <div class="statistic-title-text">How did we really utilize positions?</div>
           <div class="statistic-title-info">
-            <fa-icon [fixedWidth]="true" [icon]="faCircleInfo"
+            <fa-icon [fixedWidth]="true" icon="circle-info"
                      matTooltip="This chart shows the summed resource time for each position for all work items in all
                      processes. This time can be an indication of which position was needed most for our processes.
                      The resource times of all work items contribute to this time, where the resource that started

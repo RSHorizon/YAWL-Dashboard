@@ -2,12 +2,10 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 import {FormatUtils} from "../../util/format-util";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {FormControl, FormGroup} from "@angular/forms";
-import {MatSort} from "@angular/material/sort";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {StatisticUtils} from "../../util/statistic-utils";
 import {ChartConfiguration} from "chart.js";
-import {faCircleInfo} from '@fortawesome/free-solid-svg-icons';
 import {TaskStatisticChartConfigurations} from "./task-statistic-chart-configurations";
 
 @Component({
@@ -16,7 +14,6 @@ import {TaskStatisticChartConfigurations} from "./task-statistic-chart-configura
   styleUrls: ['./task-statistic-view.component.css']
 })
 export class TaskStatisticViewComponent implements OnInit, OnChanges {
-  faCircleInfo=faCircleInfo
   @Input("specificationDataContainer") specificationDataContainer!: SpecificationDataContainer;
   @Input("specificTaskStatistic") specificTaskStatistic!: string;
   statisticSelection = new FormControl('avgCompletionTime');
@@ -106,6 +103,9 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
           case("cost"):
             value = (taskStatistic.avgCompletionTime / (1000*60*60)) * taskStatistic.costResourceHour;
             break;
+          case("avgInstancesPerCase"):
+            value = taskStatistic.avgInstancesPerCase;
+            break;
         }
         heatMapElement.series.push({
           name: "" + counter++,
@@ -142,7 +142,7 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
         let yearMonthID = (this.fineness === 'month') ? new Date(startDate.getFullYear(),
-          startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0)
+          startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0)
           .getTime();
         let figures = allStarts.get(yearMonthID)!;
         let participantFigures = data.get(yearMonthID)!;
@@ -254,9 +254,11 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
 
   heatMapTooltipText(data: any){
     let taskStatistic : TaskStatistic = data.cell.extra.statistic;
-    let valueString = new FormatUtils().applyPastTimeFormatForTimestampWithDays(data.cell.value)
-    if(data.cell.extra.statisticSelection === 'cost'){
+    let valueString = "";
+    if(data.cell.extra.statisticSelection === 'cost' || data.cell.extra.statisticSelection === 'avgInstancesPerCase'){
       valueString = data.cell.value.toFixed(2);
+    }else{
+      valueString = new FormatUtils().applyPastTimeFormatForTimestampWithDays(data.cell.value)
     }
     return taskStatistic.name + "<br>" + valueString;
   }

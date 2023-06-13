@@ -2,14 +2,14 @@
 <!-- @editedBy Robin Steinwarz --->
 <mat-toolbar class="toolbar-primary">
   <button class="sidebar-toggle-button btn btn-icon" (click)="sidenav.toggle()">
-    <fa-icon class="fa-fw" [icon]="faBars"></fa-icon>
+    <fa-icon class="fa-fw" icon="bars"></fa-icon>
   </button>
   <div class="toolbar-title">
     YAWL Dashboard
   </div>
   <div class="toolbar-right" >
     <button class="logout-button" (click)="onLogoutButton()">
-      <fa-icon class="fa-fw" [icon]="faArrowRightFromBracket" style="font-size: 17px; color: rgba(255,255,255,0.9)"></fa-icon>
+      <fa-icon class="fa-fw" icon="arrow-right-from-bracket" style="font-size: 17px; color: rgba(255,255,255,0.9)"></fa-icon>
       Logout
     </button>
   </div>
@@ -18,12 +18,12 @@
 <sidebar-layout>
   <sidebar #sidenav>
     <div class="sidebar-header">
-      <fa-icon [fixedWidth]="true" [icon]="faChartLine" style="color: rgba(255,255,255,0.9)"></fa-icon>
+      <fa-icon [fixedWidth]="true" icon="chart-line" style="color: rgba(255,255,255,0.9)"></fa-icon>
     </div>
     <ul class="main-menu">
       <li *ngIf="withDashboardService">
         <a routerLink="/" routerLinkActive="active" style=" padding: 0.5em 1em;">
-          <fa-icon [fixedWidth]="true" [icon]="faGaugeHigh"></fa-icon>
+          <fa-icon [fixedWidth]="true" icon="gauge-high" matTooltip="Go to the dashboard."></fa-icon>
         </a>
       </li>
     </ul>

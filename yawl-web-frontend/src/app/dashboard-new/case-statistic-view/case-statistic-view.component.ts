@@ -6,7 +6,6 @@ import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {FormatUtils} from "../../util/format-util";
 import {StatisticUtils} from "../../util/statistic-utils";
-import {faCircleInfo} from '@fortawesome/free-solid-svg-icons';
 import {ChartConfiguration} from "chart.js/dist/types";
 import {CaseStatisticChartConfigurations} from "./case-statistic-chart-configurations";
 import {ColorUtils} from "../../util/color-util";
@@ -20,7 +19,6 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
 
   @Input("specificationDataContainer")
   specificationDataContainer: SpecificationDataContainer | undefined;
-  faCircleInfo = faCircleInfo;
   // @ts-ignore
   sort: MatSort;
   range = new FormGroup({
@@ -54,16 +52,6 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
   casePerformanceData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
   casePerformanceDistributionOptions = CaseStatisticChartConfigurations.casePerformanceDistributionOptions(this.fineness === 'month');
   casePerformanceDistributionData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
-
-  // Success
-  deadlineNotExceeded: number = 0;
-  deadlineExceeded: number = 0;
-  successful: number = 0;
-  unsucessful: number = 0;
-  slaLine: Object[] = [];
-  successLine: Object[] = [];
-  deadlineValues: Object[] = [];
-  successValues: Object[] = [];
 
   // Performance
   casePerformance: Object[] = [];
@@ -135,7 +123,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     this.specificationDataContainer!.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
-        let yearMonthID = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+        let yearMonthID = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0).getTime();
         let figures = dataMap.get(yearMonthID);
         figures!.set(StatisticUtils.weekdays[startDate.getDay()], figures!.get(StatisticUtils.weekdays[startDate.getDay()])! + 1)
       }
@@ -275,106 +263,6 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     })
   }
 
-  processSuccessStats(): void {
-    let allStarts: Map<string, {
-      deadlineExceeded: number, deadlineNotExceeded: number,
-      successful: number, unsuccessful: number
-    }> = new Map();
-
-    this.statisticTicks.forEach((tick) => {
-      let yearMonthID = tick.year + "." + StatisticUtils.monthNames[tick.month];
-      allStarts.set(yearMonthID, {
-        deadlineExceeded: 0, deadlineNotExceeded: 0,
-        successful: 0, unsuccessful: 0
-      });
-    })
-    this.deadlineNotExceeded = 0;
-    this.deadlineExceeded = 0;
-    this.successful = 0;
-    this.unsucessful = 0;
-
-    this.specificationDataContainer?.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-      if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
-        let date = new Date(caseStatistic.start);
-        let month = (this.fineness === 'month') ? date.getMonth() : 0;
-        let yearMonthID = date.getFullYear() + "." + StatisticUtils.monthNames[month];
-        let figures = allStarts.get(yearMonthID)!;
-        if (this.specificationDataContainer?.extensionSpecification.specificationTimeLimit === 0) {
-          this.deadlineNotExceeded++;
-          figures.deadlineNotExceeded++;
-        } else {
-          if (Number(this.specificationDataContainer?.extensionSpecification.specificationTimeLimit) < caseStatistic.age) {
-            this.deadlineExceeded++;
-            figures.deadlineExceeded++;
-          } else {
-            this.deadlineNotExceeded++;
-            figures.deadlineNotExceeded++;
-          }
-        }
-        if (caseStatistic.cancelled) {
-          this.unsucessful++;
-          figures.unsuccessful++;
-        } else {
-          this.successful++;
-          figures.successful++;
-        }
-      }
-    })
-    this.slaLine = [];
-    this.successLine = [];
-    this.deadlineValues = [];
-    this.successValues = [];
-    let slaLineElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "SLA met",
-      series: []
-    }
-    let successLineElement: { name: string, series: { name: string, value: string }[] } = {
-      name: "Success",
-      series: []
-    }
-    allStarts.forEach((value, yearMonthID) => {
-      let label = (this.fineness === 'month') ? yearMonthID.replace(".", " ") : yearMonthID.split(".")[0];
-      let finalDeadlineValue = (((value.deadlineNotExceeded / (value.deadlineNotExceeded + value.deadlineExceeded))) * 100).toFixed(2);
-      finalDeadlineValue = (value.deadlineNotExceeded === 0 && value.deadlineExceeded === 0) ? "100" : finalDeadlineValue;
-      let finalSuccessValue = ((1 - (value.unsuccessful / value.successful)) * 100).toFixed(2);
-      finalSuccessValue = (value.successful === 0 && value.unsuccessful === 0) ? "100" : finalSuccessValue;
-      let deadlineAccuracyElement = {
-        name: label,
-        series: [{
-          name: "Deadline met",
-          value: value.deadlineNotExceeded
-        }, {
-          name: "Deadline not met",
-          value: value.deadlineExceeded
-        }]
-      }
-      this.deadlineValues.push(deadlineAccuracyElement);
-      slaLineElement.series.push({
-        name: label,
-        value: finalDeadlineValue
-      })
-      let successElement = {
-        name: label,
-        series: [{
-          name: "Successful cases",
-          value: value.successful
-        }, {
-          name: "Unsuccessful cases",
-          value: value.unsuccessful
-        }]
-      }
-      this.successValues.push(successElement);
-      successLineElement.series.push({
-        name: label,
-        value: finalSuccessValue
-      })
-    })
-    this.slaLine.push(slaLineElement);
-    this.successLine.push(successLineElement);
-    StatisticUtils.preventNullStatistic(this.slaLine, true);
-    StatisticUtils.preventNullStatistic(this.successLine, true);
-  }
-
   processCosts(): void {
     let allStarts: Map<number, Map<string, number>> = new Map();
     let taskMap: Map<string, TaskStatistic> = new Map();
@@ -392,7 +280,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
         let yearMonthID = (this.fineness === 'month') ? new Date(startDate.getFullYear(),
-          startDate.getMonth() + 1, 0).getTime() : new Date(startDate.getFullYear(), 1, 0)
+          startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0)
           .getTime();
         let monthInstance = allStarts.get(yearMonthID)!;
         caseStatistic.taskTimingDTOS.forEach(taskTiming => {
@@ -430,8 +318,8 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)
         && caseStatistic.end !== 0) {
         let startDate = new Date(caseStatistic.start);
-        let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0)
-          .getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+        let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth())
+          .getTime() : new Date(startDate.getFullYear(), 0).getTime();
         if (!successMap.has(tick)) {
           successMap.set(tick, {success: [], sla: []});
         }
@@ -493,8 +381,8 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
       if (StatisticUtils.notCancelledAndCompleted(caseStatistic) &&
         StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
-        let label = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0)
-          .getTime() : new Date(startDate.getFullYear(), 1, 0).getTime();
+        let label = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() )
+          .getTime() : new Date(startDate.getFullYear(), 0).getTime();
         let instance = map.get(label)!;
         instance.ages.push(caseStatistic.age);
         if (instance.min > caseStatistic.age) {

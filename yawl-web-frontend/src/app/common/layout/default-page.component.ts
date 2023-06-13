@@ -2,11 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotifierService } from 'angular-notifier';
 import { SessionService } from '../session/session.service';
-import {faChartLine} from '@fortawesome/free-solid-svg-icons';
-
-//import { ExtensionSpecificationService } from '../../dashboard/dashboard.service';
-import {subscribeOn, Subscription} from "rxjs";
-import { faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell, faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight} from '@fortawesome/free-solid-svg-icons';
+import { Subscription} from "rxjs";
 
 /**
  * @author Philipp R. Thomas
@@ -19,18 +15,6 @@ import { faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell, faSite
     encapsulation: ViewEncapsulation.None
 })
 export class DefaultPageComponent implements OnInit {
-  faArrowRightFromBracket=faArrowRightFromBracket
-  faBars=faBars
-  faGaugeHigh=faGaugeHigh
-  faChartLine=faChartLine
-  faCompass=faCompass
-  faBell=faBell
-  faSitemap=faSitemap
-  faCubes=faCubes
-  faFileCode=faFileCode
-  faDatabase=faDatabase
-  faCaretDown=faCaretDown
-  faCaretRight=faCaretRight
 	dashboards : any = [];
 
   private subscription: Subscription = Subscription.EMPTY;

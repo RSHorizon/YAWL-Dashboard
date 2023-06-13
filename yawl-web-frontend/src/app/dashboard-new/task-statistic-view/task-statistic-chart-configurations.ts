@@ -17,7 +17,6 @@ export class TaskStatisticChartConfigurations {
           time: {
             unit: (month)?'month': 'year',
             displayFormats: {
-
               year: 'yyy MMM',
               month: 'yyy MMM',
             }

@@ -1,4 +1,4 @@
-import {NgModule, APP_INITIALIZER} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -9,6 +9,10 @@ import {LayoutModule} from './common/layout/layout.module';
 import {SessionModule} from './common/session/session.module';
 import {YawlResourcesModule} from './yawl/resources/yawl-resources.module';
 import {DashboardNewModule} from './dashboard-new/dashboard-new.module';
+import {FontAwesomeModule, FaIconLibrary, FaConfig} from '@fortawesome/angular-fontawesome'
+import { faCircleInfo, faChartLine, faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell,
+  faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight, faPencil,
+  faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons';
 /**
  *
  * @author Philipp Thomas
@@ -22,7 +26,6 @@ import {AppComponent} from './app.component';
 import {CommonModule, HashLocationStrategy, LocationStrategy} from "@angular/common";
 import {MatMenuModule} from "@angular/material/menu";
 import {MaterialModule} from './material.module';
-import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
 
 @NgModule({
@@ -52,4 +55,10 @@ import {NgxChartsModule} from "@swimlane/ngx-charts";
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}]
 })
 export class AppModule {
+  constructor(library: FaIconLibrary, faConfig: FaConfig) {
+    faConfig.fixedWidth = true;
+    library.addIcons(faCircleInfo, faChartLine, faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell,
+      faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight, faPencil,
+      faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus);
+  }
 }

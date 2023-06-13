@@ -30,8 +30,10 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
     private String decompositionOrder = "";
     private String minimalOrder = "";
     private long avgCompletionTime = 0;
+    private long avgResourceTime = 0;
     private Integer[] avgOccurrencesPerWeek = {0,0,0,0,0,0,0,0};
     private long avgQueueTime = 0;
+    private double avgInstancesPerCase = 0;
     private boolean automated = false;
     private long avgTimeToReach = 0;
     private double costResourceHour;
@@ -283,5 +285,21 @@ public class TaskStatisticDTO implements Comparable<TaskStatisticDTO>, Serializa
 
     public void setTotalTimeSpentWithPositions(Map<String, Long> totalTimeSpentWithPositions) {
         this.totalTimeSpentWithPositions = totalTimeSpentWithPositions;
+    }
+
+    public long getAvgResourceTime() {
+        return avgResourceTime;
+    }
+
+    public void setAvgResourceTime(long avgResourceTime) {
+        this.avgResourceTime = avgResourceTime;
+    }
+
+    public double getAvgInstancesPerCase() {
+        return avgInstancesPerCase;
+    }
+
+    public void setAvgInstancesPerCase(double avgInstancesPerCase) {
+        this.avgInstancesPerCase = avgInstancesPerCase;
     }
 }

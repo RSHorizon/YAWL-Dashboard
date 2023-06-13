@@ -1,7 +1,8 @@
 <!-- @author Robin Steinwarz--->
 <div>
   <h3>Specifications <a [href]="specificationsURL" target="_blank">
-    <fa-icon [fixedWidth]="true" [icon]="faPencil"></fa-icon>
+    <fa-icon [fixedWidth]="true" icon="pencil"
+             matTooltip="Redirect to yawl dashboard."></fa-icon>
   </a></h3>
 
   <mat-form-field class="mat-mdc-form-field" >
@@ -18,7 +19,8 @@
         Color
       </th>
       <td mat-cell *matCellDef="let element">
-        <fa-icon [style.color]="element.specificationStatistic.color" [fixedWidth]="true" [icon]="faSquare"></fa-icon>
+        <fa-icon [style.color]="element.specificationStatistic.color" [fixedWidth]="true" icon="square"
+                 matTooltip="This is the color associated with the specification."></fa-icon>
       </td>
     </ng-container>
 
@@ -87,7 +89,8 @@
       </th>
       <td mat-cell *matCellDef="let element">
         <a href="/#/dashboard/specification/{{element.specificationInformation.uri}}/{{element.specificationInformation.id}}/{{element.specificationInformation.specversion}}">
-          <fa-icon [fixedWidth]="true" [icon]="faArrowsToEye"></fa-icon>
+          <fa-icon [fixedWidth]="true" icon="arrows-to-eye"
+                   matTooltip="Redirect to the details page of the specification."></fa-icon>
         </a>
       </td>
     </ng-container>
