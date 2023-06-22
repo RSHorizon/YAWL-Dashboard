@@ -21,6 +21,7 @@ import {
 export class TimestampformComponent implements OnInit, OnChanges {
   @Input() monthSelectionActive: boolean = false;
   @Input() timestamp: number | undefined;
+  @Input() enabled: boolean | undefined;
   @Output() timestampChange = new EventEmitter<number>();
   @Output() timestampChanged = new EventEmitter<number>();
   months: number = 0;

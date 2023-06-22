@@ -13,7 +13,7 @@ import {NotifierService} from "angular-notifier";
 import {ExtensionSpecificationService} from "../../yawl/resources/services/extension-specification.service";
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
-
+import {featuresConfig} from "../../common/config/features-config";
 /**
  * @author Robin Steinwarz
  */
@@ -23,6 +23,7 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
   styleUrls: ['./case-view.component.css']
 })
 export class CaseViewComponent implements OnInit {
+  featuresConfig=featuresConfig;
   @ViewChild(MatSort) set matSort(ms: MatSort) {
     this.sort = ms;
     if (this.dataSource != undefined) {

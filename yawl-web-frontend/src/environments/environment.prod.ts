@@ -5,8 +5,8 @@
  */
 export const env = {
   production: true,
-  apiUrl: "http://localhost:8082/api/",
-  url: "http://localhost:8082/",
-  remoteUIUrl: "http://localhost:8080/yawlui/"
+  apiUrl: "http://10.20.129.41:8082/api/",
+  url: "http://10.20.129.41:8082/",
+  remoteUIUrl: "http://10.20.129.41:8080/yawlui/"
 
 };

@@ -2,22 +2,22 @@
 
 <mat-form-field [hidden]="!monthSelectionActive" style="width:45px !important">
   <mat-label>Months</mat-label>
-  <input matInput type="number" min="0" max="120" (change)="change()" [(ngModel)]="months" />
+  <input [disabled]="!enabled" matInput type="number" min="0" max="120" (change)="change()" [(ngModel)]="months" />
 </mat-form-field>
 
 <mat-form-field style="width:45px !important">
   <mat-label>Days</mat-label>
-  <input matInput type="number" min="0" max="29" (change)="change()" [(ngModel)]="days"/>
+  <input [disabled]="!enabled" matInput type="number" min="0" max="29" (change)="change()" [(ngModel)]="days"/>
 </mat-form-field>
 
 <mat-form-field style="width:45px !important">
   <mat-label>Hours</mat-label>
-  <input matInput type="number" min="0" max="23" (change)="change()" [(ngModel)]="hours"/>
+  <input [disabled]="!enabled" matInput type="number" min="0" max="23" (change)="change()" [(ngModel)]="hours"/>
 </mat-form-field>
 
 <mat-form-field style="width:45px !important">
   <mat-label>Minutes</mat-label>
-  <input matInput type="number" min="0" max="59" (change)="change()" [(ngModel)]="minutes"/>
+  <input [disabled]="!enabled" matInput type="number" min="0" max="59" (change)="change()" [(ngModel)]="minutes"/>
 </mat-form-field>
 
 

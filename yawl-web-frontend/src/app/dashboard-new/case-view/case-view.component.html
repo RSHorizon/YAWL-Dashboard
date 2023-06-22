@@ -41,7 +41,7 @@
           style="color: rgba(0, 0, 0, 0.38); font-size: 8px; font-weight: 600; font-family: Roboto, 'Helvetica Neue', sans-serif">
           Max case time
         </mat-label><br>
-        <app-timestampform [(timestamp)]="specificationTimeLimit" [monthSelectionActive]="true"
+        <app-timestampform [enabled]="featuresConfig.editCostAndLimits" [(timestamp)]="specificationTimeLimit" [monthSelectionActive]="true"
                            (timestampChanged)="changedSpecificationAttributes()"></app-timestampform>
       </span>
     </p>

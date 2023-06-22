@@ -5,7 +5,7 @@ import {SpecificationService} from "../../yawl/resources/services/specification.
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {NotifierService} from "angular-notifier";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
-
+import {featuresConfig} from "../../common/config/features-config";
 /**
  * @author Robin Steinwarz
  */
@@ -16,6 +16,7 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
+  featuresConfig=featuresConfig;
   @Input("specificationDataContainer") specificationDataContainer!: SpecificationDataContainer;
   @ViewChild(MatSort) sort: MatSort | undefined;
   displayedColumns: string[] = ['color', 'name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'automated',

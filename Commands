@@ -1,0 +1,5 @@
+Build:
+docker build -t rsteinwarz/dashboard-showcase:latest .
+
+Start:
+docker run -p 8082:8082 yawl/dashboard-showcase

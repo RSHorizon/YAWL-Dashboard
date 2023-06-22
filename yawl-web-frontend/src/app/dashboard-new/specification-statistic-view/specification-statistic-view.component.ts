@@ -187,13 +187,15 @@ export class SpecificationStatisticViewComponent implements OnInit {
           }
           let successArray = successMap.get(tick)!;
 
-          if (specificationDataContainer.extensionSpecification.specificationTimeLimit === 0) {
-            successArray.sla.push(1);
-          } else {
-            if (Number(specificationDataContainer.extensionSpecification.specificationTimeLimit) < caseStatistic.age) {
-              successArray.sla.push(0);
-            } else {
+          if(!caseStatistic.cancelled){
+            if (specificationDataContainer.extensionSpecification.specificationTimeLimit === 0) {
               successArray.sla.push(1);
+            } else {
+              if (Number(specificationDataContainer.extensionSpecification.specificationTimeLimit) < caseStatistic.age) {
+                successArray.sla.push(0);
+              } else {
+                successArray.sla.push(1);
+              }
             }
           }
           if (caseStatistic.cancelled) {
