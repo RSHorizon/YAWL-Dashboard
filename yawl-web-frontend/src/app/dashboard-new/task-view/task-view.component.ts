@@ -6,6 +6,7 @@ import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {NotifierService} from "angular-notifier";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {featuresConfig} from "../../common/config/features-config";
+import {animate, state, style, transition, trigger} from "@angular/animations";
 /**
  * @author Robin Steinwarz
  */
@@ -13,14 +14,23 @@ import {featuresConfig} from "../../common/config/features-config";
   selector: 'app-task-view',
   templateUrl: './task-view.component.html',
   styleUrls: ['./task-view.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed, void', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('50ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
   featuresConfig=featuresConfig;
   @Input("specificationDataContainer") specificationDataContainer!: SpecificationDataContainer;
   @ViewChild(MatSort) sort: MatSort | undefined;
   displayedColumns: string[] = ['color', 'name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'automated',
-    'costResourceHour', 'maxQueueAge', 'maxTaskAge', 'actions'];
+    'costResourceHour', 'maxQueueAge', 'maxTaskAge'];
+  displayedColumnsWithExpand = ['expand', ...this.displayedColumns];
+  expandedElement: {} | undefined;
   dataSource: MatTableDataSource<TaskStatistic> = new MatTableDataSource<TaskStatistic>();
   specificTaskStatisticSelection = '';
 

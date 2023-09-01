@@ -1,5 +1,5 @@
 
-import {Participant} from "../yawl/resources/entities/participant.entity";
+import {Participant} from "../../yawl/resources/entities/participant.entity";
 import { lighten,darken, transparentize, parseToRgba, rgba } from 'color2k';
 
 /**

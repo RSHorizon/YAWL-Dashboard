@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 @RestController
 @Secured("ROLE_ADMIN")
-public class StatisticController {
+public class PMIController {
 
     @Autowired
     private WorkItemManager workItemManager;
@@ -44,7 +44,7 @@ public class StatisticController {
     @RequestMapping(value = "/api/statistic/specification/{uri}/{specificationID}/{specversion}", method = RequestMethod.GET)
     @ResponseBody
     @Transactional
-    public SpecificationStatisticDTO processSpecificationStatistic(@PathVariable("specificationID") String specificationID,
+    public SpecificationStatisticDTO receiveSpecificationPMI(@PathVariable("specificationID") String specificationID,
                                                                    @PathVariable("specversion") String specversion,
                                                                    @PathVariable("uri") String uri) {
         // *** Gather all needed data in advance
@@ -112,7 +112,7 @@ public class StatisticController {
             taskStatistics.add(newTaskStatistic);
             taskTimings.put(existingTask.getId(), new HashMap<>());
         }
-        StatisticEventRepairService.fixTaskOrder(cases, smallestDecompositionOrders, allExistingTasks, caseStatisticMap,
+        ProcessLogRepairService.fixTaskOrder(cases, smallestDecompositionOrders, allExistingTasks, caseStatisticMap,
                 taskTimings, eventRelatedParticipants, participantsInformationMap);
 
         SpecificationStatisticDTO specificationStatistic = new SpecificationStatisticDTO(specificationID, specversion, uri);
@@ -212,7 +212,7 @@ public class StatisticController {
         }
 
         // Occurrences per week divided by weeks, where case occurred
-        Integer[] caseOccurrencesPerDayOfWeek = StatisticControllerHelper.occurrencesInWeeks(caseStartTimestamps);
+        Integer[] caseOccurrencesPerDayOfWeek = PMIControllerUtil.occurrencesInWeeks(caseStartTimestamps);
 
         specificationStatistic.setAvgCaseCompletionTime(avgCaseCompletionTime);
         specificationStatistic.setSuccessfulCases(successful);
@@ -411,7 +411,7 @@ public class StatisticController {
                 taskStatistic.setAvgResourceTime(avgResourceTime.get() / avgResourceTimeCounter.get());
             }
             // Avg. occurences/week
-            taskStatistic.setAvgOccurrencesPerWeek(StatisticControllerHelper.occurrencesInWeeks(creationTimestamps));
+            taskStatistic.setAvgOccurrencesPerWeek(PMIControllerUtil.occurrencesInWeeks(creationTimestamps));
         }
 
         long avgResourceTimePerWeekSummed = 0;

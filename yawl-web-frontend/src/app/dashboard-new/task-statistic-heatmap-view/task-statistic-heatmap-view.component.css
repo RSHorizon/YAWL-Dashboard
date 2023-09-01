@@ -5,10 +5,7 @@
 
 .statistic-filter{
   padding: 0;
-  margin: 0 0 .5em;
-}
+  margin: 2em 0 0;
 
-mat-grid-list{
-  width: 100%;
 }
 

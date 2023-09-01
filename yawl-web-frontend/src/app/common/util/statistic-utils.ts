@@ -1,5 +1,5 @@
 import {FormGroup} from "@angular/forms";
-import {CaseStatistic} from "../yawl/resources/dto/case-statistic.entity";
+import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
 
 /**
  * @author Robin Steinwarz

@@ -1,13 +1,8 @@
 package org.yawlfoundation.yawldashboardbackend.endpoint;
 
-import org.yawlfoundation.yawl.engine.YSpecificationID;
-import org.yawlfoundation.yawldashboardbackend.model.ExtensionSpecification;
-import org.yawlfoundation.yawldashboardbackend.model.ExtensionTask;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
-
 import java.util.*;
 
-public class StatisticControllerHelper {
+public class PMIControllerUtil {
 
     protected static boolean decompositionOrderIsSmaller(String order, String order2) {
         if (order2.equals("")) {

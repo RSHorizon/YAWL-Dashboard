@@ -4,11 +4,11 @@ import {FormControl, FormGroup} from "@angular/forms";
 import {MatSort} from "@angular/material/sort";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
-import {FormatUtils} from "../../util/format-util";
-import {StatisticUtils} from "../../util/statistic-utils";
+import {FormatUtils} from "../../common/util/format-util";
+import {StatisticUtils} from "../../common/util/statistic-utils";
 import {ChartConfiguration} from "chart.js/dist/types";
 import {CaseStatisticChartConfigurations} from "./case-statistic-chart-configurations";
-import {ColorUtils} from "../../util/color-util";
+import {ColorUtils} from "../../common/util/color-util";
 
 @Component({
   selector: 'app-case-statistic-view',

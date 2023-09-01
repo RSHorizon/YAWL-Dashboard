@@ -1,5 +1,5 @@
 import {ChartConfiguration, TooltipItem} from "chart.js";
-import {FormatUtils} from "../../util/format-util";
+import {FormatUtils} from "../../common/util/format-util";
 
 /**
  * @author Robin Steinwarz

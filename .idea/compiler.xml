@@ -6,15 +6,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="yawl-dashboard-backend" />
+        <module name="dashboard" />
+        <module name="YAWL_UP" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="YAWL-Dashboard" target="1.5" />
       <module name="yawl-dashboard-backend" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="dashboard" options="-parameters" />
       <module name="yawl-dashboard-backend" options="-parameters" />
     </option>
   </component>

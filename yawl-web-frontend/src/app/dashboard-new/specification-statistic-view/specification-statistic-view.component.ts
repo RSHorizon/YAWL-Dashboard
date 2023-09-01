@@ -2,12 +2,12 @@ import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@a
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
-import {FormatUtils} from "../../util/format-util";
+import {FormatUtils} from "../../common/util/format-util";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
-import {StatisticUtils} from "../../util/statistic-utils";
+import {StatisticUtils} from "../../common/util/statistic-utils";
 import {SpecificationStatisticChartConfigurations} from "./specification-statistic-chart-configurations";
-import {ColorUtils} from "../../util/color-util";
+import {ColorUtils} from "../../common/util/color-util";
 import { ChartConfiguration, ScriptableContext } from 'chart.js';
 
 

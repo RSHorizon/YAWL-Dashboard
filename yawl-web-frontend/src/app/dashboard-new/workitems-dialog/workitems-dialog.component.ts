@@ -12,7 +12,7 @@ import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
 import {TaskTiming} from "../../yawl/resources/dto/task-timing.entity";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
-import {FormatUtils} from "../../util/format-util";
+import {FormatUtils} from "../../common/util/format-util";
 import {env} from "../../../environments/environment";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 
@@ -34,8 +34,8 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
 export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort| undefined;
   dataSource: MatTableDataSource<TaskTiming> = new MatTableDataSource<TaskTiming>();
-  displayedColumns: string[] = ['name', 'decompositionOrder', 'status', 'queueTime', 'completionTime', 'participants', 'overdue'];
-  displayedColumnsWithExpand = [...this.displayedColumns, 'expand'];
+  displayedColumns: string[] = ['name', 'decompositionOrder', 'status', 'queueTime', 'completionTime', 'participants', 'overdue', 'actions'];
+  displayedColumnsWithExpand = ['expand', ...this.displayedColumns];
   expandedElement: {} | undefined;
   formatUtils: FormatUtils = new FormatUtils();
 

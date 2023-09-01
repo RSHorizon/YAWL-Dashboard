@@ -27,6 +27,7 @@ import { CaseStatisticViewComponent } from './case-statistic-view/case-statistic
 import { TaskStatisticViewComponent } from './task-statistic-view/task-statistic-view.component';
 import { ChartCapsuleComponent } from './chart-capsule/chart-capsule.component';
 import {MatExpansionModule} from "@angular/material/expansion";
+import {TaskStatisticHeatmapViewComponent} from "./task-statistic-heatmap-view/task-statistic-heatmap-view.component";
 
 /**
  * @author Robin Steinwarz
@@ -44,6 +45,7 @@ import {MatExpansionModule} from "@angular/material/expansion";
     SpecificationStatisticViewComponent,
     CaseStatisticViewComponent,
     TaskStatisticViewComponent,
+    TaskStatisticHeatmapViewComponent,
     ChartCapsuleComponent
   ],
     imports: [

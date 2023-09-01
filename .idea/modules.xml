@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/YAWL_UP.iml" filepath="$PROJECT_DIR$/.idea/YAWL_UP.iml" />
-      <module fileurl="file://$PROJECT_DIR$/yawl-dashboard-backend/yawl-dashboard-backend.iml" filepath="$PROJECT_DIR$/yawl-dashboard-backend/yawl-dashboard-backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/yawl-web-frontend/yawl-web-frontend.iml" filepath="$PROJECT_DIR$/yawl-web-frontend/yawl-web-frontend.iml" />
     </modules>
   </component>

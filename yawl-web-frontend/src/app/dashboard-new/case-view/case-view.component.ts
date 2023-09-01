@@ -7,7 +7,7 @@ import {WorkitemQueueDialogComponent} from "../workitem-queue-dialog/workitem-qu
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {WorkitemsDialogComponent} from "../workitems-dialog/workitems-dialog.component";
 import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
-import {FormatUtils} from "../../util/format-util";
+import {FormatUtils} from "../../common/util/format-util";
 import {env} from "../../../environments/environment";
 import {NotifierService} from "angular-notifier";
 import {ExtensionSpecificationService} from "../../yawl/resources/services/extension-specification.service";

@@ -9,7 +9,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 import java.util.*;
 
-public class StatisticEventRepairService {
+public class ProcessLogRepairService {
 
     protected static void fixTaskOrder(List<CaseDTO> cases, Map<String, String> smallestDecompositionOrders,
                                        List<Task> allExistingTasks,
@@ -109,21 +109,18 @@ public class StatisticEventRepairService {
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Offered");
                         participantHadEvents.add("Offer");
                         setStartTimestamp(eventTimestamp, caseStatisticDTO);
-                        caseStatisticDTO.setEnd(0);
                         break;
                     case "allocate":
                         taskTiming.setAllocatedTimestamp(eventTimestamp);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Allocated");
                         participantHadEvents.add("Allocate");
                         setStartTimestamp(eventTimestamp, caseStatisticDTO);
-                        caseStatisticDTO.setEnd(0);
                         break;
                     case "start":
                         taskTiming.setStartTimestamp(eventTimestamp);
                         setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Started");
                         participantHadEvents.add("Start");
                         setStartTimestamp(eventTimestamp, caseStatisticDTO);
-                        caseStatisticDTO.setEnd(0);
                         break;
                     case "autotask_start":
                         taskTiming.setStartTimestamp(eventTimestamp);
@@ -224,7 +221,7 @@ public class StatisticEventRepairService {
         }
         String[] ignoredEvents = {"offer", "unoffer", "allocate", "cancelled_by_case", "cancel", "suspend", "resume", "timer_expired"};
         if (!Arrays.asList(ignoredEvents).contains(event.getEventtype())) {
-            if (StatisticControllerHelper.decompositionOrderIsSmaller(smallestDecompositionOrders.get(event.getTaskid()), eventDecompositionOrder)) {
+            if (PMIControllerUtil.decompositionOrderIsSmaller(smallestDecompositionOrders.get(event.getTaskid()), eventDecompositionOrder)) {
                 smallestDecompositionOrders.replace(event.getTaskid(), eventDecompositionOrder);
             }
         }

@@ -2,46 +2,43 @@
 
 <default-page>
   <div>
-    <p>
+    <mat-toolbar class="page-title-spaceless">
       <a href="/#/dashboard">
-        <mat-toolbar>
-          <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-            <fa-icon [fixedWidth]="true" icon="arrow-left-long" matTooltip="Go back to the dashboard."></fa-icon>
-          </button>
-          <span>Back</span>
-          <span class="spacer"></span>
-          <span [innerHTML]="specificationDataContainer?.specificationStatistic?.uri"></span>,
-          <span style="margin-left: .5em;"
-                [innerHTML]="specificationDataContainer?.specificationStatistic?.version"></span>
-        </mat-toolbar>
+        Specifications
       </a>
-    </p>
-
-    <section class="example-section">
-      <mat-radio-group [(ngModel)]="viewType">
-        <mat-radio-button value="0">
-          Cases
-        </mat-radio-button>
-        <mat-radio-button value="1">
-          Tasks
-        </mat-radio-button>
-      </mat-radio-group>
-    </section>
+      <fa-icon [fixedWidth]="true" icon="arrow-right"></fa-icon>
+      <div [innerHTML]="specificationDataContainer?.specificationStatistic?.uri"></div>,
+      <div style="margin-left: .5em;"
+            [innerHTML]="specificationDataContainer?.specificationStatistic?.version"></div>
+      <section style="margin-left: .5em;">
+        (<mat-radio-group [(ngModel)]="viewType">
+          <mat-radio-button value="0" style="padding: 0; margin: 0; font-size: 16px; font-weight: 100;">
+            Cases
+          </mat-radio-button>
+          <mat-radio-button value="1" style="font-size: 16px; font-weight: 100; ">
+            Tasks
+          </mat-radio-button>
+        </mat-radio-group>)
+      </section>
+    </mat-toolbar>
   </div>
+
 
   <!--<div *ngFor="let color of colores" style="width:30px; height:30px;" [style.background-color]="color">{{color}}</div>
   -->
   <div *ngIf="specificationDataContainer?.specificationStatistic! != undefined" [hidden]="!isCaseView()">
     <app-case-statistic-view [specificationDataContainer]="specificationDataContainer"></app-case-statistic-view>
     <p style="margin-top:2em">
-      <span style="font-size: 30px">Cases</span>
-      <a style="float:right" mat-raised-button (click)="openWorkitemQueueDialog()" target="_blank">Work item queue</a>
+
+      <span style="font-size: 14px;">Instances</span>
+      <a style="float:right; top: -1em" mat-raised-button (click)="openWorkitemQueueDialog()" target="_blank">Work item queue</a>
       <span style="display: block; white-space: nowrap; float:right; margin-top: -24px; margin-right: 1em">
         <mat-label
           style="color: rgba(0, 0, 0, 0.38); font-size: 8px; font-weight: 600; font-family: Roboto, 'Helvetica Neue', sans-serif">
           Max case time
         </mat-label><br>
-        <app-timestampform [enabled]="featuresConfig.editCostAndLimits" [(timestamp)]="specificationTimeLimit" [monthSelectionActive]="true"
+        <app-timestampform [enabled]="featuresConfig.editCostAndLimits" [(timestamp)]="specificationTimeLimit"
+                           [monthSelectionActive]="true"
                            (timestampChanged)="changedSpecificationAttributes()"></app-timestampform>
       </span>
     </p>
@@ -52,7 +49,7 @@
 
       <!-- Color Column -->
       <ng-container matColumnDef="color">
-        <th mat-header-cell *matHeaderCellDef >
+        <th mat-header-cell *matHeaderCellDef>
           Color
         </th>
         <td mat-cell *matCellDef="let element">

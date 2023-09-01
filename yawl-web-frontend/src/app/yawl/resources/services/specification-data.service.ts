@@ -8,7 +8,7 @@ import {StatisticService} from "./statistic.service";
 import {AsyncSubject, forkJoin} from "rxjs";
 import {ExtensionSpecification} from "../dto/extension-specification.entity";
 import {ParticipantService} from "./participant.service";
-import {ColorUtils} from "../../../util/color-util";
+import {ColorUtils} from "../../../common/util/color-util";
 
 @Injectable({
   providedIn: 'root'

@@ -1,4 +1,4 @@
-import {Participant} from "../yawl/resources/entities/participant.entity";
+import {Participant} from "../../yawl/resources/entities/participant.entity";
 
 /**
  * @author Robin Steinwarz

@@ -39,7 +39,8 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
     @Override
     public List<Event> getSpecificationEvents(YSpecificationID specID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getSpecificationEvents(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), handle.getRawHandle());
+            String result = connection.getSpecificationEvents(specID.getIdentifier(),
+                    specID.getVersionAsString(), specID.getUri(), handle.getRawHandle());
             return SpecificationMarshaller.unmarshallEvents(result);
         } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);

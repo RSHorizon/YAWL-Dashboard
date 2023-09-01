@@ -12,7 +12,7 @@ import {DashboardNewModule} from './dashboard-new/dashboard-new.module';
 import {FontAwesomeModule, FaIconLibrary, FaConfig} from '@fortawesome/angular-fontawesome'
 import { faCircleInfo, faChartLine, faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell,
   faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight, faPencil,
-  faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons';
+  faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 /**
  *
  * @author Philipp Thomas
@@ -59,6 +59,6 @@ export class AppModule {
     faConfig.fixedWidth = true;
     library.addIcons(faCircleInfo, faChartLine, faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell,
       faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight, faPencil,
-      faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus);
+      faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus, faArrowRight);
   }
 }

@@ -1,7 +1,7 @@
 import {FormGroup} from "@angular/forms";
 import {ChartConfiguration, TooltipItem} from "chart.js";
-import {FormatUtils} from "../../util/format-util";
-import {ColorUtils} from "../../util/color-util";
+import {FormatUtils} from "../../common/util/format-util";
+import {ColorUtils} from "../../common/util/color-util";
 
 /**
  * @author Robin Steinwarz

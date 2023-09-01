@@ -8,7 +8,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 import {WorkItemService} from "../../yawl/resources/services/work-item.service";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
 import {Participant} from "../../yawl/resources/entities/participant.entity";
-import {FormatUtils} from "../../util/format-util";
+import {FormatUtils} from "../../common/util/format-util";
 import {env} from "../../../environments/environment";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {TaskTiming} from "../../yawl/resources/dto/task-timing.entity";
@@ -32,8 +32,8 @@ import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 export class WorkitemQueueDialogComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort | undefined;
   dataSource: MatTableDataSource<TaskTiming> = new MatTableDataSource<TaskTiming>();
-  displayedColumns: string[] = ['caseid', 'name', 'status', 'created', 'queueTime', 'overdue'];
-  displayedColumnsWithExpand = [...this.displayedColumns, 'expand'];
+  displayedColumns: string[] = ['caseid', 'name', 'status', 'created', 'queueTime', 'overdue', 'actions'];
+  displayedColumnsWithExpand = ['expand', ...this.displayedColumns];
   expandedElement: {} | undefined;
   formatUtils: FormatUtils = new FormatUtils();
 

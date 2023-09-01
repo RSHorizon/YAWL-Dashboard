@@ -81,19 +81,6 @@ public abstract class SpecificationMarshaller {
 		return specification;
 	}
 
-	public static List<Event> unmarshallEvents(String xml) throws JDOMException, IOException {
-		List<Event> set = new LinkedList<>();
-
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		for(Element eventElement : root.getChildren()) {
-			set.add(unmarshallEvent(eventElement));
-		}
-
-		return set;
-	}
-
 	public static List<Specification> unmarshallSpecificationsList(String xml) throws JDOMException, IOException {
 		SAXBuilder builder = new SAXBuilder();
 		Document document = (Document) builder.build(new StringReader(xml));
@@ -148,21 +135,27 @@ public abstract class SpecificationMarshaller {
 		return new YSpecificationID(specificationID, specversion, uri);
 	}
 
+	public static List<Event> unmarshallEvents(String xml) throws JDOMException, IOException {
+		List<Event> eventList = new LinkedList<>();
+		SAXBuilder builder = new SAXBuilder();
+		Document document = builder.build(new StringReader(xml));
+		Element root = document.getRootElement();
+		for(Element eventElement : root.getChildren()) {
+			eventList.add(unmarshallEvent(eventElement));
+		}
+		return eventList;
+	}
 	public static Event unmarshallEvent(Element eventElement) {
 		if (eventElement == null) return null;
-
-		String speckey = eventElement.getChildText("speckey");
-		String caseid = eventElement.getChildText("caseid");
-		String taskid = eventElement.getChildText("taskid");
-		String itemid = eventElement.getChildText("itemid");
-		String resourceid = eventElement.getChildText("resourceid");
-		String eventtype = eventElement.getChildText("eventtype");
+		String specKey = eventElement.getChildText("speckey");
+		String caseId = eventElement.getChildText("caseid");
+		String taskId = eventElement.getChildText("taskid");
+		String itemId = eventElement.getChildText("itemid");
+		String resourceId = eventElement.getChildText("resourceid");
+		String eventType = eventElement.getChildText("eventtype");
 		String timestamp = eventElement.getChildText("timestamp");
 		String _key = eventElement.getAttribute("key").getValue();
-
-		Event event = new Event(speckey, caseid, taskid, itemid, resourceid, eventtype, timestamp, _key);
-
-		return event;
+		return new Event(specKey, caseId, taskId, itemId, resourceId, eventType, timestamp, _key);
 	}
 
 	public static SpecificationStatistic unmarshallSpecificationStatistic(String xml) {
