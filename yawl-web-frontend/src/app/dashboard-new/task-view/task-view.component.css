@@ -28,7 +28,9 @@ td.mat-cell.cdk-cell.cdk-column-expandedDetail.mat-column-expandedDetail {
   padding-top: 0;
 }
 
-
+tr.mat-row {
+  height: 64px;
+}
 
 mat-cell.cdk-cell {
   padding: 0;

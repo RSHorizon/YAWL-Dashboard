@@ -27,6 +27,7 @@ import {CommonModule, HashLocationStrategy, LocationStrategy} from "@angular/com
 import {MatMenuModule} from "@angular/material/menu";
 import {MaterialModule} from './material.module';
 import {NgxChartsModule} from "@swimlane/ngx-charts";
+import {faArrowTurnUp} from "@fortawesome/free-solid-svg-icons/faArrowTurnUp";
 
 @NgModule({
   declarations: [
@@ -59,6 +60,6 @@ export class AppModule {
     faConfig.fixedWidth = true;
     library.addIcons(faCircleInfo, faChartLine, faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell,
       faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight, faPencil,
-      faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus, faArrowRight);
+      faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus, faArrowRight, faArrowTurnUp);
   }
 }

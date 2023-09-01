@@ -74,7 +74,7 @@
 
     <!-- Overdue Column -->
     <ng-container matColumnDef="overdue">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by overdue">
+      <th mat-header-cell *matHeaderCellDef>
         Overdue
       </th>
       <td mat-cell *matCellDef="let element">{{formatUtils.applyIsOverdueFormat(element.age, getOverdueLimit(element))}}</td>

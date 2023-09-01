@@ -17,7 +17,17 @@
       <div class="statistic-title">
         <div class="statistic-title-text">Heat Map</div>
         <div class="statistic-title-info">
-          <fa-icon [fixedWidth]="true" icon="circle-info"
+          <span style="margin-right: 15px">Legend</span>
+          <span style="font-size: 7px">min</span> 0
+          <fa-icon [style.color]="'rgb(255, 247, 223)'" [fixedWidth]="true" icon="square"
+                   matTooltip="This color indicates a task with a corresponding small value."></fa-icon>
+          <fa-icon [fixedWidth]="true" icon="arrow-right"></fa-icon>
+          <fa-icon [style.color]="'rgb(255, 79, 0)'" [fixedWidth]="true" icon="square"
+                   matTooltip="This color indicates a task with a corresponding big value."></fa-icon>
+          <span style="font-size: 7px">max</span>
+          {{ (this.statisticSelection.getRawValue() === 'avgInstancesPerCase')? max: this.formatUtils.applyPastTimeFormatForTimestampWithDays(this.max)}}
+
+          <fa-icon id="heatmapInfo" [fixedWidth]="true" icon="circle-info"
                    matTooltip="This heatmap illustrates the differences between several selectable properties of our
                    tasks. Each square represents a task. They are ordered by their possible first occurrence in the process.
                    The further to the left a task is in the heatmap, the earlier it can occur in the process.
@@ -29,7 +39,7 @@
           <ngx-charts-heat-map
             [animations]="false"
             [scheme]="'solar'"
-            [legend]="true"
+            [legend]="false"
             [showXAxisLabel]="false"
             [showYAxisLabel]="false"
             [xAxis]="true"

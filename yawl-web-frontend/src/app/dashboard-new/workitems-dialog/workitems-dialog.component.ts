@@ -139,6 +139,21 @@ export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
       this.dataSource?.data.sort((a: TaskTiming, b: TaskTiming) =>
         a.decompositionOrder.localeCompare(b.decompositionOrder));
     }
+
+    if (sortState.active === 'participants' && sortState.direction === 'asc') {
+      this.dataSource?.data.sort((a: TaskTiming, b: TaskTiming) => {
+        return this.getRessourcesString(a).localeCompare(this.getRessourcesString(b))
+      })
+    } else if (sortState.active === 'participants' && sortState.direction === 'desc') {
+      this.dataSource?.data.sort((a: TaskTiming, b: TaskTiming) => {
+        return this.getRessourcesString(b).localeCompare(this.getRessourcesString(a))
+      })
+    }
+
     return;
+  }
+
+  getRessourcesString(participantsList: any){
+    return this.computeResources(participantsList).map(a => a.firstname + " " + a.lastname).join(" ")
   }
 }

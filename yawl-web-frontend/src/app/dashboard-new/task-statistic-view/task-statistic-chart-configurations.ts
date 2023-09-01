@@ -23,14 +23,14 @@ export class TaskStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -42,7 +42,7 @@ export class TaskStatisticChartConfigurations {
             display: true,
             text: 'Avg. completion time',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -52,7 +52,7 @@ export class TaskStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 8
+              size: 10
             }
           }
         },
@@ -81,14 +81,14 @@ export class TaskStatisticChartConfigurations {
         x: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -100,7 +100,7 @@ export class TaskStatisticChartConfigurations {
             display: true,
             text: 'Avg. completion time',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -110,7 +110,7 @@ export class TaskStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 8
+              size: 10
             }
           }
         },
@@ -139,14 +139,14 @@ export class TaskStatisticChartConfigurations {
         x: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           min: 0,
@@ -154,7 +154,7 @@ export class TaskStatisticChartConfigurations {
             display: true,
             text: 'Instances',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -164,7 +164,7 @@ export class TaskStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 8
+              size: 10
             }
           }
         },

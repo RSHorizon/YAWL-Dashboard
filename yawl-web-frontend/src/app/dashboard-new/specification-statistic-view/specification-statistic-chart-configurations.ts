@@ -25,14 +25,14 @@ export class SpecificationStatisticChartConfigurations {
           ticks: {
             stepSize: 1,
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -44,7 +44,7 @@ export class SpecificationStatisticChartConfigurations {
             display: true,
             text: 'Avg. run time',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -54,7 +54,7 @@ export class SpecificationStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 8
+              size: 10
             }
           }
         },
@@ -103,21 +103,21 @@ export class SpecificationStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           title: {
             display: true,
             text: 'Queue size',
             font: {
-              size: 7
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           min: 0,
@@ -125,7 +125,7 @@ export class SpecificationStatisticChartConfigurations {
             display: true,
             text: 'Number of work items in queue',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -135,7 +135,7 @@ export class SpecificationStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 8
+              size: 10
             }
           }
         },
@@ -169,14 +169,14 @@ export class SpecificationStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -189,7 +189,7 @@ export class SpecificationStatisticChartConfigurations {
             display: true,
             text: 'Ratio in percentage',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -199,7 +199,7 @@ export class SpecificationStatisticChartConfigurations {
           display: true,
           labels: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
@@ -237,7 +237,7 @@ export class SpecificationStatisticChartConfigurations {
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -248,7 +248,7 @@ export class SpecificationStatisticChartConfigurations {
             display: true,
             text: 'Run time',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -262,7 +262,7 @@ export class SpecificationStatisticChartConfigurations {
             boxWidth: 0,
             boxHeight: 0,
             font: {
-              size: 7
+              size: 10
             }
           }
         },
@@ -300,7 +300,7 @@ export class SpecificationStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
@@ -308,7 +308,7 @@ export class SpecificationStatisticChartConfigurations {
           stacked: true,
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -319,7 +319,7 @@ export class SpecificationStatisticChartConfigurations {
             display: true,
             text: 'Utilized capacity',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -329,7 +329,7 @@ export class SpecificationStatisticChartConfigurations {
           display: true,
           labels: {
             font: {
-              size: 7
+              size: 10
             }
           }
         },
@@ -369,14 +369,14 @@ export class SpecificationStatisticChartConfigurations {
           stacked: true,
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           title: {
             display: true,
             text: 'Number of work items in queue',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -421,7 +421,7 @@ export class SpecificationStatisticChartConfigurations {
           max: 1,
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -432,7 +432,7 @@ export class SpecificationStatisticChartConfigurations {
             display: true,
             text: 'Automation ratio in %',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -477,7 +477,7 @@ export class SpecificationStatisticChartConfigurations {
           stacked: true,
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -488,7 +488,7 @@ export class SpecificationStatisticChartConfigurations {
             display: true,
             text: 'Avg. time to complete',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -537,12 +537,12 @@ export class SpecificationStatisticChartConfigurations {
           beginAtZero: true,
           pointLabels:{
             font: {
-              size: 6
+              size: 10
             }
           },
           ticks: {
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -573,7 +573,7 @@ export class SpecificationStatisticChartConfigurations {
         r: {
           ticks: {
             font: {
-              size: 7
+              size: 10
             },
             callback: function (value, index, ticks) {
               return FormatUtils.applyPastTimeFormatForTimestampWithDays(<number>value);
@@ -582,7 +582,7 @@ export class SpecificationStatisticChartConfigurations {
           beginAtZero: true,
           pointLabels:{
             font: {
-              size: 6
+              size: 10
             }
           },
         }

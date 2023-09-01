@@ -147,7 +147,7 @@
   <ng-container matColumnDef="expand">
     <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
     <td mat-cell *matCellDef="let element">
-      <button mat-icon-button aria-label="expand row"
+      <button *ngIf="!element.automated" mat-icon-button aria-label="expand row"
               (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
         <fa-icon matTooltip="Expand details row." *ngIf="expandedElement !== element" [fixedWidth]="true" icon="chevron-down"></fa-icon>
         <fa-icon matTooltip="Close details row." *ngIf="expandedElement === element" [fixedWidth]="true" icon="chevron-up"></fa-icon>
@@ -157,7 +157,7 @@
 
   <ng-container matColumnDef="expandedDetail">
     <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumnsWithExpand.length">
-      <div class="element-detail"
+      <div *ngIf="!element.automated" class="element-detail"
            [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
         <app-task-statistic-view *ngIf="specificationDataContainer !== undefined && element == expandedElement"
                                  [specificationDataContainer]="specificationDataContainer"

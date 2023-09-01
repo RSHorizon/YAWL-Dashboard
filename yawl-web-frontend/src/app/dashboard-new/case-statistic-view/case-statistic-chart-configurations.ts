@@ -27,7 +27,7 @@ export class CaseStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
@@ -35,14 +35,14 @@ export class CaseStatisticChartConfigurations {
           stacked: true,
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           title: {
             display: true,
             text: 'Number of cases started',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -52,7 +52,7 @@ export class CaseStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 7
+              size: 10
             }
           }
         },
@@ -91,7 +91,7 @@ export class CaseStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
@@ -99,14 +99,14 @@ export class CaseStatisticChartConfigurations {
           stacked: true,
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           title: {
             display: true,
             text: 'Sum of costs',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -116,7 +116,7 @@ export class CaseStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 7
+              size: 10
             }
           }
         },
@@ -164,14 +164,14 @@ export class CaseStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           min: 0,
@@ -179,7 +179,7 @@ export class CaseStatisticChartConfigurations {
             display: true,
             text: 'Number of participants',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -189,7 +189,7 @@ export class CaseStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 8
+              size: 10
             }
           }
         },
@@ -225,14 +225,14 @@ export class CaseStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -245,7 +245,7 @@ export class CaseStatisticChartConfigurations {
             display: true,
             text: 'Ratio as percentage',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -255,7 +255,7 @@ export class CaseStatisticChartConfigurations {
           display: true,
           labels: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
@@ -293,14 +293,14 @@ export class CaseStatisticChartConfigurations {
           },
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
         y: {
           ticks: {
             font: {
-              size: 9
+              size: 10
             },
             // Include a dollar sign in the ticks
             callback: function (value, index, ticks) {
@@ -311,7 +311,7 @@ export class CaseStatisticChartConfigurations {
             display: true,
             text: 'Run time',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -325,7 +325,7 @@ export class CaseStatisticChartConfigurations {
             boxWidth: 0,
             boxHeight: 0,
             font: {
-              size: 7
+              size: 10
             }
           }
         },
@@ -357,7 +357,7 @@ export class CaseStatisticChartConfigurations {
           stacked: true,
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           }
         },
@@ -365,14 +365,14 @@ export class CaseStatisticChartConfigurations {
           stacked: true,
           ticks: {
             font: {
-              size: 9
+              size: 10
             }
           },
           title: {
             display: true,
             text: 'Number of cases per distribution percentile',
             font: {
-              size: 7
+              size: 10
             }
           }
         }
@@ -382,7 +382,7 @@ export class CaseStatisticChartConfigurations {
           display: false,
           labels: {
             font: {
-              size: 7
+              size: 10
             }
           }
         },

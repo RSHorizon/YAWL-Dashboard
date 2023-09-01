@@ -17,6 +17,7 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
     start: new FormControl<Date | null>(new Date(Date.UTC(new Date(Date.now()).getFullYear() - 2, 0))),
     end: new FormControl<Date | null>(new Date(Date.now())),
   });
+  formatUtils = new FormatUtils();
 
   // Config
   loaded = false;
@@ -26,6 +27,7 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
 
   // Heat Map
   heatMapData: {name: string, series: {name: string, value: number}[]}[] = [];
+  max: any = 0;
 
   constructor() { }
 
@@ -59,6 +61,7 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
 
   processHeatMapData(): void{
     this.heatMapData = [];
+    this.max = 0;
     let taskStatisticMap: Map<string, TaskStatistic[]> = new Map();
     this.specificationDataContainer?.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
       if(!taskStatisticMap.has(taskStatistic.minimalOrder)){
@@ -78,18 +81,23 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
         switch(this.statisticSelection.value){
           case("avgCompletionTime"):
             value = taskStatistic.avgCompletionTime;
+            (value > this.max)? this.max = value : 'nothing' ;
             break;
           case("avgQueueTime"):
             value = taskStatistic.avgQueueTime;
+            (value > this.max)? this.max = value : 'nothing' ;
             break;
           case("avgTimeToReach"):
             value = taskStatistic.avgTimeToReach;
+            (value > this.max)? this.max = value : 'nothing' ;
             break;
           case("cost"):
             value = (taskStatistic.avgCompletionTime / (1000*60*60)) * taskStatistic.costResourceHour;
+            (value > this.max)? this.max = value : 'nothing' ;
             break;
           case("avgInstancesPerCase"):
             value = taskStatistic.avgInstancesPerCase;
+            (value > this.max)? this.max = value : 'nothing' ;
             break;
         }
         heatMapElement.series.push({
