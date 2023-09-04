@@ -34,7 +34,7 @@
       <a style="float:right; top: -1em" mat-raised-button (click)="openWorkitemQueueDialog()" target="_blank">
         Work item queue
         <fa-icon [fixedWidth]="true" class="deg90" icon="arrow-turn-up"
-                 matTooltip="Open work items dialog."></fa-icon>
+                 matTooltip="Open the work items queue dialog. This dialog summarizes all work items waiting to be processed by resources."></fa-icon>
       </a>
       <span style="display: block; white-space: nowrap; float:right; margin-top: -24px; margin-right: 1em">
         <mat-label
@@ -141,7 +141,7 @@
           <a href="javascript:" (click)="openWorkitemsDialog(element.caseid)">
             <button mat-raised-button>Details
               <fa-icon [fixedWidth]="true" class="deg90" icon="arrow-turn-up"
-                       matTooltip="Open work items dialog."></fa-icon>
+                       matTooltip="Open the work items dialog. This dialog shows the exact processing of this case. Accordingly, all work items are listed in their processing order."></fa-icon>
             </button>
           </a>
         </td>

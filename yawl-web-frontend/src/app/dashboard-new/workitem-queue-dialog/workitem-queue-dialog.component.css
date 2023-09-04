@@ -1,12 +1,12 @@
 /* @author Robin Steinwarz */
 
 mat-dialog-container{
-  display: block !important; /* I added this to see the modal, you don't need this */
+  display: block ; /* I added this to see the modal, you don't need this */
 }
 
 /* Important part */
 mat-dialog-container {
-  overflow-y: initial !important
+  overflow-y: initial
 }
 mat-dialog-container .mat-dialog-container .cdk-dialog-container{
   height: 80vh;
@@ -36,11 +36,12 @@ a{
   text-decoration: none;
 }
 
-mat-toolbar{
+mat-toolbar.modal-toolbar{
   height: 40px;
+  padding: 0 10px 0 0;
 }
 
-mat-toolbar:hover{
+mat-toolbar.modal-toolbar:hover{
   cursor: pointer;
 }
 

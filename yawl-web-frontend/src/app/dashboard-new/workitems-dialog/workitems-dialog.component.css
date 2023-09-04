@@ -40,12 +40,9 @@ a{
   text-decoration: none;
 }
 
-mat-toolbar{
+mat-toolbar.modal-toolbar{
   height: 40px;
-}
-
-mat-toolbar:hover{
-  cursor: pointer;
+  padding: 0 10px 0 0;
 }
 
 mat-grid-list{

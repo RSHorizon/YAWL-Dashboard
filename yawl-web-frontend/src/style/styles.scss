@@ -99,10 +99,6 @@ $gutter-width: 80%;
   color: white;
 }
 
-mat-toolbar {
-  color: rgb(55 56 58 / 87%) !important;
-}
-
 .app-content mat-toolbar.mat-toolbar {
   padding-left: 0;
   margin-left: 0;
@@ -112,6 +108,7 @@ mat-toolbar {
   font-size: 22px;
   font-weight: 100;
   text-decoration: none;
+  color: rgb(55 56 58 / 87%) !important;
 }
 
 mat-toolbar .ng-fa-icon {
@@ -175,6 +172,27 @@ body {
 
   background-color: white;
 }
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #c4c4c4;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 a {
   color: inherit; /* blue colors for links too */
   text-decoration: inherit; /* no underline */
@@ -190,15 +208,10 @@ app-root {
 }
 
 
-.toolbar-primary {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  -ms-flex-align: center;
-  align-items: center;
-  box-sizing: border-box;
+mat-toolbar.mat-toolbar.toolbar-primary {
+  z-index: 4;
+  position: fixed;
+  top: 0;
   width: 100%;
   height: 35px;
   font-size: 14px;
@@ -294,7 +307,7 @@ app-root {
 .app-content {
   box-sizing: border-box;
   width: 100%;
-  padding-top: .5em;
+  padding-top: 40px;
   padding-left: calc(45px + 1em);
   padding-right: 1em;
 }

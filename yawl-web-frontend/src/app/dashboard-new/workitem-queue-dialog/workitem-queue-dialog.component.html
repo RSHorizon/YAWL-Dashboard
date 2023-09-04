@@ -1,11 +1,16 @@
 <!-- @author Robin Steinwarz--->
 <div class="dialog" style="height: 70vh; overflow-y: auto;">
-  <mat-toolbar (click)="close()">
-    <fa-icon [fixedWidth]="true" icon="arrow-left-long"
-             matTooltip="Close the workitem queue modal."></fa-icon>
-    <span>Back</span>
+  <mat-toolbar class="modal-toolbar">
+    <button mat-button class="back-button" (click)="close()">
+      <fa-icon [fixedWidth]="true" icon="arrow-left-long"
+               matTooltip="Close the workitem queue modal."></fa-icon>
+      <span>Back</span>
+    </button>
+
     <span class="spacer"></span>
-    <span>Workitem queue</span>
+    <span>Workitem queue </span>
+    <fa-icon style="color: #12376a" class="info" [fixedWidth]="true" icon="circle-info"
+             matTooltip="This dialog summarizes all work items waiting to be processed by resources."></fa-icon>
   </mat-toolbar>
 
   <div class="statistics">

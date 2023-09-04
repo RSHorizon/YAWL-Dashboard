@@ -1,11 +1,15 @@
 <!-- @author Robin Steinwarz--->
 <div class="dialog" style="height: 60vh; overflow-y: auto;">
-  <mat-toolbar (click)="close()">
-    <fa-icon [fixedWidth]="true" icon="arrow-left-long"
-             matTooltip="Close the work items modal."></fa-icon>
-    <span>Back</span>
+  <mat-toolbar class="modal-toolbar" >
+    <button mat-button class="back-button" (click)="close()">
+      <fa-icon [fixedWidth]="true" icon="arrow-left-long"
+               matTooltip="Close the work items modal."></fa-icon>
+      <span>Back</span>
+    </button>
     <span class="spacer"></span>
     <span>Case Id: {{this.caseid}}</span>
+    <fa-icon style="color: #12376a" class="info" [fixedWidth]="true" icon="circle-info"
+             matTooltip="This dialog shows the exact processing of this case {{this.caseid}}. Accordingly, all corresponding work items are listed in the order in which they appeared in this process."></fa-icon>
   </mat-toolbar>
 
   <mat-form-field class="mat-mdc-form-field" >

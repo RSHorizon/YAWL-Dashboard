@@ -71,4 +71,8 @@ export class DefaultPageComponent implements OnInit {
 		});
 	}
 
+  getUsername(): string {
+    return this.sessionService.getUsername();
+  }
+
 }
