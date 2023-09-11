@@ -4,7 +4,6 @@ import {Observable} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {env} from "../../../../environments/environment";
 import {NotifierService} from "angular-notifier";
-import {Specification} from "../entities/specification.entity";
 import {ExtensionSpecification} from "../dto/extension-specification.entity";
 import {ExtensionTask} from "../dto/extension-task.entity";
 

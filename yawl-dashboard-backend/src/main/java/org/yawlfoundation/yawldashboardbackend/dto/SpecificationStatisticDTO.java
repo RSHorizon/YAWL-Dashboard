@@ -1,9 +1,6 @@
 package org.yawlfoundation.yawldashboardbackend.dto;
 
 
-
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
-
 import java.io.Serializable;
 import java.util.*;
 
@@ -11,20 +8,37 @@ import java.util.*;
  * @author Robin Steinwarz
  */
 public class SpecificationStatisticDTO implements Serializable {
-    String id;
-    String version;
-    String uri;
-    String speckey;
-    List<TaskStatisticDTO> taskStatisticDTOS;
-    List<CaseStatisticDTO> caseStatisticDTOS;
-    List<AssociatedParticipants> eventAssociatedParticipants;
-    List<AssociatedParticipants> roleAssociatedParticipants;
-    long avgCaseCompletionTime;
-    int successfulCases;
-    int unsuccessfulCases;
-    double automationPercentage;
-    Integer[] caseOccurrencesPerDayOfWeek;
-    long avgResourceTimePerWeekSummed;
+    private String id;
+    private String version;
+    private String uri;
+    private String speckey;
+    private List<TaskStatisticDTO> taskStatisticDTOS;
+    private List<CaseStatisticDTO> caseStatisticDTOS;
+    private Integer[] caseOccurrencesPerDayOfWeek;
+    private List<AssocResources> eventAssocResources;
+    private List<AssocResources> roleAssocResources;
+    private int successfulCases = 0;
+    private int unsuccessfulCases = 0;
+    private double automationPercentage = 0;
+    private long avgCaseQueueTime = 0;
+    private long minCaseQueueTime = 0;
+    private long maxCaseQueueTime = 0;
+
+    private long avgCaseCompletionTime = 0;
+    private long minCaseCompletionTime = 0;
+    private long maxCaseCompletionTime = 0;
+
+    private long avgCaseResourceTime = 0;
+    private long minCaseResourceTime = 0;
+    private long maxCaseResourceTime = 0;
+
+    private long avgCaseLeadTime = 0;
+    private long minCaseLeadTime = 0;
+    private long maxCaseLeadTime = 0;
+
+    private long avgWeeklyResourceTime = 0;
+    private long minWeeklyResourceTime = 0;
+    private long maxWeeklyResourceTime = 0;
 
     public SpecificationStatisticDTO(String id, String version, String uri) {
         this.id = id;
@@ -112,28 +126,28 @@ public class SpecificationStatisticDTO implements Serializable {
         this.caseOccurrencesPerDayOfWeek = caseOccurrencesPerDayOfWeek;
     }
 
-    public long getAvgResourceTimePerWeekSummed() {
-        return avgResourceTimePerWeekSummed;
+    public long getAvgWeeklyResourceTime() {
+        return avgWeeklyResourceTime;
     }
 
-    public void setAvgResourceTimePerWeekSummed(long avgResourceTimePerWeekSummed) {
-        this.avgResourceTimePerWeekSummed = avgResourceTimePerWeekSummed;
+    public void setAvgWeeklyResourceTime(long avgWeeklyResourceTime) {
+        this.avgWeeklyResourceTime = avgWeeklyResourceTime;
     }
 
-    public List<AssociatedParticipants> getEventAssociatedParticipants() {
-        return eventAssociatedParticipants;
+    public List<AssocResources> getEventAssocResources() {
+        return eventAssocResources;
     }
 
-    public void setEventAssociatedParticipants(List<AssociatedParticipants> eventAssociatedParticipants) {
-        this.eventAssociatedParticipants = eventAssociatedParticipants;
+    public void setEventAssocResources(List<AssocResources> eventAssocResources) {
+        this.eventAssocResources = eventAssocResources;
     }
 
-    public List<AssociatedParticipants> getRoleAssociatedParticipants() {
-        return roleAssociatedParticipants;
+    public List<AssocResources> getRoleAssocResources() {
+        return roleAssocResources;
     }
 
-    public void setRoleAssociatedParticipants(List<AssociatedParticipants> roleAssociatedParticipants) {
-        this.roleAssociatedParticipants = roleAssociatedParticipants;
+    public void setRoleAssocResources(List<AssocResources> roleAssocResources) {
+        this.roleAssocResources = roleAssocResources;
     }
 
     public double getAutomationPercentage() {
@@ -144,4 +158,107 @@ public class SpecificationStatisticDTO implements Serializable {
         this.automationPercentage = automationPercentage;
     }
 
+    public long getAvgCaseQueueTime() {
+        return avgCaseQueueTime;
+    }
+
+    public void setAvgCaseQueueTime(long avgCaseQueueTime) {
+        this.avgCaseQueueTime = avgCaseQueueTime;
+    }
+
+    public long getMinCaseQueueTime() {
+        return minCaseQueueTime;
+    }
+
+    public void setMinCaseQueueTime(long minCaseQueueTime) {
+        this.minCaseQueueTime = minCaseQueueTime;
+    }
+
+    public long getMaxCaseQueueTime() {
+        return maxCaseQueueTime;
+    }
+
+    public void setMaxCaseQueueTime(long maxCaseQueueTime) {
+        this.maxCaseQueueTime = maxCaseQueueTime;
+    }
+
+    public long getMinCaseCompletionTime() {
+        return minCaseCompletionTime;
+    }
+
+    public void setMinCaseCompletionTime(long minCaseCompletionTime) {
+        this.minCaseCompletionTime = minCaseCompletionTime;
+    }
+
+    public long getMaxCaseCompletionTime() {
+        return maxCaseCompletionTime;
+    }
+
+    public void setMaxCaseCompletionTime(long maxCaseCompletionTime) {
+        this.maxCaseCompletionTime = maxCaseCompletionTime;
+    }
+
+    public long getAvgCaseResourceTime() {
+        return avgCaseResourceTime;
+    }
+
+    public void setAvgCaseResourceTime(long avgCaseResourceTime) {
+        this.avgCaseResourceTime = avgCaseResourceTime;
+    }
+
+    public long getMinCaseResourceTime() {
+        return minCaseResourceTime;
+    }
+
+    public void setMinCaseResourceTime(long minCaseResourceTime) {
+        this.minCaseResourceTime = minCaseResourceTime;
+    }
+
+    public long getMaxCaseResourceTime() {
+        return maxCaseResourceTime;
+    }
+
+    public void setMaxCaseResourceTime(long maxCaseResourceTime) {
+        this.maxCaseResourceTime = maxCaseResourceTime;
+    }
+
+    public long getAvgCaseLeadTime() {
+        return avgCaseLeadTime;
+    }
+
+    public void setAvgCaseLeadTime(long avgCaseLeadTime) {
+        this.avgCaseLeadTime = avgCaseLeadTime;
+    }
+
+    public long getMinCaseLeadTime() {
+        return minCaseLeadTime;
+    }
+
+    public void setMinCaseLeadTime(long minCaseLeadTime) {
+        this.minCaseLeadTime = minCaseLeadTime;
+    }
+
+    public long getMaxCaseLeadTime() {
+        return maxCaseLeadTime;
+    }
+
+    public void setMaxCaseLeadTime(long maxCaseLeadTime) {
+        this.maxCaseLeadTime = maxCaseLeadTime;
+    }
+
+    public long getMinWeeklyResourceTime() {
+        return minWeeklyResourceTime;
+    }
+
+    public void setMinWeeklyResourceTime(long minWeeklyResourceTime) {
+        this.minWeeklyResourceTime = minWeeklyResourceTime;
+    }
+
+    public long getMaxWeeklyResourceTime() {
+        return maxWeeklyResourceTime;
+    }
+
+    public void setMaxWeeklyResourceTime(long maxWeeklyResourceTime) {
+        this.maxWeeklyResourceTime = maxWeeklyResourceTime;
+    }
 }

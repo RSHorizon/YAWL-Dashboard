@@ -8,7 +8,7 @@ app-task-statistic-view {
   width: 100%;
 }
 
-mat-form-field{
+mat-form-field {
   padding: 0;
 }
 
@@ -16,11 +16,11 @@ mat-form-field{
   padding-top: .5em;
 }
 
-.mat-column-taskid{
+.mat-column-taskid {
   line-break: anywhere;
 }
 
-.occurence-box{
+.occurence-box {
   margin-right: 3px;
 }
 
@@ -36,7 +36,7 @@ mat-cell.cdk-cell {
   padding: 0;
 }
 
-fa-icon .ng-fa-icon .info{
+fa-icon .ng-fa-icon .info {
   float: right;
   font-size: 10px;
   color: #829dc1;

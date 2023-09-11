@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
-import { LoginFormPage } from './login-form.page';
+import {LoginFormPage} from './login-form.page';
 
 /**
  * @author Philipp R. Thomas
@@ -13,9 +13,9 @@ import { LoginFormPage } from './login-form.page';
  * @author Philipp Thomas
  */
 export const sessionRoutesConfig: Routes = [
-	{
-        path: 'login',
-		pathMatch: 'full',
-        component: LoginFormPage
-    }
+  {
+    path: 'login',
+    pathMatch: 'full',
+    component: LoginFormPage
+  }
 ];

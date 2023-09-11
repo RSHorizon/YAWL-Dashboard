@@ -1,5 +1,8 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
+/**
+ * @author Robin Steinwarz
+ */
 public class Position {
     private String id;
     private String title;

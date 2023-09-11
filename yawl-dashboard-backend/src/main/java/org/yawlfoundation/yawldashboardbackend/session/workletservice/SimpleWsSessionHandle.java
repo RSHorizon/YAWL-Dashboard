@@ -17,24 +17,27 @@
  */
 package org.yawlfoundation.yawldashboardbackend.session.workletservice;
 
+/**
+ * @author Robin Steinwarz
+ */
 public class SimpleWsSessionHandle implements WsSessionHandle {
 
-	private final String rawHandle;
+    private final String rawHandle;
 
 
-	public SimpleWsSessionHandle(String rawHandle) {
-		this.rawHandle = rawHandle;
-	}
+    public SimpleWsSessionHandle(String rawHandle) {
+        this.rawHandle = rawHandle;
+    }
 
 
-	@Override
-	public String getRawHandle() {
-		return rawHandle;
-	}
+    @Override
+    public String getRawHandle() {
+        return rawHandle;
+    }
 
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void close() {
+    }
 
 }

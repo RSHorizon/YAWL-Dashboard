@@ -5,6 +5,7 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * @author Robin Steinwarz
  */

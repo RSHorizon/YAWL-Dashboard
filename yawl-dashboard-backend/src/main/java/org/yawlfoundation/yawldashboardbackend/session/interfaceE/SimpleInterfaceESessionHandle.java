@@ -17,24 +17,27 @@
  */
 package org.yawlfoundation.yawldashboardbackend.session.interfaceE;
 
+/**
+ * @author Robin Steinwarz
+ */
 public class SimpleInterfaceESessionHandle implements InterfaceESessionHandle {
 
-	private final String rawHandle;
+    private final String rawHandle;
 
 
-	public SimpleInterfaceESessionHandle(String rawHandle) {
-		this.rawHandle = rawHandle;
-	}
+    public SimpleInterfaceESessionHandle(String rawHandle) {
+        this.rawHandle = rawHandle;
+    }
 
 
-	@Override
-	public String getRawHandle() {
-		return rawHandle;
-	}
+    @Override
+    public String getRawHandle() {
+        return rawHandle;
+    }
 
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void close() {
+    }
 
 }

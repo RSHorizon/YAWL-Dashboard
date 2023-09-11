@@ -30,7 +30,7 @@
     </mat-grid-list>
   </div>
 
-  <mat-form-field class="mat-mdc-form-field" >
+  <mat-form-field class="mat-mdc-form-field">
     <mat-label>Filter</mat-label>
     <input matInput type="text" (keyup)="applyFilter($event)" placeholder="" #input>
   </mat-form-field>
@@ -47,7 +47,8 @@
 
     <!-- Workitem-->
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by specification work item name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header
+          sortActionDescription="Sort by specification work item name">
         Name
       </th>
       <td mat-cell *matCellDef="let element"> {{element.name}} </td>
@@ -74,7 +75,8 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by queue time">
         Queue time
       </th>
-      <td mat-cell *matCellDef="let element"> {{formatUtils.applyPastTimeFormatForTimestampWithDays(element.queueTime)}} </td>
+      <td mat-cell
+          *matCellDef="let element"> {{formatUtils.applyPastTimeFormatForTimestampWithDays(element.queueTime)}} </td>
     </ng-container>
 
     <!-- Overdue Column -->
@@ -82,7 +84,8 @@
       <th mat-header-cell *matHeaderCellDef>
         Overdue
       </th>
-      <td mat-cell *matCellDef="let element">{{formatUtils.applyIsOverdueFormat(element.age, getOverdueLimit(element))}}</td>
+      <td mat-cell
+          *matCellDef="let element">{{formatUtils.applyIsOverdueFormat(element.leadTime, getOverdueLimit(element))}}</td>
     </ng-container>
 
     <!-- Actions Column -->
@@ -104,8 +107,10 @@
       <td mat-cell *matCellDef="let element">
         <button mat-icon-button aria-label="expand row"
                 (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
-          <fa-icon matTooltip="Expand details row." *ngIf="expandedElement !== element" [fixedWidth]="true" icon="chevron-down"></fa-icon>
-          <fa-icon matTooltip="Close details row." *ngIf="expandedElement === element" [fixedWidth]="true" icon="chevron-up"></fa-icon>
+          <fa-icon matTooltip="Expand details row." *ngIf="expandedElement !== element" [fixedWidth]="true"
+                   icon="chevron-down"></fa-icon>
+          <fa-icon matTooltip="Close details row." *ngIf="expandedElement === element" [fixedWidth]="true"
+                   icon="chevron-up"></fa-icon>
         </button>
       </td>
     </ng-container>
@@ -118,26 +123,30 @@
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Queue time limit</mat-label>
-                <input matInput disabled value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskStatisticMap.get(element.taskid)!.maxQueueAge)}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskStatisticMap.get(element.taskid)!.maxQueueAge)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. queue time for task</mat-label>
-                <input matInput disabled value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskStatisticMap.get(element.taskid)!.avgQueueTime)}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskStatisticMap.get(element.taskid)!.avgQueueTime)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Avg. time to reach</mat-label>
-                <input matInput disabled value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskStatisticMap.get(element.taskid)!.avgTimeToReach)}}">
+                <input matInput disabled
+                       value="{{formatUtils.applyPastTimeFormatForTimestampWithDays(taskStatisticMap.get(element.taskid)!.avgTimeToReach)}}">
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile colspan="2">
               <mat-form-field class="grid-form" appearance="fill" disabled>
                 <mat-label>Work item was offered or allocated to</mat-label>
                 <input *ngIf="element.automated" matInput disabled value="Automated">
-                <textarea *ngIf="!element.automated" class="full-form-field"  disabled="true" matInput>{{formatUtils.applyParticipantsArrayFormat(computeResourcesAsked(element))}}</textarea>
+                <textarea *ngIf="!element.automated" class="full-form-field" disabled="true"
+                          matInput>{{formatUtils.applyResourcesArrayFormat(computeResourcesAsked(element))}}</textarea>
               </mat-form-field>
             </mat-grid-tile>
           </mat-grid-list>
@@ -153,7 +162,8 @@
     </tr>
     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
     <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" [attr.colspan]="displayedColumnsWithExpand.length" style="text-align: center; color: #5e5e5e">
+      <td class="mat-cell" [attr.colspan]="displayedColumnsWithExpand.length"
+          style="text-align: center; color: #5e5e5e">
         Empty table
       </td>
     </tr>

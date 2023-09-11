@@ -39,8 +39,8 @@ public class WorkItemController {
     @ResponseBody
     @Transactional
     public Set<WorkItemRecord> getAllWorkitemsFromSpecification(@PathVariable("specificationID") String specificationID,
-                                                       @PathVariable("specversion") String specversion,
-                                                       @PathVariable("uri") String uri) {
+                                                                @PathVariable("specversion") String specversion,
+                                                                @PathVariable("uri") String uri) {
         return workItemManager.getAllWorkItemsForSpecification(specificationID, specversion, uri);
     }
 

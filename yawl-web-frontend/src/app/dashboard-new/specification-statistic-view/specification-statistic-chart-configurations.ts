@@ -1,4 +1,3 @@
-import {FormGroup} from "@angular/forms";
 import {ChartConfiguration, TooltipItem} from "chart.js";
 import {FormatUtils} from "../../common/util/format-util";
 import {ColorUtils} from "../../common/util/color-util";
@@ -9,14 +8,14 @@ import {ColorUtils} from "../../common/util/color-util";
 
 export class SpecificationStatisticChartConfigurations {
 
-  static specPerformanceComparisonOptions(month: boolean): ChartConfiguration<'bubble'>['options']{
+  static specPerformanceComparisonOptions(month: boolean): ChartConfiguration<'bubble'>['options'] {
     return {
       animation: false,
       scales: {
         x: {
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -62,7 +61,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bubble">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label!,
@@ -79,7 +78,7 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static pastBottlenecksOptions(month: boolean): ChartConfiguration<'line'>['options']{
+  static pastBottlenecksOptions(month: boolean): ChartConfiguration<'line'>['options'] {
     return {
       animation: false,
       elements: {
@@ -143,7 +142,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"line">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return "Queue size " + tooltipItem.raw;
@@ -154,14 +153,14 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static specIndicatorOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static specIndicatorOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       scales: {
         x: {
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -207,7 +206,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label + " bar",
@@ -220,7 +219,7 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static specOutlierOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static specOutlierOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -270,7 +269,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label + " bar",
@@ -283,7 +282,7 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static capacityUtilizationOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static capacityUtilizationOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -292,7 +291,7 @@ export class SpecificationStatisticChartConfigurations {
           stacked: true,
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -337,7 +336,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label + " bar",
@@ -350,7 +349,7 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static activeBottlenecksOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static activeBottlenecksOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -389,7 +388,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" Task: " + tooltipItem.dataset.label,
@@ -402,7 +401,7 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static automationRatioOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static automationRatioOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -445,7 +444,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label + " bar",
@@ -458,7 +457,7 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static automationCandidatesOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static automationCandidatesOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -501,7 +500,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" Task: " + tooltipItem.dataset.label,
@@ -515,7 +514,7 @@ export class SpecificationStatisticChartConfigurations {
   }
 
 
-  static resourcesRadarOptions(month: boolean): ChartConfiguration<'radar'>['options']{
+  static resourcesRadarOptions(month: boolean): ChartConfiguration<'radar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: true,
@@ -535,7 +534,7 @@ export class SpecificationStatisticChartConfigurations {
             display: false
           },
           beginAtZero: true,
-          pointLabels:{
+          pointLabels: {
             font: {
               size: 10
             }
@@ -555,7 +554,7 @@ export class SpecificationStatisticChartConfigurations {
     };
   }
 
-  static resourceUtilizationRadarOptions(month: boolean): ChartConfiguration<'radar'>['options']{
+  static resourceUtilizationRadarOptions(month: boolean): ChartConfiguration<'radar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: true,
@@ -580,7 +579,7 @@ export class SpecificationStatisticChartConfigurations {
             }
           },
           beginAtZero: true,
-          pointLabels:{
+          pointLabels: {
             font: {
               size: 10
             }
@@ -595,7 +594,7 @@ export class SpecificationStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"radar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               // @ts-ignore

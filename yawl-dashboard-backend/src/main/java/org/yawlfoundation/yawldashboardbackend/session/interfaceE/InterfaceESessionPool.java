@@ -17,8 +17,11 @@
  */
 package org.yawlfoundation.yawldashboardbackend.session.interfaceE;
 
+/**
+ * @author Robin Steinwarz
+ */
 public interface InterfaceESessionPool {
 
-	InterfaceESessionHandle getHandle();
+    InterfaceESessionHandle getHandle();
 
 }

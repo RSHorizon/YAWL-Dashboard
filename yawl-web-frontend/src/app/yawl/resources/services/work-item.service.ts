@@ -5,7 +5,6 @@ import {Observable} from 'rxjs';
 
 
 import {WorkItem} from '../entities/work-item.entity';
-import {User} from '../entities/user.entity';
 import {catchError, map} from "rxjs/operators";
 
 import {env} from '../../../../environments/environment';

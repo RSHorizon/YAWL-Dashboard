@@ -19,7 +19,7 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient;
 
 
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Capability;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Resource;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Position;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 
@@ -27,29 +27,30 @@ import java.util.List;
 
 
 /**
- * The service to manage participants and org data.
+ * The service to manage resources and org data.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  */
 public interface ResourceManager {
 
-	boolean		checkCredentials(String username, String password);
+    boolean checkCredentials(String username, String password);
 
-    List<Participant> getParticipants();
+    List<Resource> getResources();
 
-	String getConstraints();
+    String getConstraints();
 
-	String getFilters();
+    String getFilters();
 
-	String getAllSelectors();
+    String getAllSelectors();
 
-	String getAllocators();
+    String getAllocators();
 
-	Participant	getParticipantByName(String name);
+    Resource getResourceByName(String name);
 
 
-	List<Role> getRoles();
+    List<Role> getRoles();
 
-	List<Capability> getCapabilities();
+    List<Capability> getCapabilities();
 
-	List<Position> getPositions();
+    List<Position> getPositions();
 }

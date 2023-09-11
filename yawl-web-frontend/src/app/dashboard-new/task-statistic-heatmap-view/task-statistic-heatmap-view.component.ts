@@ -4,6 +4,10 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
 import {FormControl, FormGroup} from "@angular/forms";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {StatisticUtils} from "../../common/util/statistic-utils";
+
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-task-statistic-heatmap-view',
   templateUrl: './task-statistic-heatmap-view.component.html',
@@ -26,10 +30,11 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
   statisticTicks: { year: number, month: number }[] = [];
 
   // Heat Map
-  heatMapData: {name: string, series: {name: string, value: number}[]}[] = [];
+  heatMapData: { name: string, series: { name: string, value: number }[] }[] = [];
   max: any = 0;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     this.updateOnlyStatisticData();
@@ -51,7 +56,7 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
     this.processHeatMapData();
   }
 
-  updateOnlyStatisticData(): void{
+  updateOnlyStatisticData(): void {
     if (this.range.value.start === null || this.range.value.end === null) {
       return;
     }
@@ -59,45 +64,48 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
     this.processCasesInRange();
   }
 
-  processHeatMapData(): void{
+  processHeatMapData(): void {
     this.heatMapData = [];
     this.max = 0;
     let taskStatisticMap: Map<string, TaskStatistic[]> = new Map();
     this.specificationDataContainer?.specificationStatistic.taskStatisticDTOS.forEach(taskStatistic => {
-      if(!taskStatisticMap.has(taskStatistic.minimalOrder)){
+      if (!taskStatisticMap.has(taskStatistic.minimalOrder)) {
         taskStatisticMap.set(taskStatistic.minimalOrder, []);
       }
       taskStatisticMap.get(taskStatistic.minimalOrder)!.push(taskStatistic);
     });
 
     taskStatisticMap.forEach((taskStatistics, label) => {
-      let heatMapElement: {name: string, series: {name: string, value: number, extra: {statistic: TaskStatistic, statisticSelection: string}}[]} = {
+      let heatMapElement: {
+        name: string,
+        series: { name: string, value: number, extra: { statistic: TaskStatistic, statisticSelection: string } }[]
+      } = {
         name: label,
         series: []
       };
       let counter = 1;
       taskStatistics.forEach(taskStatistic => {
         let value = 0;
-        switch(this.statisticSelection.value){
+        switch (this.statisticSelection.value) {
           case("avgCompletionTime"):
             value = taskStatistic.avgCompletionTime;
-            (value > this.max)? this.max = value : 'nothing' ;
+            (value > this.max) ? this.max = value : 'nothing';
             break;
           case("avgQueueTime"):
             value = taskStatistic.avgQueueTime;
-            (value > this.max)? this.max = value : 'nothing' ;
+            (value > this.max) ? this.max = value : 'nothing';
             break;
           case("avgTimeToReach"):
             value = taskStatistic.avgTimeToReach;
-            (value > this.max)? this.max = value : 'nothing' ;
+            (value > this.max) ? this.max = value : 'nothing';
             break;
           case("cost"):
-            value = (taskStatistic.avgCompletionTime / (1000*60*60)) * taskStatistic.costResourceHour;
-            (value > this.max)? this.max = value : 'nothing' ;
+            value = (taskStatistic.avgCompletionTime / (1000 * 60 * 60)) * taskStatistic.costResourceHour;
+            (value > this.max) ? this.max = value : 'nothing';
             break;
           case("avgInstancesPerCase"):
             value = taskStatistic.avgInstancesPerCase;
-            (value > this.max)? this.max = value : 'nothing' ;
+            (value > this.max) ? this.max = value : 'nothing';
             break;
         }
         heatMapElement.series.push({
@@ -112,7 +120,7 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
       this.heatMapData.push(heatMapElement);
     });
     this.heatMapData.sort((a, b) => {
-        return this.compare(a.name, b.name, true);
+      return this.compare(a.name, b.name, true);
     });
   }
 
@@ -125,12 +133,12 @@ export class TaskStatisticHeatmapViewComponent implements OnInit, OnChanges {
     })
   }
 
-  heatMapTooltipText(data: any){
-    let taskStatistic : TaskStatistic = data.cell.extra.statistic;
+  heatMapTooltipText(data: any) {
+    let taskStatistic: TaskStatistic = data.cell.extra.statistic;
     let valueString = "";
-    if(data.cell.extra.statisticSelection === 'cost' || data.cell.extra.statisticSelection === 'avgInstancesPerCase'){
+    if (data.cell.extra.statisticSelection === 'cost' || data.cell.extra.statisticSelection === 'avgInstancesPerCase') {
       valueString = data.cell.value.toFixed(2);
-    }else{
+    } else {
       valueString = new FormatUtils().applyPastTimeFormatForTimestampWithDays(data.cell.value)
     }
     return taskStatistic.name + "<br>" + valueString;

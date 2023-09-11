@@ -17,12 +17,13 @@
  */
 package org.yawlfoundation.yawldashboardbackend.session.interfaceE;
 
-
-
+/**
+ * @author Robin Steinwarz
+ */
 public interface InterfaceESessionHandle extends AutoCloseable {
 
-	String	getRawHandle();
+    String getRawHandle();
 
-	@Override
-	void close();
+    @Override
+    void close();
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 /**
  * The dto for specification.
+ *
  * @author Philipp Thomas
  * @editedBy Robin Steinwarz
  */

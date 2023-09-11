@@ -2,9 +2,12 @@ package org.yawlfoundation.yawldashboardbackend.endpoint;
 
 import java.util.*;
 
+/**
+ * @author Robin Steinwarz
+ */
 public class PMIControllerUtil {
 
-    protected static boolean decompositionOrderIsSmaller(String order, String order2) {
+    protected static boolean orderIsSmaller(String order, String order2) {
         if (order2.equals("")) {
             return false;
         }
@@ -16,13 +19,21 @@ public class PMIControllerUtil {
 
         // select smallest array
         int limiter = orderElements.length;
-        if (limiter > order2Elements.length) {
+        if (limiter < order2Elements.length) {
             limiter = order2Elements.length;
         }
 
         // compare progress on individual levels
         for (int i = 0; i < limiter; i++) {
-            if (Integer.parseInt(orderElements[i]) > Integer.parseInt(order2Elements[i])) {
+            int firstOrderElement = 0;
+            if (i < orderElements.length) {
+                firstOrderElement = Integer.parseInt(orderElements[i]);
+            }
+            int secondOrderElement = 0;
+            if (i < order2Elements.length) {
+                secondOrderElement = Integer.parseInt(order2Elements[i]);
+            }
+            if (firstOrderElement < secondOrderElement) {
                 return true;
             }
         }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
 // @ts-ignore
-import {Observable, Observer, Subscriber, of} from 'rxjs';
+import {Observable, Observer, of, Subscriber} from 'rxjs';
 import {catchError, map} from "rxjs/operators";
 import {env} from "../../../environments/environment";
 
@@ -79,7 +79,11 @@ export class SessionService {
     let headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
 
     let payload = 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
-    let response: Observable<any> = this.http.post<HttpResponse<any>>(this.loginUrl, payload, {headers,  observe: "response", withCredentials: true});
+    let response: Observable<any> = this.http.post<HttpResponse<any>>(this.loginUrl, payload, {
+      headers,
+      observe: "response",
+      withCredentials: true
+    });
 
     response.subscribe({
       next: this.handleLoginResponse.bind(this),

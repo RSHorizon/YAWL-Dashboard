@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable, tap} from "rxjs";
 import {SpecificationStatistic} from "../dto/specification-statistic.entity";
-import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {env} from "../../../../environments/environment";
-import {catchError, map} from "rxjs/operators";
 import {NotifierService} from "angular-notifier";
 import {SpecificationService} from "./specification.service";
-import {SpecificationDataContainer} from "../dto/specification-data-container.entity";
 import {ExtensionSpecificationService} from "./extension-specification.service";
 
+/**
+ * @author Robin Steinwarz
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -30,7 +31,7 @@ export class StatisticService {
       + "/" + encodeURIComponent(version);
 
     return this.http.get<SpecificationStatistic>(url, {headers, withCredentials: true}).pipe(
-        tap({ error: (error) => this.handleError(error)}));
+      tap({error: (error) => this.handleError(error)}));
   }
 
   private handleError(error: any): Observable<any> {

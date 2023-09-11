@@ -32,24 +32,25 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 
 /**
  * SessionDataController.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  * @editedBy Robin Steinwarz
  */
 public class RestAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request,
-										HttpServletResponse response,
-										Authentication authentication) throws IOException, ServletException {
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
 
-		this.setRedirectStrategy(new RedirectStrategy() {
-			@Override
-			public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
-				response.setStatus(HttpStatus.OK.value());
-				response.getWriter().flush();
-			}
-		});
-		super.onAuthenticationSuccess(request, response, authentication);
-	}
+        this.setRedirectStrategy(new RedirectStrategy() {
+            @Override
+            public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
+                response.setStatus(HttpStatus.OK.value());
+                response.getWriter().flush();
+            }
+        });
+        super.onAuthenticationSuccess(request, response, authentication);
+    }
 
 }

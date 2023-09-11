@@ -13,13 +13,13 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
  */
 @RestController
 public class LoginController {
-    @RequestMapping(value="/login", method= RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public void login() {
         // Specification in Spring security
         // Declaration necessary for MVC CORS configuration
     }
 
-    @RequestMapping(value="/logout", method= RequestMethod.GET)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public void logout() {
         // Specification in Spring security
         // Declaration necessary for MVC CORS configuration

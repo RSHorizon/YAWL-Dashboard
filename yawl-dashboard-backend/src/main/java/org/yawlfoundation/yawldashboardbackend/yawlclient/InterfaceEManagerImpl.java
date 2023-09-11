@@ -38,7 +38,7 @@ public class InterfaceEManagerImpl implements InterfaceEManager {
         this.connection = connection;
     }
 
-    public String getSpecificationXESLog(YSpecificationID specID){
+    public String getSpecificationXESLog(YSpecificationID specID) {
         try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
             String result = connection.getSpecificationXESLog(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), handle.getRawHandle());
             return result;
@@ -47,7 +47,7 @@ public class InterfaceEManagerImpl implements InterfaceEManager {
         }
     }
 
-    public String getCompleteCaseLogsForSpecification(YSpecificationID specID){
+    public String getCompleteCaseLogsForSpecification(YSpecificationID specID) {
         try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
             String result = connection.getCompleteCaseLogsForSpecification(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), handle.getRawHandle());
             return result;
@@ -56,7 +56,7 @@ public class InterfaceEManagerImpl implements InterfaceEManager {
         }
     }
 
-    public List<Event> getCaseEvents(String caseID){
+    public List<Event> getCaseEvents(String caseID) {
         try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
             String xml = connection.getCaseEvents(caseID, handle.getRawHandle());
             return CaseMarshaller.unmarshallCaseEventList(xml);
@@ -65,7 +65,7 @@ public class InterfaceEManagerImpl implements InterfaceEManager {
         }
     }
 
-    public String getCompleteCaseLog(String caseID){
+    public String getCompleteCaseLog(String caseID) {
         try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
             String result = connection.getCompleteCaseLog(caseID, handle.getRawHandle());
             return result;
@@ -75,7 +75,7 @@ public class InterfaceEManagerImpl implements InterfaceEManager {
     }
 
 
-    public List<Specification> getAllSpecifications(){
+    public List<Specification> getAllSpecifications() {
         try (InterfaceESessionHandle handle = interfaceESessionPool.getHandle()) {
             String xml = connection.getAllSpecifications(handle.getRawHandle());
             return SpecificationMarshaller.unmarshallSpecificationsList(xml);

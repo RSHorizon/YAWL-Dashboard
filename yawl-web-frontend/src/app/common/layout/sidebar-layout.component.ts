@@ -1,6 +1,6 @@
-import { Component, ContentChildren, QueryList } from '@angular/core';
+import {Component, ContentChildren, QueryList} from '@angular/core';
 
-import { SidebarComponent } from './sidebar.component';
+import {SidebarComponent} from './sidebar.component';
 
 /**
  * @author Philipp R. Thomas
@@ -8,27 +8,27 @@ import { SidebarComponent } from './sidebar.component';
 
 
 @Component({
-    selector: 'sidebar-layout',
-    template: `
-		<div class="sidebar-backdrop"
-			 (click)="toggleSidebar()"
-			 [class.sidebar-backdrop-shown]="isSidebarOpen()">
-		</div>
-		<ng-content></ng-content>`
+  selector: 'sidebar-layout',
+  template: `
+    <div class="sidebar-backdrop"
+         (click)="toggleSidebar()"
+         [class.sidebar-backdrop-shown]="isSidebarOpen()">
+    </div>
+    <ng-content></ng-content>`
 })
 export class SidebarLayoutComponent {
 
 
   @ContentChildren(SidebarComponent)
     // @ts-ignore
-	sidebar: QueryList<SidebarComponent>;
+  sidebar: QueryList<SidebarComponent>;
 
-	toggleSidebar() {
-		return this.sidebar.first.toggle();
-	}
+  toggleSidebar() {
+    return this.sidebar.first.toggle();
+  }
 
-	isSidebarOpen() {
-		return this.sidebar.first.opened;
-	}
+  isSidebarOpen() {
+    return this.sidebar.first.opened;
+  }
 
 }

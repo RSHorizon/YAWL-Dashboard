@@ -30,38 +30,41 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceLogManagerImpl
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManagerImpl;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManagerImpl;
 
+/**
+ * @author Robin Steinwarz
+ */
 @Configuration
 public class YawlInterfaceEConfig {
 
-	@Value("${yawl.engine.url}")
-	private String		engineUrl;
+    @Value("${yawl.engine.url}")
+    private String engineUrl;
 
-	@Value("${yawl.engine.username}")
-	private String		engineUsername;
+    @Value("${yawl.engine.username}")
+    private String engineUsername;
 
-	@Value("${yawl.engine.password}")
-	private String		enginePassword;
+    @Value("${yawl.engine.password}")
+    private String enginePassword;
 
-	@Value("${yawl.interfaceE.gateway.path}")
-	private String		logGatewayPath;
+    @Value("${yawl.interfaceE.gateway.path}")
+    private String logGatewayPath;
 
 
-	@Bean
-	public YLogGatewayClient yLogGatewayClient() {
-		return new YLogGatewayClient(createUrlForClient(engineUrl,logGatewayPath));
-	}
+    @Bean
+    public YLogGatewayClient yLogGatewayClient() {
+        return new YLogGatewayClient(createUrlForClient(engineUrl, logGatewayPath));
+    }
 
-	@Bean
-	public PermanentInterfaceESessionPool permanentInterfaceESessionPool() {
-		return new PermanentInterfaceESessionPool(yLogGatewayClient(), engineUsername, enginePassword);
-	}
+    @Bean
+    public PermanentInterfaceESessionPool permanentInterfaceESessionPool() {
+        return new PermanentInterfaceESessionPool(yLogGatewayClient(), engineUsername, enginePassword);
+    }
 
-	@Bean
-	public InterfaceEManagerImpl interfaceEManager() {
-		return new InterfaceEManagerImpl(permanentInterfaceESessionPool(), yLogGatewayClient());
-	}
+    @Bean
+    public InterfaceEManagerImpl interfaceEManager() {
+        return new InterfaceEManagerImpl(permanentInterfaceESessionPool(), yLogGatewayClient());
+    }
 
-	public static String createUrlForClient(String base, String path) {
-		return (base.endsWith("/") ? base : base + "/") + path;
-	}
+    public static String createUrlForClient(String base, String path) {
+        return (base.endsWith("/") ? base : base + "/") + path;
+    }
 }

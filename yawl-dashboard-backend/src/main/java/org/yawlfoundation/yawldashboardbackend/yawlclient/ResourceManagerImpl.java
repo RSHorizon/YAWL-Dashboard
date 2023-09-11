@@ -19,7 +19,6 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.jdom2.JDOMException;
@@ -27,12 +26,12 @@ import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionHandle;
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.CapabilityMarshaller;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ParticipantMarshaller;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ResourceMarshaller;
 import org.yawlfoundation.yawl.util.PasswordEncryptor;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.PositionMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.RoleMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Capability;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Resource;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Position;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Role;
 
@@ -59,7 +58,7 @@ public class ResourceManagerImpl implements ResourceManager {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.validateUserCredentials(username, PasswordEncryptor.encrypt(password, password), false, handle.getRawHandle());
             return connection.successful(result);
-        } catch(ConnectException e){
+        } catch (ConnectException e) {
             System.out.println("Login not possible, because the connection to the resource service is unavailable.");
             return false;
         } catch (IOException e) {
@@ -67,27 +66,12 @@ public class ResourceManagerImpl implements ResourceManager {
         }
     }
 
-
-    public List<String> getAllParticipantNames() {
-        try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.getAllParticipantNames(handle.getRawHandle());
-
-            if (result.startsWith("<failure>")) {
-                return null;
-            } else {
-                return Arrays.asList(result.split(","));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
-    public List<Participant> getParticipants() {
+    public List<Resource> getResources() {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getParticipants(handle.getRawHandle());
 
-            return ParticipantMarshaller.parseParticipants(result);
+            return ResourceMarshaller.parseResources(result);
         } catch (IOException | JDOMException e) {
             throw new RuntimeException(e);
         }
@@ -134,14 +118,14 @@ public class ResourceManagerImpl implements ResourceManager {
     }
 
     @Override
-    public Participant getParticipantByName(String name) {
+    public Resource getResourceByName(String name) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getParticipantFromUserID(name, handle.getRawHandle());
 
             if (!connection.successful(result)) {
                 return null;
             } else {
-                return ParticipantMarshaller.parseParticipant(result);
+                return ResourceMarshaller.parseResource(result);
             }
         } catch (IOException | JDOMException e) {
             throw new RuntimeException(e);

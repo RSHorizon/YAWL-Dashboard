@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.jdom2.Attribute;
-import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.yawlfoundation.yawl.elements.*;
@@ -38,7 +37,7 @@ import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceS
 import org.yawlfoundation.yawldashboardbackend.session.resourceservice.ResourceServiceSessionPool;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.CaseMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.FailureMarshaller;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ParticipantMarshaller;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.ResourceMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.SpecificationMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller.WorkItemMarshaller;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.*;
@@ -69,14 +68,14 @@ public class WorkItemManagerImpl implements WorkItemManager {
 
 
     @Override
-    public synchronized List<Participant> getAllParticipants() {
+    public synchronized List<Resource> getAllResources() {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getAllParticipants(handle.getRawHandle());
 
             if (!connection.successful(result)) {
                 throw new RuntimeException(FailureMarshaller.parseFailure(result));
             } else {
-                return ParticipantMarshaller.parseParticipants(result);
+                return ResourceMarshaller.parseResources(result);
             }
         } catch (IOException | JDOMException ex) {
             throw new RuntimeException(ex);
@@ -238,9 +237,9 @@ public class WorkItemManagerImpl implements WorkItemManager {
 
 
     @Override
-    public synchronized String acceptOffer(String participantId, String itemId) {
+    public synchronized String acceptOffer(String resourceId, String itemId) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.acceptOffer(participantId, itemId, handle.getRawHandle());
+            String result = connection.acceptOffer(resourceId, itemId, handle.getRawHandle());
 
             if (!connection.successful(result)) {
                 throw new RuntimeException("Could not allocate work item! " + FailureMarshaller.parseFailure(result));
@@ -254,9 +253,9 @@ public class WorkItemManagerImpl implements WorkItemManager {
 
 
     @Override
-    public synchronized String startWorkItem(String participantId, String itemId) {
+    public synchronized String startWorkItem(String resourceId, String itemId) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.startItem(participantId, itemId, handle.getRawHandle());
+            String result = connection.startItem(resourceId, itemId, handle.getRawHandle());
 
             if (!connection.successful(result)) {
                 throw new RuntimeException("Could not start work item! " + FailureMarshaller.parseFailure(result));
@@ -270,9 +269,9 @@ public class WorkItemManagerImpl implements WorkItemManager {
 
 
     @Override
-    public synchronized String completeWorkItem(String participantId, String itemId) {
+    public synchronized String completeWorkItem(String resourceId, String itemId) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            String result = connection.completeItem(participantId, itemId, handle.getRawHandle());
+            String result = connection.completeItem(resourceId, itemId, handle.getRawHandle());
 
             if (!connection.successful(result)) {
                 throw new RuntimeException("Could not complete work item! " + FailureMarshaller.parseFailure(result));

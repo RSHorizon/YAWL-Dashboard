@@ -1,4 +1,4 @@
-import {ApplicationRef, ChangeDetectorRef, EventEmitter, Injectable, NgZone} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {NotifierService} from "angular-notifier";
 import {SpecificationService} from "./specification.service";
@@ -7,9 +7,12 @@ import {SpecificationDataContainer} from "../dto/specification-data-container.en
 import {StatisticService} from "./statistic.service";
 import {AsyncSubject, forkJoin} from "rxjs";
 import {ExtensionSpecification} from "../dto/extension-specification.entity";
-import {ParticipantService} from "./participant.service";
+import {ResourceService} from "./resource.service";
 import {ColorUtils} from "../../../common/util/color-util";
 
+/**
+ * @author Robin Steinwarz
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +22,7 @@ export class SpecificationDataService {
               private notifierService: NotifierService,
               private specificationService: SpecificationService,
               private statisticService: StatisticService,
-              private participantService: ParticipantService,
+              private resourceService: ResourceService,
               private extensionSpecificationService: ExtensionSpecificationService) {
   }
 
@@ -83,10 +86,10 @@ export class SpecificationDataService {
             })
           })
 
-          let participantObservable = this.participantService.findAll();
-          observables.push(participantObservable);
-          participantObservable.subscribe(participants => {
-            specificationDataContainer.participants = participants;
+          let resourceObservable = this.resourceService.findAll();
+          observables.push(resourceObservable);
+          resourceObservable.subscribe(resources => {
+            specificationDataContainer.resources = resources;
           })
 
           this.specificationDataContainers!.push(specificationDataContainer);

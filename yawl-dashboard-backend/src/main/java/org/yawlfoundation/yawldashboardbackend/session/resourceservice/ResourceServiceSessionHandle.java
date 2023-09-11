@@ -18,24 +18,25 @@
 package org.yawlfoundation.yawldashboardbackend.session.resourceservice;
 
 
-
 /**
  * A session handle the encapsulates the raw handle.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public interface ResourceServiceSessionHandle extends AutoCloseable {
 
-	/**
-	 * Provides the raw session handle.
-	 * @return the raw handle.
-	 */
-	String	getRawHandle();
+    /**
+     * Provides the raw session handle.
+     *
+     * @return the raw handle.
+     */
+    String getRawHandle();
 
 
-	/**
-	 * Closes the handle.
-	 */
-	@Override
-	void close();
+    /**
+     * Closes the handle.
+     */
+    @Override
+    void close();
 
 }

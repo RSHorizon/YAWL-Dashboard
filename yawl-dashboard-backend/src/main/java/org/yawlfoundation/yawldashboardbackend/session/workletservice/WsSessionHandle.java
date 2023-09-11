@@ -18,11 +18,13 @@
 package org.yawlfoundation.yawldashboardbackend.session.workletservice;
 
 
-
+/**
+ * @author Robin Steinwarz
+ */
 public interface WsSessionHandle extends AutoCloseable {
 
-	String	getRawHandle();
+    String getRawHandle();
 
-	@Override
-	void close();
+    @Override
+    void close();
 }

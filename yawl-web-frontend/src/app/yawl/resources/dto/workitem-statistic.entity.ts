@@ -2,24 +2,25 @@
  * @author Robin Steinwarz
  */
 
-export interface TaskTiming {
+export interface WorkItem {
   taskid: string;
   name: string;
   caseid: string;
-  decompositionOrder: string;
-  participantsIds: string[];
-  participants: Map<String, Set<String>>;
-  status: string;
-  latestEventTimestamp: number;
+  order: string;
   automated: boolean;
   cancelled: boolean
+  resources: Map<String, Set<String>>;
+  resourceIds: string[];
+  events: Event[];
+  status: string;
+  latestEventTimestamp: number;
   offeredTimestamp: number;
   allocatedTimestamp: number;
   startTimestamp: number;
   endTimestamp: number;
-  resourceTime: number;
-  age: number;
+  created: number;
   queueTime: number;
   completionTime: number;
-  created: number;
+  resourceTime: number;
+  leadTime: number;
 }

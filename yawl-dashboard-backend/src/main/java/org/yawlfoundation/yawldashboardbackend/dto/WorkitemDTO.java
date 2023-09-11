@@ -1,37 +1,39 @@
 package org.yawlfoundation.yawldashboardbackend.dto;
 
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
 
 import java.util.*;
+
 /**
  * @author Robin Steinwarz
  */
-public class TaskTimingDTO {
-    private String taskid;
-    private String name;
-    private String caseid;
-    private String decompositionOrder;
-    // <Participant_ID, Set<Event>>
+public class WorkitemDTO {
+    private String taskid = "";
+    private String name = "";
+    private String caseid = "";
+    private String order = "";
+    // <Resources_ID, Set<Event>>
 
-    private Map<String, Set<String>> participants = new HashMap<>();
+    private Map<String, Set<String>> resources = new HashMap<>();
     private boolean automated = false;
     private boolean cancelled = false;
     private String status;
+    private List<Event> events;
     private long latestEventTimestamp = 0L;
     private long offeredTimestamp = 0L;
     private long allocatedTimestamp = 0L;
     private long startTimestamp = 0L;
     private long endTimestamp = 0L;
-    private long resourceTime = 0L;
-    private long age = 0L;
     private long completionTime = 0L;
     private long queueTime = 0L;
+    private long resourceTime = 0L;
+    private long leadTime = 0L;
     private long created = 0L;
 
-    public TaskTimingDTO(String taskid, String caseid, String decompositionOrder) {
+    public WorkitemDTO(String taskid, String caseid, String order) {
         this.taskid = taskid;
         this.caseid = caseid;
-        this.decompositionOrder = decompositionOrder;
+        this.order = order;
     }
 
     public String getCaseid() {
@@ -98,12 +100,12 @@ public class TaskTimingDTO {
         this.automated = automated;
     }
 
-    public String getDecompositionOrder() {
-        return decompositionOrder;
+    public String getOrder() {
+        return order;
     }
 
-    public void setDecompositionOrder(String decompositionOrder) {
-        this.decompositionOrder = decompositionOrder;
+    public void setOrder(String order) {
+        this.order = order;
     }
 
     public String getStatus() {
@@ -122,12 +124,12 @@ public class TaskTimingDTO {
         this.latestEventTimestamp = latestEventTimestamp;
     }
 
-    public Map<String, Set<String>> getParticipants() {
-        return participants;
+    public Map<String, Set<String>> getResources() {
+        return resources;
     }
 
-    public void setParticipants(Map<String, Set<String>> participants) {
-        this.participants = participants;
+    public void setResources(Map<String, Set<String>> resources) {
+        this.resources = resources;
     }
 
     public String getName() {
@@ -146,12 +148,12 @@ public class TaskTimingDTO {
         this.resourceTime = resourceTime;
     }
 
-    public long getAge() {
-        return age;
+    public long getLeadTime() {
+        return leadTime;
     }
 
-    public void setAge(long age) {
-        this.age = age;
+    public void setLeadTime(long leadTime) {
+        this.leadTime = leadTime;
     }
 
     public long getQueueTime() {
@@ -176,5 +178,13 @@ public class TaskTimingDTO {
 
     public void setCompletionTime(long completionTime) {
         this.completionTime = completionTime;
+    }
+
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
 }

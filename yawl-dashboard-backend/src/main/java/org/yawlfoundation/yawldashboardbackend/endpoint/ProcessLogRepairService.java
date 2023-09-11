@@ -2,21 +2,24 @@ package org.yawlfoundation.yawldashboardbackend.endpoint;
 
 import org.yawlfoundation.yawldashboardbackend.dto.CaseDTO;
 import org.yawlfoundation.yawldashboardbackend.dto.CaseStatisticDTO;
-import org.yawlfoundation.yawldashboardbackend.dto.TaskTimingDTO;
+import org.yawlfoundation.yawldashboardbackend.dto.WorkitemDTO;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Resource;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 import java.util.*;
 
+/**
+ * @author Robin Steinwarz
+ */
 public class ProcessLogRepairService {
 
-    protected static void fixTaskOrder(List<CaseDTO> cases, Map<String, String> smallestDecompositionOrders,
+    protected static void fixTaskOrder(List<CaseDTO> cases, Map<String, String> smallestOrders,
                                        List<Task> allExistingTasks,
                                        Map<String, CaseStatisticDTO> caseStatisticMap,
-                                       Map<String, Map<String, TaskTimingDTO>> taskTimings,
-                                       Map<String, Set<Participant>> eventRelatedParticipants,
-                                       Map<String, Participant> participantsInformationMap) {
+                                       Map<String, Map<String, WorkitemDTO>> workitems,
+                                       Map<String, Set<Resource>> eventRelatedResources,
+                                       Map<String, Resource> resourcesInformationMap) {
         for (CaseDTO caseInstance : cases) {
             // Initiate case statistic per case and get it
             caseStatisticMap.put(caseInstance.getId(), new CaseStatisticDTO(caseInstance.getId()));
@@ -28,12 +31,12 @@ public class ProcessLogRepairService {
             Map<String, Set<String>> excluded = new HashMap<>();
             for (Event event : caseInstance.getTaskEvents()) {
                 // Misc
-                String eventDecompositionOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
-                updateSmallestDecompositionOrder(event, eventDecompositionOrder, smallestDecompositionOrders);
-                if (!eventRelatedParticipants.containsKey(event.getEventtype())) {
-                    eventRelatedParticipants.put(event.getEventtype(), new HashSet<>());
+                String eventOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
+                updateSmallestOrder(event, eventOrder, smallestOrders);
+                if (!eventRelatedResources.containsKey(event.getEventtype())) {
+                    eventRelatedResources.put(event.getEventtype(), new HashSet<>());
                 }
-                eventRelatedParticipants.get(event.getEventtype()).add(participantsInformationMap.get(event.getResourceid()));
+                eventRelatedResources.get(event.getEventtype()).add(resourcesInformationMap.get(event.getResourceid()));
                 // Update baseline
                 if (!baseline.containsKey(event.getTaskid())) {
                     baseline.put(event.getTaskid(), null);
@@ -45,16 +48,16 @@ public class ProcessLogRepairService {
                 // Handle baseline Events
                 String[] resourceEvents = {"offer", "unoffer", "allocate", "deallocate"};
                 String[] cancelEvents = {"cancelled_by_case", "cancel"};
-                boolean notExcluded = !localExcluded.contains(eventDecompositionOrder);
+                boolean notExcluded = !localExcluded.contains(eventOrder);
                 if (Arrays.asList(resourceEvents).contains(event.getEventtype())) {
                     if (baseline.get(event.getTaskid()) == null && notExcluded) {
-                        baseline.replace(event.getTaskid(), eventDecompositionOrder);
+                        baseline.replace(event.getTaskid(), eventOrder);
                         localBaselineEvents.add(event);
                     }
-                    if (eventDecompositionOrder.equals(baseline.get(event.getTaskid()))) {
+                    if (eventOrder.equals(baseline.get(event.getTaskid()))) {
                         localBaselineEvents.add(event);
                     } else {
-                        localExcluded.add(eventDecompositionOrder);
+                        localExcluded.add(eventOrder);
                     }
                 } else if (event.getEventtype().equals("start") && notExcluded) {
                     localBaselineEvents.forEach(baseLineEvent -> {
@@ -72,6 +75,18 @@ public class ProcessLogRepairService {
                 }
             }
 
+            // The position number of some events cannot be repaired, because no start or complete Event exists, yet.
+            // This case can not be completely solved with current information
+            for (List<Event> eventsWithoutStartOrComplete : baselineEvents.values()) {
+                for (Event event : eventsWithoutStartOrComplete) {
+                    String eventOrder = event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", "");
+                    String minTaskOrder = smallestOrders.get(event.getTaskid());
+                    if (PMIControllerUtil.orderIsSmaller(eventOrder, minTaskOrder)) {
+                        event.setCaseid(event.getCaseid().split("\\.")[0] + "." + minTaskOrder);
+                    }
+                }
+            }
+
             // Fill timings, where one timing is identified by its taskid and caseId
             // and set initial start and end dates for cases
             for (Event event : caseInstance.getTaskEvents()) {
@@ -83,84 +98,84 @@ public class ProcessLogRepairService {
                 }
                 // Initialize timing objects
                 long eventTimestamp = Long.parseLong(event.getTimestamp());
-                Map<String, TaskTimingDTO> timingMap = taskTimings.get(event.getTaskid());
+                Map<String, WorkitemDTO> timingMap = workitems.get(event.getTaskid());
                 String eventIdentifier = event.getTaskid() + "__" + event.getCaseid();
                 if (!timingMap.containsKey(eventIdentifier)) {
-                    TaskTimingDTO newTiming = new TaskTimingDTO(event.getTaskid(), event.getCaseid().split("\\.")[0], event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""));
+                    WorkitemDTO newTiming = new WorkitemDTO(event.getTaskid(), event.getCaseid().split("\\.")[0], event.getCaseid().replaceFirst("\\A\\w+[0-9][\\.]?", ""));
                     timingMap.put(eventIdentifier, newTiming);
-                    caseStatisticDTO.getTaskTimingDTOS().add(newTiming);
+                    caseStatisticDTO.getWorkitemDTOS().add(newTiming);
                 }
-                TaskTimingDTO taskTiming = timingMap.get(eventIdentifier);
-                // Relate participant to tasktiming
+                WorkitemDTO workitem = timingMap.get(eventIdentifier);
+                // Relate resources to workitem
 
-                Map<String, Set<String>> participantsMap = taskTiming.getParticipants();
-                if (!event.getResourceid().equals("") && !participantsMap.containsKey(event.getResourceid())) {
-                    participantsMap.put(event.getResourceid(), new HashSet<>());
+                Map<String, Set<String>> resourcesMap = workitem.getResources();
+                if (!event.getResourceid().equals("") && !resourcesMap.containsKey(event.getResourceid())) {
+                    resourcesMap.put(event.getResourceid(), new HashSet<>());
                 }
-                Set<String> participantHadEvents = participantsMap.get(event.getResourceid());
-                if (participantHadEvents == null) {
-                    participantHadEvents = new HashSet<>();
+                Set<String> resourcesHadEvents = resourcesMap.get(event.getResourceid());
+                if (resourcesHadEvents == null) {
+                    resourcesHadEvents = new HashSet<>();
                 }
                 // Handle events
                 switch (event.getEventtype()) {
                     case "offer":
                     case "unoffer":
-                        taskTiming.setOfferedTimestamp(eventTimestamp);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Offered");
-                        participantHadEvents.add("Offer");
+                        workitem.setOfferedTimestamp(eventTimestamp);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Offered");
+                        resourcesHadEvents.add("Offer");
                         setStartTimestamp(eventTimestamp, caseStatisticDTO);
                         break;
                     case "allocate":
-                        taskTiming.setAllocatedTimestamp(eventTimestamp);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Allocated");
-                        participantHadEvents.add("Allocate");
+                        workitem.setAllocatedTimestamp(eventTimestamp);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Allocated");
+                        resourcesHadEvents.add("Allocate");
                         setStartTimestamp(eventTimestamp, caseStatisticDTO);
                         break;
                     case "start":
-                        taskTiming.setStartTimestamp(eventTimestamp);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Started");
-                        participantHadEvents.add("Start");
+                        workitem.setStartTimestamp(eventTimestamp);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Started");
+                        resourcesHadEvents.add("Start");
                         setStartTimestamp(eventTimestamp, caseStatisticDTO);
                         break;
                     case "autotask_start":
-                        taskTiming.setStartTimestamp(eventTimestamp);
-                        taskTiming.setAutomated(true);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Running");
+                        workitem.setStartTimestamp(eventTimestamp);
+                        workitem.setAutomated(true);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Running");
                         setStartTimestamp(eventTimestamp, caseStatisticDTO);
                         caseStatisticDTO.setEnd(0);
                         break;
                     case "complete":
-                        taskTiming.setEndTimestamp(eventTimestamp);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
-                        participantHadEvents.add("Complete");
+                        workitem.setEndTimestamp(eventTimestamp);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Completed");
+                        resourcesHadEvents.add("Complete");
                     case "released":
-                        taskTiming.setEndTimestamp(eventTimestamp);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
-                        participantHadEvents.add("Released");
+                        workitem.setEndTimestamp(eventTimestamp);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Completed");
+                        resourcesHadEvents.add("Released");
                         break;
                     case "autotask_complete":
-                        taskTiming.setEndTimestamp(eventTimestamp);
-                        taskTiming.setAutomated(true);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Completed");
+                        workitem.setEndTimestamp(eventTimestamp);
+                        workitem.setAutomated(true);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Completed");
                         break;
                     case "cancel":
                     case "cancelled_by_case":
-                        taskTiming.setCancelled(true);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Cancelled");
-                        participantHadEvents.add("Cancel");
+                        workitem.setCancelled(true);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Cancelled");
+                        resourcesHadEvents.add("Cancel");
                         break;
                     case "timer_expired":
-                        taskTiming.setCancelled(true);
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Expired");
-                        participantHadEvents.add("Expired");
+                        workitem.setCancelled(true);
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Expired");
+                        resourcesHadEvents.add("Expired");
                         break;
                     case "suspended":
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Suspended");
-                        participantHadEvents.add("Suspended");
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Suspended");
+                        resourcesHadEvents.add("Suspended");
                         break;
                     case "resumed":
-                        setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Resumed");
-                        participantHadEvents.add("Resumed");
+                        setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Resumed");
+                        resourcesHadEvents.add("Resumed");
                         break;
                 }
             }
@@ -168,22 +183,22 @@ public class ProcessLogRepairService {
             // Case event handling
             for (Event event : caseInstance.getCaseEvents()) {
                 long eventTimestamp = Long.parseLong(event.getTimestamp());
-                if (!eventRelatedParticipants.containsKey(event.getEventtype())) {
-                    eventRelatedParticipants.put(event.getEventtype(), new HashSet<>());
+                if (!eventRelatedResources.containsKey(event.getEventtype())) {
+                    eventRelatedResources.put(event.getEventtype(), new HashSet<>());
                 }
-                eventRelatedParticipants.get(event.getEventtype()).add(participantsInformationMap.get(event.getResourceid()));
+                eventRelatedResources.get(event.getEventtype()).add(resourcesInformationMap.get(event.getResourceid()));
                 switch (event.getEventtype()) {
                     case "CaseCancel":
                         caseStatisticDTO.setEnd(eventTimestamp);
                         caseStatisticDTO.setCancelled(true);
                         for (Task task : allExistingTasks) {
-                            Collection<TaskTimingDTO> allTaskTimings = taskTimings.get(task.getId()).values();
-                            for (TaskTimingDTO taskTiming : allTaskTimings) {
-                                if (taskTiming.getCaseid().equals(caseInstance.getId())
-                                        && !(taskTiming.getStatus().equals("Completed")
-                                        || taskTiming.getStatus().equals("Cancelled"))) {
-                                    taskTiming.setCancelled(true);
-                                    setLatestEventTimestampAndStatus(eventTimestamp, taskTiming, "Cancelled");
+                            Collection<WorkitemDTO> allWorkitems = workitems.get(task.getId()).values();
+                            for (WorkitemDTO workitem : allWorkitems) {
+                                if (workitem.getCaseid().equals(caseInstance.getId())
+                                        && !(workitem.getStatus().equals("Completed")
+                                        || workitem.getStatus().equals("Cancelled"))) {
+                                    workitem.setCancelled(true);
+                                    setLatestEventTimestampAndStatus(eventTimestamp, workitem, "Cancelled");
                                 }
                             }
                         }
@@ -200,10 +215,10 @@ public class ProcessLogRepairService {
         }
     }
 
-    private static void setLatestEventTimestampAndStatus(long eventTimestamp, TaskTimingDTO taskTiming, String status) {
-        if (eventTimestamp > taskTiming.getLatestEventTimestamp()) {
-            taskTiming.setLatestEventTimestamp(eventTimestamp);
-            taskTiming.setStatus(status);
+    private static void setLatestEventTimestampAndStatus(long eventTimestamp, WorkitemDTO workitem, String status) {
+        if (eventTimestamp > workitem.getLatestEventTimestamp()) {
+            workitem.setLatestEventTimestamp(eventTimestamp);
+            workitem.setStatus(status);
         }
     }
 
@@ -213,16 +228,16 @@ public class ProcessLogRepairService {
         }
     }
 
-    private static void updateSmallestDecompositionOrder(Event event, String eventDecompositionOrder, Map<String, String> smallestDecompositionOrders) {
+    private static void updateSmallestOrder(Event event, String eventOrder, Map<String, String> smallestOrders) {
         // If a start or complete Event (or others) appears, check whether
-        // it has a smaller decompositionOrder then currently known for the task
-        if (!smallestDecompositionOrders.containsKey(event.getTaskid())) {
-            smallestDecompositionOrders.put(event.getTaskid(), "");
+        // it has a smaller order then currently known for the task
+        if (!smallestOrders.containsKey(event.getTaskid())) {
+            smallestOrders.put(event.getTaskid(), "");
         }
         String[] ignoredEvents = {"offer", "unoffer", "allocate", "cancelled_by_case", "cancel", "suspend", "resume", "timer_expired"};
         if (!Arrays.asList(ignoredEvents).contains(event.getEventtype())) {
-            if (PMIControllerUtil.decompositionOrderIsSmaller(smallestDecompositionOrders.get(event.getTaskid()), eventDecompositionOrder)) {
-                smallestDecompositionOrders.replace(event.getTaskid(), eventDecompositionOrder);
+            if (PMIControllerUtil.orderIsSmaller(smallestOrders.get(event.getTaskid()), eventOrder)) {
+                smallestOrders.replace(event.getTaskid(), eventOrder);
             }
         }
     }

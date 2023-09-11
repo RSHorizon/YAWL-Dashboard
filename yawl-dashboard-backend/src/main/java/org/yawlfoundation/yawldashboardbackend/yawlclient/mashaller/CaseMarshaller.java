@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -33,45 +34,46 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 
 /**
  * ConsoleApplication.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public abstract class CaseMarshaller {
 
-	public static List<Integer> parseCaseList(String xml) throws IOException, JDOMException {
-		List<Integer> result = new LinkedList<>();
+    public static List<Integer> parseCaseList(String xml) throws IOException, JDOMException {
+        List<Integer> result = new LinkedList<>();
 
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
+        SAXBuilder builder = new SAXBuilder();
+        Document document = (Document) builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
 
-		if(!root.getName().equals("response")) {
-			throw new RuntimeException(xml);
-			//return result;
-		}
+        if (!root.getName().equals("response")) {
+            throw new RuntimeException(xml);
+            //return result;
+        }
 
-		for(Element caseId : root.getChildren()) {
-			result.add(Integer.parseInt(caseId.getTextTrim()));
-		}
+        for (Element caseId : root.getChildren()) {
+            result.add(Integer.parseInt(caseId.getTextTrim()));
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static List<Event> unmarshallCaseEventList(String xml) throws JDOMException, IOException {
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		List<Event> caseEvents = new ArrayList<>();
-		for(Element eventElement : root.getChildren()) {
-			String description = eventElement.getChildText("descriptor");
-			String[] interestingEvents = {"CaseCancel", "CaseStart", "CaseComplete"};
-			if(Arrays.asList(interestingEvents).contains(description)){
-				String key = eventElement.getAttributeValue("key");
-				String timestamp = eventElement.getChildText("timestamp");
-				Event event = new Event("", "", "", "", "", description, timestamp, key);
-				caseEvents.add(event);
-			}
-		}
-		return caseEvents;
-	}
+    public static List<Event> unmarshallCaseEventList(String xml) throws JDOMException, IOException {
+        SAXBuilder builder = new SAXBuilder();
+        Document document = (Document) builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
+        List<Event> caseEvents = new ArrayList<>();
+        for (Element eventElement : root.getChildren()) {
+            String description = eventElement.getChildText("descriptor");
+            String[] interestingEvents = {"CaseCancel", "CaseStart", "CaseComplete"};
+            if (Arrays.asList(interestingEvents).contains(description)) {
+                String key = eventElement.getAttributeValue("key");
+                String timestamp = eventElement.getChildText("timestamp");
+                Event event = new Event("", "", "", "", "", description, timestamp, key);
+                caseEvents.add(event);
+            }
+        }
+        return caseEvents;
+    }
 
 }

@@ -1,13 +1,15 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormatUtils} from "../../common/util/format-util";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {FormControl, FormGroup} from "@angular/forms";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
-import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {Resource} from "../../yawl/resources/entities/resource.entity";
 import {StatisticUtils} from "../../common/util/statistic-utils";
 import {ChartConfiguration} from "chart.js";
 import {TaskStatisticChartConfigurations} from "./task-statistic-chart-configurations";
 
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-task-statistic-view',
   templateUrl: './task-statistic-view.component.html',
@@ -31,13 +33,14 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
   avgCompletionTimeOverPeriodsOptions = TaskStatisticChartConfigurations.avgCompletionTimeOverPeriodsOptions(this.fineness === 'month');
   avgCompletionTimeOverPeriodsData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
 
-  participantAvgPerformanceOptions = TaskStatisticChartConfigurations.participantAvgPerformanceOptions(this.fineness === 'month');
-  participantAvgPerformanceData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
+  resourceAvgPerformanceOptions = TaskStatisticChartConfigurations.resourceAvgPerformanceOptions(this.fineness === 'month');
+  resourceAvgPerformanceData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
 
-  participantsProcessedInstancesOptions = TaskStatisticChartConfigurations.participantsProcessedInstancesOptions(this.fineness === 'month');
-  participantsProcessedInstancesData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
+  resourcesProcessedInstancesOptions = TaskStatisticChartConfigurations.resourcesProcessedInstancesOptions(this.fineness === 'month');
+  resourcesProcessedInstancesData: ChartConfiguration<'bar'>['data'] = {labels: [], datasets: []};
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     this.updateOnlyStatisticData();
@@ -57,7 +60,7 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
     this.processCasesInRange();
   }
 
-  updateOnlyStatisticData(): void{
+  updateOnlyStatisticData(): void {
     if (this.range.value.start === null || this.range.value.end === null) {
       return;
     }
@@ -66,19 +69,22 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
     this.processCasesInRange();
   }
 
-  processSpecificTaskStatistics(): void{
-    if(this.specificTaskStatistic === ''){
+  processSpecificTaskStatistics(): void {
+    if (this.specificTaskStatistic === '') {
       return;
     }
-    let participantMap: Map<String, Participant> = new Map<String, Participant>();
-    this.specificationDataContainer.participants.forEach(participant => {
-      participantMap.set(participant.id, participant);
+    let resourceMap: Map<String, Resource> = new Map<String, Resource>();
+    this.specificationDataContainer.resources.forEach(resource => {
+      resourceMap.set(resource.id, resource);
     })
-    let allStarts: Map<number, {durations: number[], participants: Map<String,{participant: Participant, number: number, durations: number[]}>}> = new Map();
-    let data: Map<number, Map<string, {participant: Participant, durations: number[]}>> = new Map();
+    let allStarts: Map<number, {
+      durations: number[],
+      resources: Map<String, { resource: Resource, number: number, durations: number[] }>
+    }> = new Map();
+    let data: Map<number, Map<string, { resource: Resource, durations: number[] }>> = new Map();
     this.statisticTicks.forEach((tick) => {
-      allStarts.set((this.fineness === 'month')? tick.month : tick.year, {durations: [], participants: new Map()});
-      data.set((this.fineness === 'month')? tick.month : tick.year, new Map());
+      allStarts.set((this.fineness === 'month') ? tick.month : tick.year, {durations: [], resources: new Map()});
+      data.set((this.fineness === 'month') ? tick.month : tick.year, new Map());
     })
     this.specificationDataContainer!.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
@@ -87,35 +93,37 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
           startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0)
           .getTime();
         let figures = allStarts.get(yearMonthID)!;
-        let participantFigures = data.get(yearMonthID)!;
-        caseStatistic.taskTimingDTOS.forEach(taskTiming => {
-          if(taskTiming.taskid === this.specificTaskStatistic
-            && !taskTiming.cancelled && taskTiming.status === 'Completed'){
-            figures.durations.push(taskTiming.resourceTime);
-            Object.entries(taskTiming.participants).forEach(entry => {
-              if(entry[0] !== "system") {
+        let resourceFigures = data.get(yearMonthID)!;
+        caseStatistic.workitemDTOS.forEach(workitem => {
+          if (workitem.taskid === this.specificTaskStatistic
+            && !workitem.cancelled && workitem.status === 'Completed') {
+            figures.durations.push(workitem.resourceTime);
+            Object.entries(workitem.resources).forEach(entry => {
+              if (entry[0] !== "system") {
                 let isRelevant = false;
-                for(let event of entry[1]){
-                  if(event === "Start" || event === "Complete"){
+                for (let event of entry[1]) {
+                  if (event === "Start" || event === "Complete") {
                     isRelevant = true;
                     break;
                   }
                 }
-                if(isRelevant){
-                  if(!participantFigures.has(entry[0])){
-                    participantFigures.set(entry[0], {participant: participantMap.get(entry[0])!, durations: []});
+                if (isRelevant) {
+                  if (!resourceFigures.has(entry[0])) {
+                    resourceFigures.set(entry[0], {resource: resourceMap.get(entry[0])!, durations: []});
                   }
-                  participantFigures.get(entry[0])!.durations.push(taskTiming.resourceTime);
+                  resourceFigures.get(entry[0])!.durations.push(workitem.resourceTime);
 
 
-                  if(!figures.participants.has(entry[0])){
-                    figures.participants.set(entry[0], {participant: participantMap.get(entry[0])!, number: 0, durations: []});
+                  if (!figures.resources.has(entry[0])) {
+                    figures.resources.set(entry[0], {resource: resourceMap.get(entry[0])!, number: 0, durations: []});
                   }
-                  let participantEntry = figures.participants.get(entry[0])!;
-                  figures.participants.set(entry[0],
-                    {participant: participantEntry.participant,
-                      number: participantEntry.number + 1,
-                      durations: [...participantEntry.durations, taskTiming.resourceTime]})
+                  let resourceEntry = figures.resources.get(entry[0])!;
+                  figures.resources.set(entry[0],
+                    {
+                      resource: resourceEntry.resource,
+                      number: resourceEntry.number + 1,
+                      durations: [...resourceEntry.durations, workitem.resourceTime]
+                    })
                 }
               }
             })
@@ -123,25 +131,25 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
         })
       }
     })
-    let taskStatistic : TaskStatistic = this.specificationDataContainer!.specificationStatistic.taskStatisticDTOS
+    let taskStatistic: TaskStatistic = this.specificationDataContainer!.specificationStatistic.taskStatisticDTOS
       .filter(taskStatistic => taskStatistic.taskid === this.specificTaskStatistic).at(0)!;
 
     let avgCompletionTimeOverPeriodsLabels: number[] = [];
     let avgCompletionTimeOverPeriods: number[] = [];
-    let participantAvgPerformanceLabels: string[] = [];
-    let participantAvgPerformance: number[] = [];
-    let participantsProcessedInstancesLabels: string[] = [];
-    let participantsProcessedInstances: number[] = [];
-    let participantPerformance: Map<string, {durations: number[]}> = new Map();
-    data.forEach((participantMap, tick) => {
+    let resourceAvgPerformanceLabels: string[] = [];
+    let resourceAvgPerformance: number[] = [];
+    let resourcesProcessedInstancesLabels: string[] = [];
+    let resourcesProcessedInstances: number[] = [];
+    let resourcePerformance: Map<string, { durations: number[] }> = new Map();
+    data.forEach((resourceMap, tick) => {
       let allDurations: number[] = [];
-      participantMap.forEach((figures, participant) => {
+      resourceMap.forEach((figures, resource) => {
         allDurations.push(...figures.durations);
-        let label = figures.participant.firstname + " " + figures.participant.lastname;
-        if(!participantPerformance.has(label)){
-          participantPerformance.set(label, {durations: []});
+        let label = figures.resource.firstname + " " + figures.resource.lastname;
+        if (!resourcePerformance.has(label)) {
+          resourcePerformance.set(label, {durations: []});
         }
-        participantPerformance.get(label)!.durations.push(...figures.durations);
+        resourcePerformance.get(label)!.durations.push(...figures.durations);
       })
       const sum = allDurations.reduce((a, b) => a + b, 0);
       const avg = (sum / allDurations.length) || 0;
@@ -149,11 +157,11 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
       avgCompletionTimeOverPeriods.push(avg);
     })
 
-    participantPerformance.forEach((value, label) => {
-      participantAvgPerformanceLabels.push(label);
-      participantsProcessedInstancesLabels.push(label);
-      participantAvgPerformance.push(value.durations.reduce((a,b) => a + b) / value.durations.length || 0);
-      participantsProcessedInstances.push(value.durations.length);
+    resourcePerformance.forEach((value, label) => {
+      resourceAvgPerformanceLabels.push(label);
+      resourcesProcessedInstancesLabels.push(label);
+      resourceAvgPerformance.push(value.durations.reduce((a, b) => a + b) / value.durations.length || 0);
+      resourcesProcessedInstances.push(value.durations.length);
     })
 
     this.avgCompletionTimeOverPeriodsData.labels = avgCompletionTimeOverPeriodsLabels;
@@ -164,18 +172,18 @@ export class TaskStatisticViewComponent implements OnInit, OnChanges {
       backgroundColor: taskStatistic.color!
     })
 
-    this.participantAvgPerformanceData.labels = participantAvgPerformanceLabels;
-    this.participantAvgPerformanceData.datasets = [];
-    this.participantAvgPerformanceData.datasets.push({
-      data: participantAvgPerformance,
+    this.resourceAvgPerformanceData.labels = resourceAvgPerformanceLabels;
+    this.resourceAvgPerformanceData.datasets = [];
+    this.resourceAvgPerformanceData.datasets.push({
+      data: resourceAvgPerformance,
       label: "Average completion time",
       backgroundColor: taskStatistic.color!
     })
 
-    this.participantsProcessedInstancesData.labels = participantsProcessedInstancesLabels;
-    this.participantsProcessedInstancesData.datasets = [];
-    this.participantsProcessedInstancesData.datasets.push({
-      data: participantsProcessedInstances,
+    this.resourcesProcessedInstancesData.labels = resourcesProcessedInstancesLabels;
+    this.resourcesProcessedInstancesData.datasets = [];
+    this.resourcesProcessedInstancesData.datasets.push({
+      data: resourcesProcessedInstances,
       label: "Instances",
       backgroundColor: taskStatistic.color!
     })

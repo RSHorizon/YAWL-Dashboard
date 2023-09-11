@@ -1,9 +1,10 @@
+/* @author Robin Steinwarz */
 .mat-grid-tile {
   border-radius: 2px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 3px;
 }
 
-.mat-form-field{
+.mat-form-field {
   margin-left: 2em;
 }
 

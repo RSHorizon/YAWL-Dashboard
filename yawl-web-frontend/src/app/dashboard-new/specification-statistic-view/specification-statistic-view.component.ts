@@ -1,15 +1,17 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {FormatUtils} from "../../common/util/format-util";
 import {FormControl, FormGroup} from "@angular/forms";
-import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {Resource} from "../../yawl/resources/entities/resource.entity";
 import {StatisticUtils} from "../../common/util/statistic-utils";
 import {SpecificationStatisticChartConfigurations} from "./specification-statistic-chart-configurations";
 import {ColorUtils} from "../../common/util/color-util";
-import { ChartConfiguration, ScriptableContext } from 'chart.js';
-
+import {ChartConfiguration, ScriptableContext} from 'chart.js';
+/**
+ * @author Robin Steinwarz
+ */
 
 @Component({
   selector: 'app-specification-statistic-view',
@@ -92,8 +94,8 @@ export class SpecificationStatisticViewComponent implements OnInit {
 
   updateData(): void {
     if (this.range.value.start === null || this.range.value.end === null
-        || this.range.value.start === undefined || this.range.value.end === undefined
-        || this.range.value.start > this.range.value.end) {
+      || this.range.value.start === undefined || this.range.value.end === undefined
+      || this.range.value.start > this.range.value.end) {
       return;
     }
     this.statisticTicks = StatisticUtils.calculateStatisticTicks(this.range, this.fineness);
@@ -145,7 +147,7 @@ export class SpecificationStatisticViewComponent implements OnInit {
           let startDate = new Date(caseStatistic.start);
           let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0).getTime();
           let period = map.get(tick)!;
-          period.push(caseStatistic.age);
+          period.push(caseStatistic.leadTime);
           if (period.length > maxCaseCountPerPeriod) {
             maxCaseCountPerPeriod = period.length;
           }
@@ -187,11 +189,11 @@ export class SpecificationStatisticViewComponent implements OnInit {
           }
           let successArray = successMap.get(tick)!;
 
-          if(!caseStatistic.cancelled){
+          if (!caseStatistic.cancelled) {
             if (specificationDataContainer.extensionSpecification.specificationTimeLimit === 0) {
               successArray.sla.push(1);
             } else {
-              if (Number(specificationDataContainer.extensionSpecification.specificationTimeLimit) < caseStatistic.age) {
+              if (Number(specificationDataContainer.extensionSpecification.specificationTimeLimit) < caseStatistic.leadTime) {
                 successArray.sla.push(0);
               } else {
                 successArray.sla.push(1);
@@ -242,31 +244,31 @@ export class SpecificationStatisticViewComponent implements OnInit {
     let max: number[] = [];
     this.specificationDataContainers?.forEach(specificationDataContainer => {
       if (specificationDataContainer.specificationStatistic.caseStatisticDTOS.length !== 0) {
-        let avgAge: number = 0;
+        let avgLeadTime: number = 0;
         let counter: number = 0;
-        let minAge: number = Number.MAX_VALUE;
-        let maxAge: number = 0;
+        let minLeadTime: number = Number.MAX_VALUE;
+        let maxLeadTime: number = 0;
         specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach((caseStatistic, key) => {
           if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)
             && StatisticUtils.notCancelledAndCompleted(caseStatistic)) {
-            avgAge += caseStatistic.age;
+            avgLeadTime += caseStatistic.leadTime;
             counter++;
-            if (minAge > caseStatistic.age) {
-              minAge = caseStatistic.age;
+            if (minLeadTime > caseStatistic.leadTime) {
+              minLeadTime = caseStatistic.leadTime;
             }
-            if (maxAge < caseStatistic.age) {
-              maxAge = caseStatistic.age;
+            if (maxLeadTime < caseStatistic.leadTime) {
+              maxLeadTime = caseStatistic.leadTime;
             }
           }
         })
         labels.push([specificationDataContainer.specificationInformation.uri,
           specificationDataContainer.specificationInformation.specversion]);
         colors.push(specificationDataContainer.specificationStatistic.color!);
-        avg.push((avgAge / counter) || 0);
-        max.push(maxAge);
-        if(minAge !== Number.MAX_VALUE){
-          min.push(minAge)
-        }else{
+        avg.push((avgLeadTime / counter) || 0);
+        max.push(maxLeadTime);
+        if (minLeadTime !== Number.MAX_VALUE) {
+          min.push(minLeadTime)
+        } else {
           min.push(0)
         }
       }
@@ -308,14 +310,14 @@ export class SpecificationStatisticViewComponent implements OnInit {
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
         if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)
           && !caseStatistic.cancelled) {
-          caseStatistic.taskTimingDTOS.forEach(taskTiming => {
-            if (!taskTiming.automated && !taskTiming.cancelled && taskTiming.status === 'Completed'
-              && taskTiming.endTimestamp !== 0 && StatisticUtils.timestampIsInDateRange(taskTiming.startTimestamp, this.range)) {
-              let startDate = new Date(taskTiming.startTimestamp);
-              let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth()).getTime() : new Date(startDate.getFullYear(),  0).getTime();
+          caseStatistic.workitemDTOS.forEach(workitem => {
+            if (!workitem.automated && !workitem.cancelled && workitem.status === 'Completed'
+              && workitem.endTimestamp !== 0 && StatisticUtils.timestampIsInDateRange(workitem.startTimestamp, this.range)) {
+              let startDate = new Date(workitem.startTimestamp);
+              let tick = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0).getTime();
               let label = specificationDataContainer.specificationInformation.uri + " " + specificationDataContainer.specificationInformation.specversion;
               let period = dataMap.get(tick)!;
-              period.get(label)!.capacity.push(taskTiming.resourceTime);
+              period.get(label)!.capacity.push(workitem.resourceTime);
             }
           })
         }
@@ -358,12 +360,12 @@ export class SpecificationStatisticViewComponent implements OnInit {
 
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
         if (caseStatistic.end === 0 && !caseStatistic.cancelled) {
-          caseStatistic.queue.forEach(taskTiming => {
-            if (taskTiming.status === 'Offered' || taskTiming.status === 'Allocated') {
-              if (!taskMap.has(taskTiming.taskid)) {
-                taskMap.set(taskTiming.taskid, {color: colorMap.get(taskTiming.taskid)!, queueCount: [0, 0, 0]});
+          caseStatistic.queue.forEach(workitem => {
+            if (workitem.status === 'Offered' || workitem.status === 'Allocated') {
+              if (!taskMap.has(workitem.taskid)) {
+                taskMap.set(workitem.taskid, {color: colorMap.get(workitem.taskid)!, queueCount: [0, 0, 0]});
               }
-              taskMap.get(taskTiming.taskid)!.queueCount[key]++;
+              taskMap.get(workitem.taskid)!.queueCount[key]++;
             }
           })
         }
@@ -382,23 +384,23 @@ export class SpecificationStatisticViewComponent implements OnInit {
 
   processPastBottlenecks(): void {
     // Jahr, Monat, Tag, Stunde
-    let taskTimingsSorted: {timestamp: number, taskid: string, change: number}[] = [];
+    let workitemsSorted: { timestamp: number, taskid: string, change: number }[] = [];
     this.specificationDataContainers?.forEach((specificationDataContainer) => {
       specificationDataContainer.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
-        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)){
-          caseStatistic.taskTimingDTOS.forEach(taskTiming => {
-            if(!taskTiming.automated){
-              let created = (taskTiming.offeredTimestamp === 0)? taskTiming.allocatedTimestamp: taskTiming.offeredTimestamp;
-              if(created !== 0 && taskTiming.startTimestamp !== 0){
-                taskTimingsSorted.push({timestamp : created, taskid: taskTiming.taskid, change: 1});
-                taskTimingsSorted.push({timestamp : taskTiming.startTimestamp, taskid: taskTiming.taskid, change: -1});
+        if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
+          caseStatistic.workitemDTOS.forEach(workitem => {
+            if (!workitem.automated) {
+              let created = (workitem.offeredTimestamp === 0) ? workitem.allocatedTimestamp : workitem.offeredTimestamp;
+              if (created !== 0 && workitem.startTimestamp !== 0) {
+                workitemsSorted.push({timestamp: created, taskid: workitem.taskid, change: 1});
+                workitemsSorted.push({timestamp: workitem.startTimestamp, taskid: workitem.taskid, change: -1});
               }
             }
           })
         }
       })
     });
-    taskTimingsSorted.sort((a, b) => (a.timestamp < b.timestamp)? -1 : 1 )
+    workitemsSorted.sort((a, b) => (a.timestamp < b.timestamp) ? -1 : 1)
 
     this.pastBottlenecksData.labels = [];
     let yDataArray: number[] = [];
@@ -406,21 +408,21 @@ export class SpecificationStatisticViewComponent implements OnInit {
     let start = this.range.value.start?.getTime();
     let end = this.range.value.end?.getTime();
     let tick = 1000 * 60 * 60; // hours
-    if(start !== 0 && start !== undefined && end !== 0 && end !== undefined){
+    if (start !== 0 && start !== undefined && end !== 0 && end !== undefined) {
       // Zeiträum größer als 4 Jahre unzulässig
-      if(end - start > (1000 * 60 * 60 * 24 * 29 * 12 * 4) ){
+      if (end - start > (1000 * 60 * 60 * 24 * 29 * 12 * 4)) {
         end = Date.now();
         start = end - (1000 * 60 * 60 * 24 * 29 * 12 * 4);
       }
       let taskTimestampIndex = 0;
       let status: Map<string, number> = new Map();
-      for(let timeIndex = start; timeIndex < end; timeIndex += tick){
-        while(taskTimestampIndex < taskTimingsSorted.length
-              && taskTimingsSorted[taskTimestampIndex].timestamp < timeIndex){
-          if(!status.has(taskTimingsSorted[taskTimestampIndex].taskid)){
-            status.set(taskTimingsSorted[taskTimestampIndex].taskid, 0);
+      for (let timeIndex = start; timeIndex < end; timeIndex += tick) {
+        while (taskTimestampIndex < workitemsSorted.length
+        && workitemsSorted[taskTimestampIndex].timestamp < timeIndex) {
+          if (!status.has(workitemsSorted[taskTimestampIndex].taskid)) {
+            status.set(workitemsSorted[taskTimestampIndex].taskid, 0);
           }
-          status.set(taskTimingsSorted[taskTimestampIndex].taskid, status.get(taskTimingsSorted[taskTimestampIndex].taskid)! + taskTimingsSorted[taskTimestampIndex].change);
+          status.set(workitemsSorted[taskTimestampIndex].taskid, status.get(workitemsSorted[taskTimestampIndex].taskid)! + workitemsSorted[taskTimestampIndex].change);
           taskTimestampIndex++;
         }
         this.pastBottlenecksData.labels.push(timeIndex)
@@ -486,25 +488,25 @@ export class SpecificationStatisticViewComponent implements OnInit {
   }
 
   processResourceRadars(): void {
-    let participants: Participant[] = this.specificationDataContainers!.at(0)!.participants;
+    let resources: Resource[] = this.specificationDataContainers!.at(0)!.resources;
     let roles: Map<string, number> = new Map;
     let capabilities: Map<string, number> = new Map;
     let positions: Map<string, number> = new Map;
 
-    participants.forEach(participant => {
-      participant.capabilities.forEach(capability => {
+    resources.forEach(resource => {
+      resource.capabilities.forEach(capability => {
         if (!capabilities.has(capability.name)) {
           capabilities.set(capability.name, 0);
         }
         capabilities.set(capability.name, capabilities.get(capability.name)! + 1);
       })
-      participant.roles.forEach(role => {
+      resource.roles.forEach(role => {
         if (!roles.has(role.name)) {
           roles.set(role.name, 0);
         }
         roles.set(role.name, roles.get(role.name)! + 1);
       })
-      participant.positions.forEach(position => {
+      resource.positions.forEach(position => {
         if (!positions.has(position.title)) {
           positions.set(position.title, 0);
         }
@@ -541,24 +543,24 @@ export class SpecificationStatisticViewComponent implements OnInit {
           }
           positionsDemand.set(position.title, positionsDemand.get(position.title)! + 1);
         });
-        if (taskStatistic.totalTimeSpentWithRoles !== undefined && Object.keys(taskStatistic.totalTimeSpentWithRoles).length !== 0) {
-          Object.entries(taskStatistic.totalTimeSpentWithRoles).forEach((keyValue) => {
+        if (taskStatistic.assocRoleTime !== undefined && Object.keys(taskStatistic.assocRoleTime).length !== 0) {
+          Object.entries(taskStatistic.assocRoleTime).forEach((keyValue) => {
             if (!totalTimeSpentWithRoles.has(keyValue[0])) {
               totalTimeSpentWithRoles.set(keyValue[0], 0);
             }
             totalTimeSpentWithRoles.set(keyValue[0], totalTimeSpentWithRoles.get(keyValue[0])! + keyValue[1]);
           })
         }
-        if (taskStatistic.totalTimeSpentWithCapabilities !== undefined && Object.keys(taskStatistic.totalTimeSpentWithCapabilities).length !== 0) {
-          Object.entries(taskStatistic.totalTimeSpentWithCapabilities).forEach((keyValue) => {
+        if (taskStatistic.assocCapabilityTime !== undefined && Object.keys(taskStatistic.assocCapabilityTime).length !== 0) {
+          Object.entries(taskStatistic.assocCapabilityTime).forEach((keyValue) => {
             if (!totalTimeSpentWithCapabilities.has(keyValue[0])) {
               totalTimeSpentWithCapabilities.set(keyValue[0], 0);
             }
             totalTimeSpentWithCapabilities.set(keyValue[0], totalTimeSpentWithCapabilities.get(keyValue[0])! + keyValue[1]);
           })
         }
-        if (taskStatistic.totalTimeSpentWithPositions !== undefined && Object.keys(taskStatistic.totalTimeSpentWithPositions).length !== 0) {
-          Object.entries(taskStatistic.totalTimeSpentWithPositions).forEach((keyValue) => {
+        if (taskStatistic.assocPositionTime !== undefined && Object.keys(taskStatistic.assocPositionTime).length !== 0) {
+          Object.entries(taskStatistic.assocPositionTime).forEach((keyValue) => {
             if (!totalTimeSpentWithPositions.has(keyValue[0])) {
               totalTimeSpentWithPositions.set(keyValue[0], 0);
             }

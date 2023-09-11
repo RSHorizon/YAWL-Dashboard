@@ -12,6 +12,9 @@ import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author Robin Steinwarz
+ */
 public abstract class PositionMarshaller {
 
     public static List<Position> parsePositions(String xml) throws IOException, JDOMException {
@@ -20,7 +23,7 @@ public abstract class PositionMarshaller {
         SAXBuilder builder = new SAXBuilder();
         Document document = (Document) builder.build(new StringReader(xml));
         Element root = document.getRootElement();
-        for(Element item : root.getChildren()) {
+        for (Element item : root.getChildren()) {
             result.add(parsePosition(item));
         }
 

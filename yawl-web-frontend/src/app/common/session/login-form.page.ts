@@ -15,7 +15,7 @@ import {HttpErrorResponse} from "@angular/common/http";
   templateUrl: 'login-form.page.html',
   styleUrls: ['login-form.page.scss']
 })
-export class LoginFormPage implements OnInit{
+export class LoginFormPage implements OnInit {
 
   applicationName = "YAWL Web Admin";
   username = "admin";

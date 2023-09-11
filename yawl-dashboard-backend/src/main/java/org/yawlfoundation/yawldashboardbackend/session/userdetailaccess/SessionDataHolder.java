@@ -19,9 +19,9 @@ package org.yawlfoundation.yawldashboardbackend.session.userdetailaccess;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 
 
 /**
@@ -31,27 +31,27 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class SessionDataHolder {
 
-	public String getUsername() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication.getPrincipal().toString();
-	}
+    public String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getPrincipal().toString();
+    }
 
 
-	public List<String> getAuthorities(String role) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		List<String> authoritiesAsStrings = authentication.getAuthorities().stream()
-																		   .map((t) -> t.getAuthority())
-																		   .collect(Collectors.toList());
-		return authoritiesAsStrings;
-	}
+    public List<String> getAuthorities(String role) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<String> authoritiesAsStrings = authentication.getAuthorities().stream()
+                .map((t) -> t.getAuthority())
+                .collect(Collectors.toList());
+        return authoritiesAsStrings;
+    }
 
 
-	public UserData getUserData() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		List<String> authoritiesAsStrings = authentication.getAuthorities().stream()
-																		   .map((t) -> t.getAuthority())
-																		   .collect(Collectors.toList());
-		return new UserData(authentication.getPrincipal().toString(), authoritiesAsStrings);
-	}
+    public UserData getUserData() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<String> authoritiesAsStrings = authentication.getAuthorities().stream()
+                .map((t) -> t.getAuthority())
+                .collect(Collectors.toList());
+        return new UserData(authentication.getPrincipal().toString(), authoritiesAsStrings);
+    }
 
 }

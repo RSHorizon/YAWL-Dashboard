@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {Router} from '@angular/router';
 
 /**
  * @author Philipp R. Thomas
@@ -7,17 +7,17 @@ import { Router } from '@angular/router';
 
 
 @Component({
-    templateUrl: 'page-not-found.page.html'
+  templateUrl: 'page-not-found.page.html'
 })
 export class PageNotFoundPage {
 
-	constructor(
-		private router: Router) {
-	}
+  constructor(
+    private router: Router) {
+  }
 
-	navigateToHome() {
-		let url = '/';
-		this.router.navigate([url]);
-	}
+  navigateToHome() {
+    let url = '/';
+    this.router.navigate([url]);
+  }
 
 }

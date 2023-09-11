@@ -24,19 +24,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManager;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WorkItemManager;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Resource;
 
 import java.util.List;
-import java.util.Set;
 
 
 /**
- * ParticipantsController.
+ * ResourcesController.
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  */
 @RestController
 @Secured("ROLE_ADMIN")
-class ParticipantsController {
+class ResourcesController {
 
 	@Autowired
 	private WorkItemManager workItemManager;
@@ -45,14 +44,14 @@ class ParticipantsController {
 	private ResourceManager resourceManager;
 
 
-	@RequestMapping(value="/api/participants", method=RequestMethod.GET)
-	public List<Participant> getAllParticipants() {
-		return resourceManager.getParticipants();
+	@RequestMapping(value="/api/resources", method=RequestMethod.GET)
+	public List<Resource> getAllResources() {
+		return resourceManager.getResources();
 	}
 
 	@RequestMapping(value="/api/constraints", method=RequestMethod.GET)
-	public List<Participant> getAllConstraints() {
-		return resourceManager.getParticipants();
+	public List<Resource> getAllConstraints() {
+		return resourceManager.getResources();
 	}
 
 }

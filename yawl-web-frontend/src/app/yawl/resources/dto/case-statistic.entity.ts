@@ -1,17 +1,20 @@
-import {TaskTiming} from "./task-timing.entity";
+import {WorkItem} from "./workitem-statistic.entity";
+
 /**
  * @author Robin Steinwarz
  */
 export interface CaseStatistic {
-  taskTimingDTOS: TaskTiming[];
-  queue: TaskTiming[];
-  caseid : string;
-  cancelled : boolean;
-  start : number;
-  end : number;
-  age : number;
+  caseid: string;
+  cancelled: boolean;
+  workitemDTOS: WorkItem[];
+  queue: WorkItem[];
+  start: number;
+  end: number;
+  queueTime: number;
+  completionTime: number;
   resourceTime: number;
-  queuedWorkitemsCount : number;
+  leadTime: number;
+  queuedWorkitemsCount: number;
   runningWorkitemsCount: number;
   color?: string
 }

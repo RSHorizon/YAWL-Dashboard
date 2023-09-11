@@ -1,7 +1,5 @@
-import {FormGroup} from "@angular/forms";
 import {ChartConfiguration, TooltipItem} from "chart.js";
 import {FormatUtils} from "../../common/util/format-util";
-import {ColorUtils} from "../../common/util/color-util";
 
 /**
  * @author Robin Steinwarz
@@ -9,7 +7,7 @@ import {ColorUtils} from "../../common/util/color-util";
 
 export class CaseStatisticChartConfigurations {
 
-  static weekDayOccurrencesOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static weekDayOccurrencesOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -19,7 +17,7 @@ export class CaseStatisticChartConfigurations {
           stacked: true,
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -60,7 +58,7 @@ export class CaseStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label,
@@ -73,7 +71,7 @@ export class CaseStatisticChartConfigurations {
     };
   }
 
-  static costsOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static costsOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -83,7 +81,7 @@ export class CaseStatisticChartConfigurations {
           stacked: true,
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -124,7 +122,7 @@ export class CaseStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label,
@@ -138,7 +136,7 @@ export class CaseStatisticChartConfigurations {
   }
 
 
-  static resourceUtilizationOptions(month: boolean): ChartConfiguration<'line'>['options']{
+  static resourceUtilizationOptions(month: boolean): ChartConfiguration<'line'>['options'] {
     return {
       animation: false,
       normalized: true,
@@ -177,7 +175,7 @@ export class CaseStatisticChartConfigurations {
           min: 0,
           title: {
             display: true,
-            text: 'Number of participants',
+            text: 'Number of resources',
             font: {
               size: 10
             }
@@ -197,10 +195,10 @@ export class CaseStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"line">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
-              return "Number of participants " + tooltipItem.raw;
+              return "Number of resources " + tooltipItem.raw;
             }
           }
         },
@@ -209,7 +207,7 @@ export class CaseStatisticChartConfigurations {
   }
 
 
-  static caseIndicatorOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static caseIndicatorOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       normalized: true,
@@ -217,7 +215,7 @@ export class CaseStatisticChartConfigurations {
         x: {
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -263,7 +261,7 @@ export class CaseStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label + " bar",
@@ -276,7 +274,7 @@ export class CaseStatisticChartConfigurations {
     };
   }
 
-  static casePerformanceOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static casePerformanceOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -285,7 +283,7 @@ export class CaseStatisticChartConfigurations {
         x: {
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -333,7 +331,7 @@ export class CaseStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label + " bar",
@@ -347,7 +345,7 @@ export class CaseStatisticChartConfigurations {
   }
 
 
-  static casePerformanceDistributionOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static casePerformanceDistributionOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       maintainAspectRatio: false,
@@ -390,7 +388,7 @@ export class CaseStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label + " bar",

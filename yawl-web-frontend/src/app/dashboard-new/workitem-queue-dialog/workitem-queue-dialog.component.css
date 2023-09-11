@@ -1,14 +1,15 @@
 /* @author Robin Steinwarz */
 
-mat-dialog-container{
-  display: block ; /* I added this to see the modal, you don't need this */
+mat-dialog-container {
+  display: block; /* I added this to see the modal, you don't need this */
 }
 
 /* Important part */
 mat-dialog-container {
   overflow-y: initial
 }
-mat-dialog-container .mat-dialog-container .cdk-dialog-container{
+
+mat-dialog-container .mat-dialog-container .cdk-dialog-container {
   height: 80vh;
   overflow-y: auto;
 }
@@ -17,7 +18,7 @@ table {
   width: 100%;
 }
 
-.dialog{
+.dialog {
   width: 1000px;
 }
 
@@ -25,35 +26,35 @@ table {
   flex: 1 1 auto;
 }
 
-span{
+span {
   font-size: 15px;
   font-weight: normal;
   font-family: Roboto, Helvetica, sans-serif;
   color: #5e5e5e;
 }
 
-a{
+a {
   text-decoration: none;
 }
 
-mat-toolbar.modal-toolbar{
+mat-toolbar.modal-toolbar {
   height: 40px;
   padding: 0 10px 0 0;
 }
 
-mat-toolbar.modal-toolbar:hover{
+mat-toolbar.modal-toolbar:hover {
   cursor: pointer;
 }
 
-mat-grid-list{
+mat-grid-list {
   width: 100%;
 }
 
-.statistics{
+.statistics {
   width: 100%
 }
 
-.grid-form{
+.grid-form {
   width: 98%;
 }
 

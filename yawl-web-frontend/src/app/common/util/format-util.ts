@@ -1,4 +1,4 @@
-import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {Resource} from "../../yawl/resources/entities/resource.entity";
 
 /**
  * @author Robin Steinwarz
@@ -13,7 +13,7 @@ export class FormatUtils {
 
   applyPastTimeFormatForTimestamp(timestamp: number): string {
     // @ts-ignore
-    if(timestamp === undefined || timestamp === ''){
+    if (timestamp === undefined || timestamp === '') {
       timestamp = 0;
     }
     // @ts-ignore
@@ -28,8 +28,8 @@ export class FormatUtils {
     return hours + ":" + ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
   }
 
-  applyPastTimeFormatForTimestampWithDays(timestamp: number){
-    if(timestamp === 0){
+  applyPastTimeFormatForTimestampWithDays(timestamp: number) {
+    if (timestamp === 0) {
       return 0 + "d " + 0 + ":" + 0 + ":" + 0;
     }
 
@@ -40,14 +40,14 @@ export class FormatUtils {
 
     let days = Math.floor(daysMs / (1000 * 60 * 60 * 24))
     let hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    let minutes = Math.floor( minutesMs / (1000 * 60))
+    let minutes = Math.floor(minutesMs / (1000 * 60))
     let seconds = Math.floor(secondsMs / (1000))
 
     return days + "d " + hours + ":" + ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
   }
 
-  static applyPastTimeFormatForTimestampWithDays(timestamp: number){
-    if(timestamp === 0){
+  static applyPastTimeFormatForTimestampWithDays(timestamp: number) {
+    if (timestamp === 0) {
       return 0 + "d " + 0 + ":" + 0 + ":" + 0;
     }
 
@@ -58,7 +58,7 @@ export class FormatUtils {
 
     let days = Math.floor(daysMs / (1000 * 60 * 60 * 24))
     let hours = Math.floor(hoursMs / (1000 * 60 * 60))
-    let minutes = Math.floor( minutesMs / (1000 * 60))
+    let minutes = Math.floor(minutesMs / (1000 * 60))
     let seconds = Math.floor(secondsMs / (1000))
 
     return days + "d " + ("00" + hours).slice(-2) + ":" + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2);
@@ -92,14 +92,14 @@ export class FormatUtils {
     return date.getFullYear() + " " + months[date.getMonth()] + " " + date.getDate() + " " + date.getHours();
   }
 
-  applyParticipantsArrayFormat(participants: Participant[]): string {
-    if (participants === undefined) {
+  applyResourcesArrayFormat(resources: Resource[]): string {
+    if (resources === undefined) {
       return "";
     }
 
     let chain = "";
-    participants.forEach(participant => {
-      chain += ", " + participant.firstname + " " + participant.lastname
+    resources.forEach(resource => {
+      chain += ", " + resource.firstname + " " + resource.lastname
     })
     return chain.substring(2).trim();
   }
@@ -113,7 +113,7 @@ export class FormatUtils {
   }
 
   applyIsOverdueFormat(age: number, maxTime: number): string {
-    if(maxTime === 0){
+    if (maxTime === 0) {
       return "Not set";
     }
     if (age > maxTime) {
@@ -133,6 +133,10 @@ export class FormatUtils {
 
   static applyDecimalPercentageFormat(val: number) {
     return (val * 100).toFixed(2) + '%';
+  }
+
+  applyFixedDecimalNumbers(val : number): string{
+    return val.toFixed(2);
   }
 
   applyVerticalGroupChartFormat(data: any): string {

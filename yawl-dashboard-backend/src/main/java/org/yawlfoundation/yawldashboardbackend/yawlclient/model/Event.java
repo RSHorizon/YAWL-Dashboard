@@ -1,4 +1,5 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
+
 /**
  * @author Robin Steinwarz
  */

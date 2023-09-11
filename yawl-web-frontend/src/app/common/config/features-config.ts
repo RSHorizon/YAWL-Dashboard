@@ -4,6 +4,6 @@
  */
 
 export const featuresConfig = {
-  editCostAndLimits: false
+  editCostAndLimits: true
 };
 

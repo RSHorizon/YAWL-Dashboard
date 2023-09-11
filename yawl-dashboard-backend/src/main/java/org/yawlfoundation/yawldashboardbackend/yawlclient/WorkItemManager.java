@@ -28,59 +28,60 @@ import org.yawlfoundation.yawl.engine.interfce.WorkItemRecord;
 
 /**
  * The service to manage work items.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  * @editedBy Robin Steinwarz
  */
 public interface WorkItemManager {
 
-	List<Participant>		getAllParticipants();
+    List<Resource> getAllResources();
 
-	WorkItemRecord			getWorkItemById(String workItemId);
+    WorkItemRecord getWorkItemById(String workItemId);
 
-	Set<WorkItemRecord>		getUnofferedWorkItems();
+    Set<WorkItemRecord> getUnofferedWorkItems();
 
-	Set<WorkItemRecord>		getOldWorkItems(LocalDateTime boundary);
+    Set<WorkItemRecord> getOldWorkItems(LocalDateTime boundary);
 
-	Set<WorkItemRecord>		getWorkItemsWithExpiringTimer(LocalDateTime boundary);
+    Set<WorkItemRecord> getWorkItemsWithExpiringTimer(LocalDateTime boundary);
 
-	int						getNumberWorkItemsByCaseId(Integer caseId);
+    int getNumberWorkItemsByCaseId(Integer caseId);
 
-	String					acceptOffer(String participantId, String itemId);
+    String acceptOffer(String resourceId, String itemId);
 
-	String					startWorkItem(String participantId, String itemId);
+    String startWorkItem(String resourceId, String itemId);
 
-	String					completeWorkItem(String participantId, String itemId);
+    String completeWorkItem(String resourceId, String itemId);
 
 
-	Set<Integer>			getAllCasesWithWorkItems();
+    Set<Integer> getAllCasesWithWorkItems();
 
     Set<WorkItemRecord> getAllWorkItemsForCase(String id, String specversion, String uri, String caseId);
 
     Set<WorkItemRecord> getAllWorkItemsForSpecification(String id, String specversion, String uri);
 
-    List<Case>				getAllRunningCases();
+    List<Case> getAllRunningCases();
 
-	List<Integer>			getRunningCasesBySpec(Specification specification);
+    List<Integer> getRunningCasesBySpec(Specification specification);
 
     List<Integer> getRunningCasesBySpec(String specificationId, String version, String uri);
 
-	List<Integer> getCaseData(String caseId);
+    List<Integer> getCaseData(String caseId);
 
-	Set<Case> getAllCasesFromSpecification(YSpecificationID ySpecificationID);
+    Set<Case> getAllCasesFromSpecification(YSpecificationID ySpecificationID);
 
-    List<Specification>		getAllLoadedSpecifications();
+    List<Specification> getAllLoadedSpecifications();
 
-	List<Specification> getSpecificationList();
+    List<Specification> getSpecificationList();
 
-	Specification getSpecificationById(YSpecificationID ySpecificationID);
+    Specification getSpecificationById(YSpecificationID ySpecificationID);
 
-	String					launchCaseById(String caseId, String data);
+    String launchCaseById(String caseId, String data);
 
-	String					launchCaseByUri(String caseUri, String data);
+    String launchCaseByUri(String caseUri, String data);
 
-	String getCaseDataSchema(YSpecificationID specID);
+    String getCaseDataSchema(YSpecificationID specID);
 
-	String synchroniseCaches();
+    String synchroniseCaches();
 
-	List<Task> getSpecificationDefinitionById(YSpecificationID ySpecificationID);
+    List<Task> getSpecificationDefinitionById(YSpecificationID ySpecificationID);
 }

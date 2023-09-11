@@ -30,10 +30,10 @@
     <td mat-cell *matCellDef="let element">{{element.name}}</td>
   </ng-container>
 
-  <!-- Decomposition order Column -->
-  <ng-container matColumnDef="decompositionOrder">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header="decompositionOrder"
-        sortActionDescription="Sort by decomposition order">
+  <!-- Order Column -->
+  <ng-container matColumnDef="order">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="order"
+        sortActionDescription="Sort by order">
       Order
       <fa-icon class="info" [fixedWidth]="true" icon="circle-info"
                matTooltip="This property describes for each task when this task can appear in a process for the first time.
@@ -105,7 +105,7 @@
       Automated
     </th>
     <td mat-cell *matCellDef="let element">
-      {{(element.automated)? 'Yes': 'No'}}
+      {{(element.automated) ? 'Yes' : 'No'}}
     </td>
   </ng-container>
 
@@ -117,7 +117,8 @@
     </th>
     <td mat-cell *matCellDef="let element">
       <mat-form-field *ngIf="!element.automated" class="grid-form" appearance="legacy" disabled [style.width.px]=70>
-        <input [disabled]="!featuresConfig.editCostAndLimits" matInput type="number" min="0" [(ngModel)]="element.costResourceHour">
+        <input [disabled]="!featuresConfig.editCostAndLimits" matInput type="number" min="0"
+               [(ngModel)]="element.costResourceHour">
       </mat-form-field>
     </td>
   </ng-container>
@@ -129,7 +130,8 @@
       Task queue time limit
     </th>
     <td mat-cell *matCellDef="let element">
-      <app-timestampform [enabled]="featuresConfig.editCostAndLimits" *ngIf="!element.automated" [monthSelectionActive]="true" [(timestamp)]="element.maxQueueAge"></app-timestampform>
+      <app-timestampform [enabled]="featuresConfig.editCostAndLimits" *ngIf="!element.automated"
+                         [monthSelectionActive]="true" [(timestamp)]="element.maxQueueAge"></app-timestampform>
     </td>
   </ng-container>
 
@@ -139,7 +141,17 @@
       Task time limit
     </th>
     <td mat-cell *matCellDef="let element">
-      <app-timestampform [enabled]="featuresConfig.editCostAndLimits" *ngIf="!element.automated" [monthSelectionActive]="true" [(timestamp)]="element.maxTaskAge"></app-timestampform>
+      <app-timestampform [enabled]="featuresConfig.editCostAndLimits" *ngIf="!element.automated"
+                         [monthSelectionActive]="true" [(timestamp)]="element.maxTaskAge"></app-timestampform>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>
+      Actions
+    </th>
+    <td mat-cell *matCellDef="let element">
+      <button mat-button (click)="saveLimits(element)">save</button>
     </td>
   </ng-container>
 
@@ -149,8 +161,10 @@
     <td mat-cell *matCellDef="let element">
       <button *ngIf="!element.automated" mat-icon-button aria-label="expand row"
               (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
-        <fa-icon matTooltip="Expand details row." *ngIf="expandedElement !== element" [fixedWidth]="true" icon="chevron-down"></fa-icon>
-        <fa-icon matTooltip="Close details row." *ngIf="expandedElement === element" [fixedWidth]="true" icon="chevron-up"></fa-icon>
+        <fa-icon matTooltip="Expand details row." *ngIf="expandedElement !== element" [fixedWidth]="true"
+                 icon="chevron-down"></fa-icon>
+        <fa-icon matTooltip="Close details row." *ngIf="expandedElement === element" [fixedWidth]="true"
+                 icon="chevron-up"></fa-icon>
       </button>
     </td>
   </ng-container>
@@ -171,7 +185,7 @@
   <tr mat-row *matRowDef="let element; columns: displayedColumnsWithExpand;"
       class="element-row"
       [class.expanded-row]="expandedElement === element"
-      (click)="expandedElement = expandedElement === element ? null : element">
+      >
   </tr>
   <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
   <tr class="mat-row" *matNoDataRow>

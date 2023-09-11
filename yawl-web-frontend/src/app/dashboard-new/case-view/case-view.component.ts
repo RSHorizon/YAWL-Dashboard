@@ -14,6 +14,7 @@ import {ExtensionSpecificationService} from "../../yawl/resources/services/exten
 import {SpecificationDataService} from "../../yawl/resources/services/specification-data.service";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {featuresConfig} from "../../common/config/features-config";
+
 /**
  * @author Robin Steinwarz
  */
@@ -23,7 +24,8 @@ import {featuresConfig} from "../../common/config/features-config";
   styleUrls: ['./case-view.component.css']
 })
 export class CaseViewComponent implements OnInit {
-  featuresConfig=featuresConfig;
+  featuresConfig = featuresConfig;
+
   @ViewChild(MatSort) set matSort(ms: MatSort) {
     this.sort = ms;
     if (this.dataSource != undefined) {
@@ -36,7 +38,7 @@ export class CaseViewComponent implements OnInit {
   formatUtils: FormatUtils = new FormatUtils();
 
   // Config
-  displayedColumns: string[] = ['caseid', 'start', 'end', 'age', 'running', 'queue', 'overdue', 'cancelled', 'actions'];
+  displayedColumns: string[] = ['caseid', 'start', 'end', 'leadTime', 'running', 'queue', 'overdue', 'cancelled', 'actions'];
   // @ts-ignore
   dataSource: MatTableDataSource<CaseStatistic> = new MatTableDataSource<CaseStatistic>();
   // @ts-ignore
@@ -134,7 +136,7 @@ export class CaseViewComponent implements OnInit {
     } else {
       switch (sort.active) {
         case 'overdue':
-          this.dataSource?.data.sort((a: CaseStatistic, b: CaseStatistic) => this.compare(+(a.age > +this.specificationDataContainer?.extensionSpecification!.specificationTimeLimit!), +(b.age > +this.specificationDataContainer?.extensionSpecification!.specificationTimeLimit!), isAsc));
+          this.dataSource?.data.sort((a: CaseStatistic, b: CaseStatistic) => this.compare(+(a.leadTime > +this.specificationDataContainer?.extensionSpecification!.specificationTimeLimit!), +(b.leadTime > +this.specificationDataContainer?.extensionSpecification!.specificationTimeLimit!), isAsc));
           return;
         default:
           return 0;

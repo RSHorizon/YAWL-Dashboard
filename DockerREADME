@@ -1,4 +1,4 @@
-Build:
+Build (execute command from within the project folder):
 docker build -t rsteinwarz/dashboard-showcase:latest .
 
 Start:

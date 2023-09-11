@@ -18,6 +18,7 @@
 package org.yawlfoundation.yawldashboardbackend.session;
 
 import java.util.LinkedList;
+
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,49 +27,50 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManager;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Resource;
 
 /**
  * The user details service that retrieves data from YAWL Resource Service.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  */
 public class YawlUserDetailsService implements UserDetailsService {
 
-	private ResourceManager resourceManager;
+    private ResourceManager resourceManager;
 
 
-	public YawlUserDetailsService(ResourceManager resourceManager) {
-		this.resourceManager = resourceManager;
-	}
+    public YawlUserDetailsService(ResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
 
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		LinkedList<GrantedAuthority> authorities = new LinkedList<>();
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        LinkedList<GrantedAuthority> authorities = new LinkedList<>();
 
-		if(username.equals("admin")) {
-			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-			return new User("admin", "", authorities);
-		}
+        if (username.equals("admin")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            return new User("admin", "", authorities);
+        }
 
-		Participant participant = resourceManager.getParticipantByName(username);
-		if(participant == null) {
-			throw new UsernameNotFoundException("User \""+username+"\" not found!");
-		}
+        Resource resource = resourceManager.getResourceByName(username);
+        if (resource == null) {
+            throw new UsernameNotFoundException("User \"" + username + "\" not found!");
+        }
 
-		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-		if(participant.isAdmin()) {
-			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-		}
+        if (resource.isAdmin()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
 
-		// The next 3 lines prevent login for normal users.
-		if(!participant.isAdmin()) {
-			throw new LockedException("User \""+username+"\" found, but is not admin!");
-		}
+        // The next 3 lines prevent login for normal users.
+        if (!resource.isAdmin()) {
+            throw new LockedException("User \"" + username + "\" found, but is not admin!");
+        }
 
-		return new User(participant.getUsername(), "", authorities);
-	}
+        return new User(resource.getUsername(), "", authorities);
+    }
 
 }

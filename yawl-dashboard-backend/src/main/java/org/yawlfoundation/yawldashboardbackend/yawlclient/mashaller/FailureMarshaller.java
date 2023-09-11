@@ -19,6 +19,7 @@ package org.yawlfoundation.yawldashboardbackend.yawlclient.mashaller;
 
 import java.io.IOException;
 import java.io.StringReader;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -27,29 +28,30 @@ import org.jdom2.input.SAXBuilder;
 
 /**
  * FailureMarshaller.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public abstract class FailureMarshaller {
 
-	public static String parseFailure(String xml) throws IOException, JDOMException {
-		if(xml == null) {
-			return "Response is null!";
-		}
+    public static String parseFailure(String xml) throws IOException, JDOMException {
+        if (xml == null) {
+            return "Response is null!";
+        }
 
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
+        SAXBuilder builder = new SAXBuilder();
+        Document document = (Document) builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
 
-		if(!root.getName().equals("failure")) {
-			return xml;
-		}
+        if (!root.getName().equals("failure")) {
+            return xml;
+        }
 
-		Element reason = root.getChild("reason");
-		if(reason != null) {
-			return reason.getTextTrim();
-		} else {
-			return root.getTextTrim();
-		}
-	}
+        Element reason = root.getChild("reason");
+        if (reason != null) {
+            return reason.getTextTrim();
+        } else {
+            return root.getTextTrim();
+        }
+    }
 
 }

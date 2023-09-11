@@ -24,46 +24,45 @@ import java.time.LocalDateTime;
  */
 public class Case {
 
-	private Integer id;
-	private LocalDateTime	startTime;
-	private Specification specification;
+    private Integer id;
+    private LocalDateTime startTime;
+    private Specification specification;
 
 
-	public Case(Integer id, Specification specification) {
-		this.id = id;
-		this.specification = specification;
-	}
+    public Case(Integer id, Specification specification) {
+        this.id = id;
+        this.specification = specification;
+    }
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
 
-	public LocalDateTime getStartTime() {
-		return startTime;
-	}
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
 
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
-	}
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 
 
-	public Specification getSpecification() {
-		return specification;
-	}
+    public Specification getSpecification() {
+        return specification;
+    }
 
 
-	public void setSpecification(Specification specification) {
-		this.specification = specification;
-	}
-
+    public void setSpecification(Specification specification) {
+        this.specification = specification;
+    }
 
 
 }

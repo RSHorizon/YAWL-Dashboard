@@ -32,7 +32,7 @@ public class WsManagerImpl implements WsManager {
         this.connection = connection;
     }
 
-    public String getRunningWorklets(){
+    public String getRunningWorklets() {
         try (WsSessionHandle handle = wsSessionPool.getHandle()) {
             String result = connection.getRunningWorklets(handle.getRawHandle());
             return result;
@@ -41,7 +41,7 @@ public class WsManagerImpl implements WsManager {
         }
     }
 
-    public String getOrphanedWorklets(){
+    public String getOrphanedWorklets() {
         try (WsSessionHandle handle = wsSessionPool.getHandle()) {
             String result = connection.getOrphanedWorklets(handle.getRawHandle());
             return result;
@@ -50,7 +50,7 @@ public class WsManagerImpl implements WsManager {
         }
     }
 
-    public String getWorklet(YSpecificationID specificationID){
+    public String getWorklet(YSpecificationID specificationID) {
         try (WsSessionHandle handle = wsSessionPool.getHandle()) {
             String result = connection.getWorklet(specificationID, handle.getRawHandle());
             return result;
@@ -59,7 +59,7 @@ public class WsManagerImpl implements WsManager {
         }
     }
 
-    public String getWorkletNames(){
+    public String getWorkletNames() {
         try (WsSessionHandle handle = wsSessionPool.getHandle()) {
             String result = connection.getWorkletNames(handle.getRawHandle());
             return result;
@@ -68,7 +68,7 @@ public class WsManagerImpl implements WsManager {
         }
     }
 
-    public String getWorkletInfoList(){
+    public String getWorkletInfoList() {
         try (WsSessionHandle handle = wsSessionPool.getHandle()) {
             String result = connection.getWorkletInfoList(handle.getRawHandle());
             return result;

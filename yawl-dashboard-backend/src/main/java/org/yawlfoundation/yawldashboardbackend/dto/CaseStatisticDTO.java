@@ -3,18 +3,21 @@ package org.yawlfoundation.yawldashboardbackend.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * @author Robin Steinwarz
  */
 public class CaseStatisticDTO implements Serializable {
     private String caseid;
-    private boolean cancelled;
-    private List<TaskTimingDTO> taskTimingDTOS = new ArrayList<>();
-    private List<TaskTimingDTO> queue = new ArrayList<>();
+    private boolean cancelled = false;
+    private List<WorkitemDTO> workitemDTOS = new ArrayList<>();
+    private List<WorkitemDTO> queue = new ArrayList<>();
     private long start = 0;
     private long end = 0;
-    private long age = 0;
+    private long queueTime = 0;
+    private long completionTime = 0;
     private long resourceTime = 0;
+    private long leadTime = 0;
     private long runningWorkitemsCount = 0;
     private long queuedWorkitemsCount = 0;
 
@@ -47,12 +50,12 @@ public class CaseStatisticDTO implements Serializable {
         this.end = end;
     }
 
-    public long getAge() {
-        return age;
+    public long getLeadTime() {
+        return leadTime;
     }
 
-    public void setAge(long age) {
-        this.age = age;
+    public void setLeadTime(long leadTime) {
+        this.leadTime = leadTime;
     }
 
     public long getRunningWorkitemsCount() {
@@ -63,11 +66,11 @@ public class CaseStatisticDTO implements Serializable {
         this.runningWorkitemsCount = runningWorkitemsCount;
     }
 
-    public void incRunningWorkitemsCount(){
+    public void incRunningWorkitemsCount() {
         this.runningWorkitemsCount++;
     }
 
-    public void decRunningWorkitemsCount(){
+    public void decRunningWorkitemsCount() {
         this.runningWorkitemsCount--;
     }
 
@@ -79,11 +82,11 @@ public class CaseStatisticDTO implements Serializable {
         this.queuedWorkitemsCount = queuedWorkitemsCount;
     }
 
-    public void incQueuedWorkitemsCount(){
+    public void incQueuedWorkitemsCount() {
         this.queuedWorkitemsCount++;
     }
 
-    public void decQueuedWorkitemsCount(){
+    public void decQueuedWorkitemsCount() {
         this.queuedWorkitemsCount--;
     }
 
@@ -95,12 +98,12 @@ public class CaseStatisticDTO implements Serializable {
         this.caseid = caseid;
     }
 
-    public List<TaskTimingDTO> getTaskTimingDTOS() {
-        return taskTimingDTOS;
+    public List<WorkitemDTO> getWorkitemDTOS() {
+        return workitemDTOS;
     }
 
-    public void setTaskTimingDTOS(List<TaskTimingDTO> taskTimingDTOS) {
-        this.taskTimingDTOS = taskTimingDTOS;
+    public void setWorkitemDTOS(List<WorkitemDTO> workitemDTOS) {
+        this.workitemDTOS = workitemDTOS;
     }
 
     public long getResourceTime() {
@@ -111,11 +114,27 @@ public class CaseStatisticDTO implements Serializable {
         this.resourceTime = resourceTime;
     }
 
-    public List<TaskTimingDTO> getQueue() {
+    public List<WorkitemDTO> getQueue() {
         return queue;
     }
 
-    public void setQueue(List<TaskTimingDTO> queue) {
+    public void setQueue(List<WorkitemDTO> queue) {
         this.queue = queue;
+    }
+
+    public long getQueueTime() {
+        return queueTime;
+    }
+
+    public void setQueueTime(long queueTime) {
+        this.queueTime = queueTime;
+    }
+
+    public long getCompletionTime() {
+        return completionTime;
+    }
+
+    public void setCompletionTime(long completionTime) {
+        this.completionTime = completionTime;
     }
 }

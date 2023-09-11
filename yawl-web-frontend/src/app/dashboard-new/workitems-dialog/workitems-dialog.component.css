@@ -1,5 +1,5 @@
 /* @author Robin Steinwarz */
-mat-dialog-container{
+mat-dialog-container {
   display: block !important; /* I added this to see the modal, you don't need this */
 }
 
@@ -7,7 +7,8 @@ mat-dialog-container{
 mat-dialog-container {
   overflow-y: initial !important
 }
-mat-dialog-container .mat-dialog-container .cdk-dialog-container{
+
+mat-dialog-container .mat-dialog-container .cdk-dialog-container {
   height: 80vh;
   overflow-y: auto;
 }
@@ -17,7 +18,7 @@ table {
   margin-top: 1em;
 }
 
-.dialog{
+.dialog {
   width: 1000px;
 }
 
@@ -25,35 +26,35 @@ table {
   flex: 1 1 auto;
 }
 
-.mat-cell{
+.mat-cell {
   line-break: anywhere;
 }
 
-span{
+span {
   font-size: 15px;
   font-weight: normal;
   font-family: Roboto, Helvetica, sans-serif;
   color: #5e5e5e;
 }
 
-a{
+a {
   text-decoration: none;
 }
 
-mat-toolbar.modal-toolbar{
+mat-toolbar.modal-toolbar {
   height: 40px;
   padding: 0 10px 0 0;
 }
 
-mat-grid-list{
+mat-grid-list {
   width: 100%;
 }
 
-.statistics{
+.statistics {
   width: 100%
 }
 
-.grid-form{
+.grid-form {
   width: 98%;
 }
 
@@ -102,7 +103,7 @@ tr.element-row:not(.example-expanded-row):active {
   opacity: 0.5;
 }
 
-.full-form-field{
+.full-form-field {
   width: 100%;
   height: 100%;
   resize: none;

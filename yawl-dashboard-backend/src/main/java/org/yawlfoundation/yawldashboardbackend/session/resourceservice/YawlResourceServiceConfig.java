@@ -29,74 +29,73 @@ import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
 import org.yawlfoundation.yawl.resourcing.rsInterface.WorkQueueGatewayClient;
 
 
-
 /**
  * The security configuration.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  * @editedBy Robin Steinwarz
  */
 @Configuration
 public class YawlResourceServiceConfig {
 
-	@Value("${yawl.resourceservice.url}")
-	private String		resourceServiceUrl;
+    @Value("${yawl.resourceservice.url}")
+    private String resourceServiceUrl;
 
-	@Value("${yawl.resourceservice.username}")
-	private String		resourceServiceUsername;
+    @Value("${yawl.resourceservice.username}")
+    private String resourceServiceUsername;
 
-	@Value("${yawl.resourceservice.password}")
-	private String		resourceServicePassword;
+    @Value("${yawl.resourceservice.password}")
+    private String resourceServicePassword;
 
-	@Value("${yawl.resource.gateway.path}")
-	private String		resourceGatewayPath;
+    @Value("${yawl.resource.gateway.path}")
+    private String resourceGatewayPath;
 
-	@Value("${yawl.log.gateway.path}")
-	private String		resourceLogGatewayPath;
+    @Value("${yawl.log.gateway.path}")
+    private String resourceLogGatewayPath;
 
-	@Value("${yawl.workqueue.gateway.path}")
-	private String		workQueueGatewayPath;
-
-
-
-	@Bean
-	public ResourceGatewayClient resourceGatewayClient() {
-		return new ResourceGatewayClient(createUrlForClient(resourceServiceUrl, resourceGatewayPath));
-	}
-
-	@Bean
-	public ResourceLogGatewayClient resourceLogGatewayClient() {
-		return new ResourceLogGatewayClient(createUrlForClient(resourceServiceUrl, resourceLogGatewayPath));
-	}
-
-	@Bean
-	public WorkQueueGatewayClient workQueueGatewayClient() {
-		return new WorkQueueGatewayClient(createUrlForClient(resourceServiceUrl, workQueueGatewayPath));
-	}
-
-	public static String createUrlForClient(String base, String path) {
-		return (base.endsWith("/") ? base : base + "/") + path;
-	}
+    @Value("${yawl.workqueue.gateway.path}")
+    private String workQueueGatewayPath;
 
 
-	@Bean
-	public PermanentResourceServiceSessionPool permanentResourceServiceSessionPool() {
-		return new PermanentResourceServiceSessionPool(resourceGatewayClient(), resourceServiceUsername, resourceServicePassword);
-	}
+    @Bean
+    public ResourceGatewayClient resourceGatewayClient() {
+        return new ResourceGatewayClient(createUrlForClient(resourceServiceUrl, resourceGatewayPath));
+    }
+
+    @Bean
+    public ResourceLogGatewayClient resourceLogGatewayClient() {
+        return new ResourceLogGatewayClient(createUrlForClient(resourceServiceUrl, resourceLogGatewayPath));
+    }
+
+    @Bean
+    public WorkQueueGatewayClient workQueueGatewayClient() {
+        return new WorkQueueGatewayClient(createUrlForClient(resourceServiceUrl, workQueueGatewayPath));
+    }
+
+    public static String createUrlForClient(String base, String path) {
+        return (base.endsWith("/") ? base : base + "/") + path;
+    }
 
 
-	@Bean
-	public ResourceManagerImpl resourceManager() {
-		return new ResourceManagerImpl(permanentResourceServiceSessionPool(), resourceGatewayClient());
-	}
+    @Bean
+    public PermanentResourceServiceSessionPool permanentResourceServiceSessionPool() {
+        return new PermanentResourceServiceSessionPool(resourceGatewayClient(), resourceServiceUsername, resourceServicePassword);
+    }
 
-	@Bean
-	public ResourceLogManagerImpl resourceLogManager() {
-		return new ResourceLogManagerImpl(permanentResourceServiceSessionPool(), resourceLogGatewayClient());
-	}
 
-	@Bean
-	public WorkItemManagerImpl workItemManager() {
-		return new WorkItemManagerImpl(permanentResourceServiceSessionPool(), workQueueGatewayClient(), resourceManager());
-	}
+    @Bean
+    public ResourceManagerImpl resourceManager() {
+        return new ResourceManagerImpl(permanentResourceServiceSessionPool(), resourceGatewayClient());
+    }
+
+    @Bean
+    public ResourceLogManagerImpl resourceLogManager() {
+        return new ResourceLogManagerImpl(permanentResourceServiceSessionPool(), resourceLogGatewayClient());
+    }
+
+    @Bean
+    public WorkItemManagerImpl workItemManager() {
+        return new WorkItemManagerImpl(permanentResourceServiceSessionPool(), workQueueGatewayClient(), resourceManager());
+    }
 
 }

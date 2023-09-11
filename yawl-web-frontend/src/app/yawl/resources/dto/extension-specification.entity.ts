@@ -2,12 +2,12 @@
  * @author Robin Steinwarz
  */
 export interface ExtensionSpecification {
-  specificationId : string;
+  specificationId: string;
   specversion: string;
   uri: string;
-  core : string;
-  specificationTimeLimit : number;
-  costResourceHour : number;
-  maxTaskAge : number;
-  maxQueueAge : number;
+  core: string;
+  specificationTimeLimit: number;
+  costResourceHour: number;
+  maxTaskAge: number;
+  maxQueueAge: number;
 }

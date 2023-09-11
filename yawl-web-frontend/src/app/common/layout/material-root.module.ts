@@ -1,12 +1,9 @@
-import { NgModule }      from '@angular/core';
+import {NgModule} from '@angular/core';
 
-import { MatNativeDateModule } from '@angular/material/core';
-import { CovalentDialogsModule } from '@covalent/core/dialogs';
+import {DateAdapter, MatNativeDateModule} from '@angular/material/core';
+import {CovalentDialogsModule} from '@covalent/core/dialogs';
 
-
-import { DateAdapter } from '@angular/material/core';
-
-import { MyDateAdapter } from './material-datetime-adapter';
+import {MyDateAdapter} from './material-datetime-adapter';
 
 /**
  * @author Philipp R. Thomas
@@ -14,14 +11,15 @@ import { MyDateAdapter } from './material-datetime-adapter';
 
 
 @NgModule({
-	imports: [
-        MatNativeDateModule,
-        CovalentDialogsModule,
-    ],
-    providers: [
-        {provide: DateAdapter, useClass: MyDateAdapter},
-        //{provide: MatPaginatorIntl, useClass: MyPaginatorIntl}
-    ]
+  imports: [
+    MatNativeDateModule,
+    CovalentDialogsModule,
+  ],
+  providers: [
+    {provide: DateAdapter, useClass: MyDateAdapter},
+    //{provide: MatPaginatorIntl, useClass: MyPaginatorIntl}
+  ]
 })
-export class MaterialRootModule { }
+export class MaterialRootModule {
+}
 

@@ -26,45 +26,43 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.ResourceManager;
 
 
-
 /**
  * The user details service that retrieves data from YAWL Resource Service.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  */
 public class YawlAuthenticationProvider implements AuthenticationProvider {
 
-	private final ResourceManager		resourceManager;
+    private final ResourceManager resourceManager;
 
-	private final UserDetailsService	userDetailsService;
-
-	
-	
-	public YawlAuthenticationProvider(ResourceManager resourceManager, UserDetailsService userDetailsService) {
-		this.resourceManager = resourceManager;
-		this.userDetailsService = userDetailsService;
-	}
-	
+    private final UserDetailsService userDetailsService;
 
 
-	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		String username = authentication.getName();
-		String password = authentication.getCredentials().toString();
-		
-		UserDetails user = userDetailsService.loadUserByUsername(username);
-
-		if(resourceManager.checkCredentials(username, password)) {
-			Authentication auth = new UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
-			return auth;
-		} else {
-			return null;
-		}
-	}
+    public YawlAuthenticationProvider(ResourceManager resourceManager, UserDetailsService userDetailsService) {
+        this.resourceManager = resourceManager;
+        this.userDetailsService = userDetailsService;
+    }
 
 
-	@Override
-	public boolean supports(Class<?> type) {
-		return true;
-	}
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        String username = authentication.getName();
+        String password = authentication.getCredentials().toString();
+
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+
+        if (resourceManager.checkCredentials(username, password)) {
+            Authentication auth = new UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
+            return auth;
+        } else {
+            return null;
+        }
+    }
+
+
+    @Override
+    public boolean supports(Class<?> type) {
+        return true;
+    }
 
 }

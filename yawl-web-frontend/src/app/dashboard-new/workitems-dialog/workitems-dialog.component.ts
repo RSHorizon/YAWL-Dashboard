@@ -7,10 +7,9 @@ import {MatTableDataSource} from "@angular/material/table";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {WorkItemService} from "../../yawl/resources/services/work-item.service";
 import {SpecificationService} from "../../yawl/resources/services/specification.service";
-import {SpecificationStatistic} from "../../yawl/resources/dto/specification-statistic.entity";
 import {CaseStatistic} from "../../yawl/resources/dto/case-statistic.entity";
-import {TaskTiming} from "../../yawl/resources/dto/task-timing.entity";
-import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {WorkItem} from "../../yawl/resources/dto/workitem-statistic.entity";
+import {Resource} from "../../yawl/resources/entities/resource.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {FormatUtils} from "../../common/util/format-util";
 import {env} from "../../../environments/environment";
@@ -32,9 +31,9 @@ import {SpecificationDataContainer} from "../../yawl/resources/dto/specification
   ],
 })
 export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort| undefined;
-  dataSource: MatTableDataSource<TaskTiming> = new MatTableDataSource<TaskTiming>();
-  displayedColumns: string[] = ['name', 'decompositionOrder', 'status', 'queueTime', 'completionTime', 'participants', 'overdue', 'actions'];
+  @ViewChild(MatSort) sort: MatSort | undefined;
+  dataSource: MatTableDataSource<WorkItem> = new MatTableDataSource<WorkItem>();
+  displayedColumns: string[] = ['name', 'order', 'status', 'queueTime', 'completionTime', 'resources', 'overdue', 'actions'];
   displayedColumnsWithExpand = ['expand', ...this.displayedColumns];
   expandedElement: {} | undefined;
   formatUtils: FormatUtils = new FormatUtils();
@@ -61,8 +60,8 @@ export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
     })
     this.relevantCaseStatistic = this.specificationDataContainer.specificationStatistic.caseStatisticDTOS
       .filter(caseInstance => caseInstance.caseid === this.caseid)[0]
-    this.dataSource.data = this.relevantCaseStatistic.taskTimingDTOS.sort((a: TaskTiming, b: TaskTiming) =>
-      a.decompositionOrder.localeCompare(b.decompositionOrder));
+    this.dataSource.data = this.relevantCaseStatistic.workitemDTOS.sort((a: WorkItem, b: WorkItem) =>
+      a.order.localeCompare(b.order));
   }
 
   ngAfterViewInit(): void {
@@ -73,55 +72,55 @@ export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
     this.dialogRef.close();
   }
 
-  computeResourcesAsked(workitem: TaskTiming): Participant[] {
-    let participantMap: Map<String, Participant> = new Map<String, Participant>();
-    this.specificationDataContainer.participants.forEach(participant => {
-      participantMap.set(participant.id, participant);
+  computeResourcesAsked(workitem: WorkItem): Resource[] {
+    let resourceMap: Map<String, Resource> = new Map<String, Resource>();
+    this.specificationDataContainer.resources.forEach(resource => {
+      resourceMap.set(resource.id, resource);
     })
-    let participantsArray: Participant[] = [];
-    Object.entries(workitem.participants).forEach(entry => {
-      if(entry[0] !== "system"){
+    let resourcesArray: Resource[] = [];
+    Object.entries(workitem.resources).forEach(entry => {
+      if (entry[0] !== "system") {
         let isRelevant = false;
-        for(let event of entry[1]){
-          if(event === "Offer" || event === "Allocate"){
+        for (let event of entry[1]) {
+          if (event === "Offer" || event === "Allocate") {
             isRelevant = true;
             break;
           }
         }
-        if(isRelevant){
-          participantsArray.push(participantMap.get(entry[0])!)!;
+        if (isRelevant) {
+          resourcesArray.push(resourceMap.get(entry[0])!)!;
         }
       }
     })
 
-    return participantsArray;
+    return resourcesArray;
   }
 
-  computeResources(workitem: TaskTiming): Participant[]{
-    let participantMap: Map<String, Participant> = new Map<String, Participant>();
-    this.specificationDataContainer.participants.forEach(participant => {
-      participantMap.set(participant.id, participant);
+  computeResources(workitem: WorkItem): Resource[] {
+    let resourceMap: Map<String, Resource> = new Map<String, Resource>();
+    this.specificationDataContainer.resources.forEach(resource => {
+      resourceMap.set(resource.id, resource);
     })
-    let participantsArray: Participant[] = [];
-    Object.entries(workitem.participants).forEach(entry => {
-      if(entry[0] !== "system"){
+    let resourcesArray: Resource[] = [];
+    Object.entries(workitem.resources).forEach(entry => {
+      if (entry[0] !== "system") {
         let isRelevant = false;
-        for(let event of entry[1]){
-          if(event === "Start" || event === "Complete"){
+        for (let event of entry[1]) {
+          if (event === "Start" || event === "Complete") {
             isRelevant = true;
             break;
           }
         }
-        if(isRelevant){
-          participantsArray.push(participantMap.get(entry[0])!)!;
+        if (isRelevant) {
+          resourcesArray.push(resourceMap.get(entry[0])!)!;
         }
       }
     })
 
-    return participantsArray;
+    return resourcesArray;
   }
 
-  getOverdueLimit(workitem: TaskTiming): number{
+  getOverdueLimit(workitem: WorkItem): number {
     let taskStatistic = this.taskstatisticMap.get(workitem.taskid)!;
     if (workitem.startTimestamp === 0) {
       return taskStatistic.maxQueueAge!;
@@ -134,18 +133,19 @@ export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
   announceSortChange(sortState: Sort) {
     if (sortState.direction === '') {
-      this.dataSource?.data.sort((a: TaskTiming, b: TaskTiming) =>
-        a.decompositionOrder.localeCompare(b.decompositionOrder));
+      this.dataSource?.data.sort((a: WorkItem, b: WorkItem) =>
+        a.order.localeCompare(b.order));
     }
 
-    if (sortState.active === 'participants' && sortState.direction === 'asc') {
-      this.dataSource?.data.sort((a: TaskTiming, b: TaskTiming) => {
+    if (sortState.active === 'resources' && sortState.direction === 'asc') {
+      this.dataSource?.data.sort((a: WorkItem, b: WorkItem) => {
         return this.getRessourcesString(a).localeCompare(this.getRessourcesString(b))
       })
-    } else if (sortState.active === 'participants' && sortState.direction === 'desc') {
-      this.dataSource?.data.sort((a: TaskTiming, b: TaskTiming) => {
+    } else if (sortState.active === 'resources' && sortState.direction === 'desc') {
+      this.dataSource?.data.sort((a: WorkItem, b: WorkItem) => {
         return this.getRessourcesString(b).localeCompare(this.getRessourcesString(a))
       })
     }
@@ -153,7 +153,7 @@ export class WorkitemsDialogComponent implements OnInit, AfterViewInit {
     return;
   }
 
-  getRessourcesString(participantsList: any){
-    return this.computeResources(participantsList).map(a => a.firstname + " " + a.lastname).join(" ")
+  getRessourcesString(resourcesList: any) {
+    return this.computeResources(resourcesList).map(a => a.firstname + " " + a.lastname).join(" ")
   }
 }

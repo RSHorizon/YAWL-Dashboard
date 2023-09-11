@@ -25,38 +25,41 @@ import org.yawlfoundation.yawl.worklet.support.WorkletGatewayClient;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.InterfaceEManagerImpl;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.WsManagerImpl;
 
+/**
+ * @author Robin Steinwarz
+ */
 @Configuration
 public class YawlWsConfig {
 
-	@Value("${yawl.ws.url}")
-	private String		wsUrl;
+    @Value("${yawl.ws.url}")
+    private String wsUrl;
 
-	@Value("${yawl.ws.username}")
-	private String		wsUsername;
+    @Value("${yawl.ws.username}")
+    private String wsUsername;
 
-	@Value("${yawl.ws.password}")
-	private String		wsPassword;
+    @Value("${yawl.ws.password}")
+    private String wsPassword;
 
-	@Value("${yawl.ws.gateway.path}")
-	private String		wsGatewayPath;
+    @Value("${yawl.ws.gateway.path}")
+    private String wsGatewayPath;
 
 
-	@Bean
-	public WorkletGatewayClient wsGatewayClient() {
-		return new WorkletGatewayClient(createUrlForClient(wsUrl,wsGatewayPath));
-	}
+    @Bean
+    public WorkletGatewayClient wsGatewayClient() {
+        return new WorkletGatewayClient(createUrlForClient(wsUrl, wsGatewayPath));
+    }
 
-	@Bean
-	public PermanentWsSessionPool permanentWsSessionPool() {
-		return new PermanentWsSessionPool(wsGatewayClient(), wsUsername, wsPassword);
-	}
+    @Bean
+    public PermanentWsSessionPool permanentWsSessionPool() {
+        return new PermanentWsSessionPool(wsGatewayClient(), wsUsername, wsPassword);
+    }
 
-	@Bean
-	public WsManagerImpl wsManager() {
-		return new WsManagerImpl(permanentWsSessionPool(), wsGatewayClient());
-	}
+    @Bean
+    public WsManagerImpl wsManager() {
+        return new WsManagerImpl(permanentWsSessionPool(), wsGatewayClient());
+    }
 
-	public static String createUrlForClient(String base, String path) {
-		return (base.endsWith("/") ? base : base + "/") + path;
-	}
+    public static String createUrlForClient(String base, String path) {
+        return (base.endsWith("/") ? base : base + "/") + path;
+    }
 }

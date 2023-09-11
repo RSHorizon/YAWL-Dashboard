@@ -1,3 +1,4 @@
+<!-- @author Robin Steinwarz--->
 <div class="statistic-filter">
   <mat-form-field>
     <mat-label>Heat map selection</mat-label>
@@ -25,7 +26,7 @@
           <fa-icon [style.color]="'rgb(255, 79, 0)'" [fixedWidth]="true" icon="square"
                    matTooltip="This color indicates a task with a corresponding big value."></fa-icon>
           <span style="font-size: 7px">max</span>
-          {{ (this.statisticSelection.getRawValue() === 'avgInstancesPerCase')? max: this.formatUtils.applyPastTimeFormatForTimestampWithDays(this.max)}}
+          {{ (this.statisticSelection.getRawValue() === 'avgInstancesPerCase' || this.statisticSelection.getRawValue() === 'cost')? this.formatUtils.applyFixedDecimalNumbers(max): this.formatUtils.applyPastTimeFormatForTimestampWithDays(this.max)}}
 
           <fa-icon id="heatmapInfo" [fixedWidth]="true" icon="circle-info"
                    matTooltip="This heatmap illustrates the differences between several selectable properties of our

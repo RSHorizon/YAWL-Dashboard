@@ -11,11 +11,11 @@ export class StatisticUtils {
     "July", "August", "September", "October", "November", "December"
   ];
   static weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  static tickBuffer: Map<string, { year: number, month: number }[]> = new Map();
 
-  static notCancelledAndCompleted(caseStatistic: CaseStatistic): boolean{
+  static notCancelledAndCompleted(caseStatistic: CaseStatistic): boolean {
     return !caseStatistic.cancelled && caseStatistic.end !== 0;
   }
-
 
   static timestampIsInDateRange(timestamp: number, range: FormGroup): boolean {
     let start = range.value.start?.getTime();
@@ -27,12 +27,11 @@ export class StatisticUtils {
     return false;
   }
 
-  static tickBuffer: Map<string, {year: number, month: number}[]> = new Map();
   static calculateStatisticTicks(range: FormGroup, fineness: string): { year: number, month: number }[] {
     let start = range.value.start!;
     let end = range.value.end!;
     let bufferLabel = start.getTime() + " " + end.getTime() + " " + fineness;
-    if(this.tickBuffer.has(bufferLabel)){
+    if (this.tickBuffer.has(bufferLabel)) {
       return this.tickBuffer.get(bufferLabel)!;
     }
     let startYear = start.getFullYear();
@@ -46,12 +45,12 @@ export class StatisticUtils {
         let startMonthIndex = (i === startYear) ? startMonth : 0;
         let endMonthIndex = (i != endYear) ? 11 : endMonth;
         for (let j = startMonthIndex; j <= endMonthIndex; j++) {
-          dates.push({year: new Date(i,0).getTime(), month: new Date(i,j).getTime()});
+          dates.push({year: new Date(i, 0).getTime(), month: new Date(i, j).getTime()});
         }
       }
     } else {
       for (let i = startYear; i <= endYear; i++) {
-        dates.push({year: new Date(i,0).getTime(), month: 0});
+        dates.push({year: new Date(i, 0).getTime(), month: 0});
       }
     }
     this.tickBuffer.set(bufferLabel, dates);
@@ -70,14 +69,14 @@ export class StatisticUtils {
       name: "None",
       value: 0
     }
-    if(series && array.length === 0){
+    if (series && array.length === 0) {
       array.push(emptyStatistic);
-    } else if (!series && array.length === 0){
+    } else if (!series && array.length === 0) {
       array.push(emptyNormalStatistic);
     }
   }
 
-  static changeMap(map: Map<string, number>, id: string, change: number){
+  static changeMap(map: Map<string, number>, id: string, change: number) {
     if (!map.has(id)) {
       map.set(id, 0);
     }

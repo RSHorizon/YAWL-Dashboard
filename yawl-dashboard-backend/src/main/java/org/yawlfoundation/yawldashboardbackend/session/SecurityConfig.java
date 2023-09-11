@@ -45,84 +45,84 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
-	@Autowired
-	private YawlResourceServiceConfig yawlResourceServiceConfig;
+    @Autowired
+    private YawlResourceServiceConfig yawlResourceServiceConfig;
 
-	@Autowired
-	private AuthenticationManagerBuilder authenticationManagerBuilder;
-
-
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.cors(withDefaults())
-				.csrf().disable()
-				.authorizeRequests().antMatchers("/api/**").hasAuthority("ROLE_ADMIN").anyRequest().permitAll()
-				.and()
-					.formLogin()
-					.loginPage("/login")
-					.usernameParameter("username")
-					.passwordParameter("password")
-					.successHandler(authenticationSuccessHandler())
-					.failureHandler(authenticationFailureHandler())
-					.permitAll()
-				.and()
-					.logout()
-					.logoutUrl("/logout")
-                    .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-					.permitAll()
-				.and()
-					.exceptionHandling()
-					.authenticationEntryPoint(authenticationEntryPoint())
-				// für h2 db
-				.and()
-					.headers()
-					.frameOptions()
-                    .disable();
-
-		authenticationManagerBuilder.authenticationProvider(yawlAuthenticationProvider());
-
-		return http.build();
-	}
+    @Autowired
+    private AuthenticationManagerBuilder authenticationManagerBuilder;
 
 
-	@Bean
-	protected UserDetailsService userDetailsService() {
-		return new YawlUserDetailsService(yawlResourceServiceConfig.resourceManager());
-	}
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(withDefaults())
+                .csrf().disable()
+                .authorizeRequests().antMatchers("/api/**").hasAuthority("ROLE_ADMIN").anyRequest().permitAll()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .successHandler(authenticationSuccessHandler())
+                .failureHandler(authenticationFailureHandler())
+                .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+                .permitAll()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint())
+                // für h2 db
+                .and()
+                .headers()
+                .frameOptions()
+                .disable();
+
+        authenticationManagerBuilder.authenticationProvider(yawlAuthenticationProvider());
+
+        return http.build();
+    }
 
 
-	@Bean
-	protected YawlAuthenticationProvider yawlAuthenticationProvider() {
-		return new YawlAuthenticationProvider(yawlResourceServiceConfig.resourceManager(), userDetailsService());
-	}
+    @Bean
+    protected UserDetailsService userDetailsService() {
+        return new YawlUserDetailsService(yawlResourceServiceConfig.resourceManager());
+    }
 
 
-	@Bean
-	protected RestAuthenticationEntryPoint authenticationEntryPoint() {
-		return new RestAuthenticationEntryPoint();
-	}
+    @Bean
+    protected YawlAuthenticationProvider yawlAuthenticationProvider() {
+        return new YawlAuthenticationProvider(yawlResourceServiceConfig.resourceManager(), userDetailsService());
+    }
 
 
-	@Bean
-	protected RestAuthenticationFailureHandler authenticationFailureHandler() {
-		return new RestAuthenticationFailureHandler();
-	}
+    @Bean
+    protected RestAuthenticationEntryPoint authenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
+    }
 
 
-	@Bean
-	protected RestAuthenticationSuccessHandler authenticationSuccessHandler() {
-		return new RestAuthenticationSuccessHandler();
-	}
+    @Bean
+    protected RestAuthenticationFailureHandler authenticationFailureHandler() {
+        return new RestAuthenticationFailureHandler();
+    }
 
-	@Bean
-	public LogoutSuccessHandler logoutSuccessHandler() {
-		return new RestLogoutSuccessHandler();
-	}
 
-	@Bean
-	protected SessionDataHolder sessionDataHolder() {
-		return new SessionDataHolder();
-	}
+    @Bean
+    protected RestAuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new RestAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        return new RestLogoutSuccessHandler();
+    }
+
+    @Bean
+    protected SessionDataHolder sessionDataHolder() {
+        return new SessionDataHolder();
+    }
 }
 
 

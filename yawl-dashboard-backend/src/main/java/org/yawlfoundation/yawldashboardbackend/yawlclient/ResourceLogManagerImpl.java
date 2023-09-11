@@ -50,7 +50,7 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
     @Override
     public SpecificationStatistic getStatisticsForSpecification(YSpecificationID specID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
-            SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
             Date myDate = parser.parse("2000-01-01");
             String result = connection.getSpecificationStatistics(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), myDate, new Date(), handle.getRawHandle());
 
@@ -116,7 +116,7 @@ public class ResourceLogManagerImpl implements ResourceLogManager {
     }
 
     @Override
-    public String getMergedXESLog(YSpecificationID specID){
+    public String getMergedXESLog(YSpecificationID specID) {
         try (ResourceServiceSessionHandle handle = resourceManagerSessionPool.getHandle()) {
             String result = connection.getMergedXESLog(specID.getIdentifier(), specID.getVersionAsString(), specID.getUri(), true, handle.getRawHandle());
             return result;

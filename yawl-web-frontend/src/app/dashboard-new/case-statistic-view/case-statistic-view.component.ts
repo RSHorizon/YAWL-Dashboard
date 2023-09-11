@@ -1,15 +1,17 @@
-import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {FormControl, FormGroup} from "@angular/forms";
 import {MatSort} from "@angular/material/sort";
-import {Participant} from "../../yawl/resources/entities/participant.entity";
+import {Resource} from "../../yawl/resources/entities/resource.entity";
 import {TaskStatistic} from "../../yawl/resources/dto/task-statistic.entity";
 import {FormatUtils} from "../../common/util/format-util";
 import {StatisticUtils} from "../../common/util/statistic-utils";
 import {ChartConfiguration} from "chart.js/dist/types";
 import {CaseStatisticChartConfigurations} from "./case-statistic-chart-configurations";
 import {ColorUtils} from "../../common/util/color-util";
-
+/**
+ * @author Robin Steinwarz
+ */
 @Component({
   selector: 'app-case-statistic-view',
   templateUrl: './case-statistic-view.component.html',
@@ -43,7 +45,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
   resourceUtilizationOptions = CaseStatisticChartConfigurations.resourceUtilizationOptions(this.fineness === 'month');
   resourceUtilizationData: ChartConfiguration<'line'>['data'] = {labels: [], datasets: []};
 
-  associatedParticipants: Map<string, Set<Participant>> = new Map<string, Set<Participant>>();
+  assocResources: Map<string, Set<Resource>> = new Map<string, Set<Resource>>();
 
   // Performance
   overallIndicatorOptions = CaseStatisticChartConfigurations.caseIndicatorOptions(this.fineness === 'month');
@@ -71,7 +73,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     this.weekDayOccurrences();
     this.processRessourceUtilization();
     this.processCosts();
-    this.processAssociatedParticipants();
+    this.processAssocResources();
     this.processIndicatorRate();
     this.processPerformance();
     this.processPerformanceDistribution();
@@ -88,7 +90,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     this.weekDayOccurrences();
     this.processRessourceUtilization();
     this.processCosts();
-    this.processAssociatedParticipants();
+    this.processAssocResources();
     this.processIndicatorRate();
     this.processPerformance();
     this.processPerformanceDistribution();
@@ -189,35 +191,35 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
 
   processRessourceUtilization(): void {
     // Jahr, Monat, Tag, Stunde
-    let taskTimingsSorted: { timestamp: number, taskid: string, change: number, resourceKey: string }[] = [];
+    let workitemsSorted: { timestamp: number, taskid: string, change: number, resourceKey: string }[] = [];
     this.specificationDataContainer!.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
       if (StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
-        caseStatistic.taskTimingDTOS.forEach(taskTiming => {
-          let participant: string | undefined;
-          Object.entries(taskTiming.participants).forEach((keyValue) => {
+        caseStatistic.workitemDTOS.forEach(workitem => {
+          let resource: string | undefined;
+          Object.entries(workitem.resources).forEach((keyValue) => {
             let events = new Set(keyValue[1]);
             if (events.has('Start') && events.has('Complete')) {
-              participant = keyValue[0];
+              resource = keyValue[0];
             }
           })
-          if (!taskTiming.automated && participant !== undefined && taskTiming.startTimestamp !== 0 && taskTiming.endTimestamp !== 0) {
-            taskTimingsSorted.push({
-              timestamp: taskTiming.startTimestamp,
-              taskid: taskTiming.taskid,
+          if (!workitem.automated && resource !== undefined && workitem.startTimestamp !== 0 && workitem.endTimestamp !== 0) {
+            workitemsSorted.push({
+              timestamp: workitem.startTimestamp,
+              taskid: workitem.taskid,
               change: 1,
-              resourceKey: participant
+              resourceKey: resource
             });
-            taskTimingsSorted.push({
-              timestamp: taskTiming.endTimestamp,
-              taskid: taskTiming.taskid,
+            workitemsSorted.push({
+              timestamp: workitem.endTimestamp,
+              taskid: workitem.taskid,
               change: -1,
-              resourceKey: participant
+              resourceKey: resource
             });
           }
         })
       }
     })
-    taskTimingsSorted.sort((a, b) => (a.timestamp < b.timestamp) ? -1 : 1)
+    workitemsSorted.sort((a, b) => (a.timestamp < b.timestamp) ? -1 : 1)
 
     this.resourceUtilizationData.labels = [];
     let yDataArray: number[] = [];
@@ -235,12 +237,12 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
       let status: Map<string, number> = new Map();
       for (let timeIndex = start; timeIndex < end; timeIndex += tick) {
         let minus: Map<string, number> = new Map();
-        while (taskTimestampIndex < taskTimingsSorted.length
-        && taskTimingsSorted[taskTimestampIndex].timestamp < timeIndex) {
-          if (taskTimingsSorted[taskTimestampIndex].change === -1) {
-            StatisticUtils.changeMap(minus, taskTimingsSorted[taskTimestampIndex].resourceKey, taskTimingsSorted[taskTimestampIndex].change);
+        while (taskTimestampIndex < workitemsSorted.length
+        && workitemsSorted[taskTimestampIndex].timestamp < timeIndex) {
+          if (workitemsSorted[taskTimestampIndex].change === -1) {
+            StatisticUtils.changeMap(minus, workitemsSorted[taskTimestampIndex].resourceKey, workitemsSorted[taskTimestampIndex].change);
           } else {
-            StatisticUtils.changeMap(status, taskTimingsSorted[taskTimestampIndex].resourceKey, taskTimingsSorted[taskTimestampIndex].change);
+            StatisticUtils.changeMap(status, workitemsSorted[taskTimestampIndex].resourceKey, workitemsSorted[taskTimestampIndex].change);
           }
           taskTimestampIndex++;
         }
@@ -283,9 +285,9 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
           startDate.getMonth()).getTime() : new Date(startDate.getFullYear(), 0)
           .getTime();
         let monthInstance = allStarts.get(yearMonthID)!;
-        caseStatistic.taskTimingDTOS.forEach(taskTiming => {
-          if (!taskTiming.automated && !taskTiming.cancelled && taskTiming.endTimestamp !== 0) {
-            monthInstance.set(taskTiming.taskid, monthInstance.get(taskTiming.taskid)! + ((taskTiming.resourceTime) / (1000 * 60 * 60)) * taskMap.get(taskTiming.taskid)!.costResourceHour)
+        caseStatistic.workitemDTOS.forEach(workitem => {
+          if (!workitem.automated && !workitem.cancelled && workitem.endTimestamp !== 0) {
+            monthInstance.set(workitem.taskid, monthInstance.get(workitem.taskid)! + ((workitem.resourceTime) / (1000 * 60 * 60)) * taskMap.get(workitem.taskid)!.costResourceHour)
           }
         })
       }
@@ -328,7 +330,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
         if (this.specificationDataContainer!.extensionSpecification.specificationTimeLimit === 0) {
           successArray.sla.push(1);
         } else {
-          if (Number(this.specificationDataContainer!.extensionSpecification.specificationTimeLimit) < caseStatistic.age) {
+          if (Number(this.specificationDataContainer!.extensionSpecification.specificationTimeLimit) < caseStatistic.leadTime) {
             successArray.sla.push(0);
           } else {
             successArray.sla.push(1);
@@ -375,22 +377,23 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     this.statisticTicks.forEach(tick => {
       map.set(((this.fineness === 'month') ? tick.month : tick.year), {
         min: Number.MAX_VALUE, minColor: "",
-        max: 0, maxColor: "", ages: []});
+        max: 0, maxColor: "", ages: []
+      });
     })
     this.specificationDataContainer?.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
       if (StatisticUtils.notCancelledAndCompleted(caseStatistic) &&
         StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
         let startDate = new Date(caseStatistic.start);
-        let label = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth() )
+        let label = (this.fineness === 'month') ? new Date(startDate.getFullYear(), startDate.getMonth())
           .getTime() : new Date(startDate.getFullYear(), 0).getTime();
         let instance = map.get(label)!;
-        instance.ages.push(caseStatistic.age);
-        if (instance.min > caseStatistic.age) {
-          instance.min = caseStatistic.age;
+        instance.ages.push(caseStatistic.leadTime);
+        if (instance.min > caseStatistic.leadTime) {
+          instance.min = caseStatistic.leadTime;
           instance.minColor = caseStatistic.color!;
         }
-        if (instance.max < caseStatistic.age) {
-          instance.max = caseStatistic.age;
+        if (instance.max < caseStatistic.leadTime) {
+          instance.max = caseStatistic.leadTime;
           instance.maxColor = caseStatistic.color!;
         }
       }
@@ -436,7 +439,7 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     this.specificationDataContainer?.specificationStatistic.caseStatisticDTOS.forEach(caseStatistic => {
       if (StatisticUtils.notCancelledAndCompleted(caseStatistic) &&
         StatisticUtils.timestampIsInDateRange(caseStatistic.start, this.range)) {
-        casePerformanceSorted.push({name: caseStatistic.caseid, age: caseStatistic.age});
+        casePerformanceSorted.push({name: caseStatistic.caseid, age: caseStatistic.leadTime});
       }
     });
     casePerformanceSorted = casePerformanceSorted.sort((a, b) => (a.age > b.age) ? 1 : -1);
@@ -446,11 +449,23 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
       this.casePerformanceDistributionMin = "(" + this.formatUtils.applyPastTimeFormatForTimestampWithDays(min) + ")"
       this.casePerformanceDistributionMax = "(" + this.formatUtils.applyPastTimeFormatForTimestampWithDays(max) + ")"
       let diff = max - min;
-      let performanceDistributionMap: Map<number, {duration: number, performance: { name: string; value: number }[]}> =
-        new Map([[0, {duration: min, performance:[]}], [10, {duration: min+.1*diff, performance:[]}], [20, {duration: min+.2*diff, performance:[]}],
-          [30, {duration: min+.3*diff, performance:[]}], [40, {duration: min+.4*diff, performance:[]}], [50, {duration: min+.5*diff, performance:[]}],
-          [60, {duration: min+.6*diff, performance:[]}], [70, {duration: min+.7*diff, performance:[]}], [80, {duration: min+.8*diff, performance:[]}],
-          [90, {duration: min+.9*diff, performance:[]}], [100, {duration: max, performance:[]}]]);
+      let performanceDistributionMap: Map<number, {
+        duration: number,
+        performance: { name: string; value: number }[]
+      }> =
+        new Map([[0, {duration: min, performance: []}], [10, {
+          duration: min + .1 * diff,
+          performance: []
+        }], [20, {duration: min + .2 * diff, performance: []}],
+          [30, {duration: min + .3 * diff, performance: []}], [40, {
+            duration: min + .4 * diff,
+            performance: []
+          }], [50, {duration: min + .5 * diff, performance: []}],
+          [60, {duration: min + .6 * diff, performance: []}], [70, {
+            duration: min + .7 * diff,
+            performance: []
+          }], [80, {duration: min + .8 * diff, performance: []}],
+          [90, {duration: min + .9 * diff, performance: []}], [100, {duration: max, performance: []}]]);
       casePerformanceSorted.forEach(caseElement => {
         let fraction = (Math.round((Math.abs((1 - (max - caseElement.age) / diff))) * 10) * 10);
         if (diff === 0) {
@@ -475,10 +490,10 @@ export class CaseStatisticViewComponent implements OnInit, AfterViewInit {
     }
   }
 
-  processAssociatedParticipants(): void {
-    this.associatedParticipants = new Map<string, Set<Participant>>();
-    this.specificationDataContainer?.specificationStatistic!.roleAssociatedParticipants!.forEach(entry => {
-      this.associatedParticipants.set(entry.association, entry.participants);
+  processAssocResources(): void {
+    this.assocResources = new Map<string, Set<Resource>>();
+    this.specificationDataContainer?.specificationStatistic!.roleAssocResources!.forEach(entry => {
+      this.assocResources.set(entry.association, entry.resources);
     })
   }
 }

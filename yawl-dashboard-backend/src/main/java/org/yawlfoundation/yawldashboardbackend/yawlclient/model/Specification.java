@@ -22,103 +22,105 @@ import java.util.List;
 
 /**
  * The dto for specification.
+ *
  * @author Philipp Thomas
  */
 public class Specification {
 
-	private String id;
-	private String uri;
-	private String version;
-	private String specversion;
-	private String documentation;
-	private String metatitle;
-	private Integer activeCasesCount;
+    private String id;
+    private String uri;
+    private String version;
+    private String specversion;
+    private String documentation;
+    private String metatitle;
+    private Integer activeCasesCount;
 
-	private String key;
-
-
-	public Integer getActiveCasesCount() {
-		return activeCasesCount;
-	}
-
-	public void setActiveCasesCount(Integer activeCasesCount) {
-		this.activeCasesCount = activeCasesCount;
-	}
-
-	public String getMetatitle() {
-		return metatitle;
-	}
-
-	public void setMetatitle(String metatitle) {
-		this.metatitle = metatitle;
-	}
-	private List<String> authors = new LinkedList<>();
-
-	public String getId() {
-		return id;
-	}
+    private String key;
 
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public Integer getActiveCasesCount() {
+        return activeCasesCount;
+    }
+
+    public void setActiveCasesCount(Integer activeCasesCount) {
+        this.activeCasesCount = activeCasesCount;
+    }
+
+    public String getMetatitle() {
+        return metatitle;
+    }
+
+    public void setMetatitle(String metatitle) {
+        this.metatitle = metatitle;
+    }
+
+    private List<String> authors = new LinkedList<>();
+
+    public String getId() {
+        return id;
+    }
 
 
-	public String getUri() {
-		return uri;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
 
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
+    public String getUri() {
+        return uri;
+    }
 
 
-	public String getVersion() {
-		return version;
-	}
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public String getVersion() {
+        return version;
+    }
 
 
-	public String getSpecversion() {
-		return specversion;
-	}
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
 
-	public void setSpecversion(String specversion) {
-		this.specversion = specversion;
-	}
+    public String getSpecversion() {
+        return specversion;
+    }
 
 
-	public String getDocumentation() {
-		return documentation;
-	}
+    public void setSpecversion(String specversion) {
+        this.specversion = specversion;
+    }
 
 
-	public void setDocumentation(String documentation) {
-		this.documentation = documentation;
-	}
+    public String getDocumentation() {
+        return documentation;
+    }
 
 
-	public List<String> getAuthors() {
-		return authors;
-	}
+    public void setDocumentation(String documentation) {
+        this.documentation = documentation;
+    }
 
 
-	public void setAuthors(List<String> authors) {
-		this.authors = authors;
-	}
+    public List<String> getAuthors() {
+        return authors;
+    }
 
 
-	public String getKey() {
-		return key;
-	}
+    public void setAuthors(List<String> authors) {
+        this.authors = authors;
+    }
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 }

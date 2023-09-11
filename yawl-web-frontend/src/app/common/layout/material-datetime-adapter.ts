@@ -67,7 +67,7 @@ export class MyDateAdapter extends NativeDateAdapter {
   }
 
   // @ts-ignore
-  format (d: Date, displayFormat: Object): string {
+  format(d: Date, displayFormat: Object): string {
     return ("0" + d.getDate()).slice(-2) + "." + ("0" + (d.getMonth() + 1)).slice(-2) + "." + d.getFullYear();
   }
 }

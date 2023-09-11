@@ -20,14 +20,16 @@ package org.yawlfoundation.yawldashboardbackend.session.resourceservice;
 
 /**
  * A pool with session handles for the resource service.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public interface ResourceServiceSessionPool {
 
-	/**
-	 * Provides a session handle.
-	 * @return the handle.
-	 */
-	ResourceServiceSessionHandle getHandle();
+    /**
+     * Provides a session handle.
+     *
+     * @return the handle.
+     */
+    ResourceServiceSessionHandle getHandle();
 
 }

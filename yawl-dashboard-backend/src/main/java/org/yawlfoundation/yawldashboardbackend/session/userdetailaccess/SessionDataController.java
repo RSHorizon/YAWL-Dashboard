@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-
 /**
  * SessionDataController.
  *
@@ -31,12 +30,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 class SessionDataController {
 
-	@Autowired
-	private SessionDataHolder sessionDataHolder;
+    @Autowired
+    private SessionDataHolder sessionDataHolder;
 
-	@RequestMapping("/api/user")
-	public UserData user() {
-		return sessionDataHolder.getUserData();
-	}
+    @RequestMapping("/api/user")
+    public UserData user() {
+        return sessionDataHolder.getUserData();
+    }
 
 }

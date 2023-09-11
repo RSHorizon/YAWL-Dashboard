@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -40,148 +41,150 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.SpecificationSta
 
 /**
  * ConsoleApplication.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  * @editedBy Robin Steinwarz
  */
 public abstract class SpecificationMarshaller {
 
-	public static List<Specification> parseSepcifications(String xml) throws IOException, JDOMException {
-		List<Specification> result = new LinkedList<>();
+    public static List<Specification> parseSepcifications(String xml) throws IOException, JDOMException {
+        List<Specification> result = new LinkedList<>();
 
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		for(Element workItemElement : root.getChildren()) {
-			result.add(parseSepcification(workItemElement));
-		}
+        SAXBuilder builder = new SAXBuilder();
+        Document document = (Document) builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
+        for (Element workItemElement : root.getChildren()) {
+            result.add(parseSepcification(workItemElement));
+        }
 
-		return result;
-	}
-
-
-	public static SpecificationData parseSpecificationDefinition(String xml) throws IOException, JDOMException, YSyntaxException {
-		ResourceMarshaller resourceMarshaller = new ResourceMarshaller();
-		return resourceMarshaller.unmarshallSpecificationData(xml);
-	}
+        return result;
+    }
 
 
-	public static Specification parseSepcification(Element element) throws IOException {
-		Specification specification = new Specification();
-		specification.setId(element.getChildText("id"));
-		specification.setUri(element.getChildText("uri"));
-		specification.setVersion(element.getChildText("version"));
-		specification.setSpecversion(element.getChildText("specversion"));
-		specification.setDocumentation(element.getChildText("documentation"));
-		specification.setMetatitle(element.getChildText("metaTitle"));
-		if(element.getChild("authors") != null) {
-			for(Element author : element.getChild("authors").getChildren()) {
-				specification.getAuthors().add(author.getTextTrim());
-			}
-		}
-		return specification;
-	}
+    public static SpecificationData parseSpecificationDefinition(String xml) throws IOException, JDOMException, YSyntaxException {
+        ResourceMarshaller resourceMarshaller = new ResourceMarshaller();
+        return resourceMarshaller.unmarshallSpecificationData(xml);
+    }
 
-	public static List<Specification> unmarshallSpecificationsList(String xml) throws JDOMException, IOException {
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		List<Specification> specifications = new ArrayList<>();
-		for(Element eventElement : root.getChildren()) {
-			Specification specification = new Specification();
-			specification.setKey(eventElement.getAttributeValue("key"));
-			for (Element content : eventElement.getChildren()){
-				if(content.getName().equals("id")){
-					for(Element idElement : content.getChildren()){
-						if(idElement.getName().equals("identifier")){
-							specification.setId(idElement.getValue());
-						}else if(idElement.getName().equals("version")){
-							specification.setSpecversion(idElement.getValue());
-						}else if(idElement.getName().equals("uri")){
-							specification.setUri(idElement.getValue());
-						}
-					}
-				}
-			}
-			specifications.add(specification);
-		}
-		return specifications;
-	}
 
-	public static YSpecificationID unmarshallYSpecificationID(String xml) {
-		SAXBuilder builder = new SAXBuilder();
-		Document document = null;
-		try {
-			document = (Document) builder.build(new StringReader(xml));
-		} catch (JDOMException | IOException e) {
-			throw new RuntimeException(e);
-		}
-		Element element = document.getRootElement();
+    public static Specification parseSepcification(Element element) throws IOException {
+        Specification specification = new Specification();
+        specification.setId(element.getChildText("id"));
+        specification.setUri(element.getChildText("uri"));
+        specification.setVersion(element.getChildText("version"));
+        specification.setSpecversion(element.getChildText("specversion"));
+        specification.setDocumentation(element.getChildText("documentation"));
+        specification.setMetatitle(element.getChildText("metaTitle"));
+        if (element.getChild("authors") != null) {
+            for (Element author : element.getChild("authors").getChildren()) {
+                specification.getAuthors().add(author.getTextTrim());
+            }
+        }
+        return specification;
+    }
 
-		if (element == null) return null;
+    public static List<Specification> unmarshallSpecificationsList(String xml) throws JDOMException, IOException {
+        SAXBuilder builder = new SAXBuilder();
+        Document document = (Document) builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
+        List<Specification> specifications = new ArrayList<>();
+        for (Element eventElement : root.getChildren()) {
+            Specification specification = new Specification();
+            specification.setKey(eventElement.getAttributeValue("key"));
+            for (Element content : eventElement.getChildren()) {
+                if (content.getName().equals("id")) {
+                    for (Element idElement : content.getChildren()) {
+                        if (idElement.getName().equals("identifier")) {
+                            specification.setId(idElement.getValue());
+                        } else if (idElement.getName().equals("version")) {
+                            specification.setSpecversion(idElement.getValue());
+                        } else if (idElement.getName().equals("uri")) {
+                            specification.setUri(idElement.getValue());
+                        }
+                    }
+                }
+            }
+            specifications.add(specification);
+        }
+        return specifications;
+    }
 
-		String specificationID = "";
-		String specversion = "";
-		String uri = "";
+    public static YSpecificationID unmarshallYSpecificationID(String xml) {
+        SAXBuilder builder = new SAXBuilder();
+        Document document = null;
+        try {
+            document = (Document) builder.build(new StringReader(xml));
+        } catch (JDOMException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        Element element = document.getRootElement();
 
-		for(Element child : element.getChildren()){
-			if(child.getName().equals("identifier")){
-				specificationID = child.getValue();
-			}else if(child.getName().equals("version")){
-				specversion = child.getValue();
-			}else if(child.getName().equals("uri")){
-				uri = child.getValue();
-			}
-		}
-		return new YSpecificationID(specificationID, specversion, uri);
-	}
+        if (element == null) return null;
 
-	public static List<Event> unmarshallEvents(String xml) throws JDOMException, IOException {
-		List<Event> eventList = new LinkedList<>();
-		SAXBuilder builder = new SAXBuilder();
-		Document document = builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		for(Element eventElement : root.getChildren()) {
-			eventList.add(unmarshallEvent(eventElement));
-		}
-		return eventList;
-	}
-	public static Event unmarshallEvent(Element eventElement) {
-		if (eventElement == null) return null;
-		String specKey = eventElement.getChildText("speckey");
-		String caseId = eventElement.getChildText("caseid");
-		String taskId = eventElement.getChildText("taskid");
-		String itemId = eventElement.getChildText("itemid");
-		String resourceId = eventElement.getChildText("resourceid");
-		String eventType = eventElement.getChildText("eventtype");
-		String timestamp = eventElement.getChildText("timestamp");
-		String _key = eventElement.getAttribute("key").getValue();
-		return new Event(specKey, caseId, taskId, itemId, resourceId, eventType, timestamp, _key);
-	}
+        String specificationID = "";
+        String specversion = "";
+        String uri = "";
 
-	public static SpecificationStatistic unmarshallSpecificationStatistic(String xml) {
-		SAXBuilder builder = new SAXBuilder();
-		Document document = null;
-		try {
-			document = (Document) builder.build(new StringReader(xml));
-		} catch (JDOMException | IOException e) {
-			throw new RuntimeException(e);
-		}
-		Element element = document.getRootElement();
+        for (Element child : element.getChildren()) {
+            if (child.getName().equals("identifier")) {
+                specificationID = child.getValue();
+            } else if (child.getName().equals("version")) {
+                specversion = child.getValue();
+            } else if (child.getName().equals("uri")) {
+                uri = child.getValue();
+            }
+        }
+        return new YSpecificationID(specificationID, specversion, uri);
+    }
 
-		if (element == null) return null;
+    public static List<Event> unmarshallEvents(String xml) throws JDOMException, IOException {
+        List<Event> eventList = new LinkedList<>();
+        SAXBuilder builder = new SAXBuilder();
+        Document document = builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
+        for (Element eventElement : root.getChildren()) {
+            eventList.add(unmarshallEvent(eventElement));
+        }
+        return eventList;
+    }
 
-		SpecificationStatistic specificationStatistic = new SpecificationStatistic(element.getAttribute("id").getValue(), element.getAttribute("key").getValue());
-		specificationStatistic.setStarted(Integer.parseInt(element.getChildText("started")));
-		specificationStatistic.setCompleted(Integer.parseInt(element.getChildText("completed")));
-		specificationStatistic.setCancelled(Integer.parseInt(element.getChildText("cancelled")));
-		specificationStatistic.setCompletionMaxtime(element.getChildText("completionMaxtime"));
-		specificationStatistic.setCompletionMintime(element.getChildText("completionMintime"));
-		specificationStatistic.setCompletionAvgtime(element.getChildText("completionAvgtime"));
-		specificationStatistic.setCancelledMaxtime(element.getChildText("cancelledMaxtime"));
-		specificationStatistic.setCancelledMintime(element.getChildText("cancelledMintime"));
-		specificationStatistic.setCancelledAvgtime(element.getChildText("cancelledAvgtime"));
+    public static Event unmarshallEvent(Element eventElement) {
+        if (eventElement == null) return null;
+        String specKey = eventElement.getChildText("speckey");
+        String caseId = eventElement.getChildText("caseid");
+        String taskId = eventElement.getChildText("taskid");
+        String itemId = eventElement.getChildText("itemid");
+        String resourceId = eventElement.getChildText("resourceid");
+        String eventType = eventElement.getChildText("eventtype");
+        String timestamp = eventElement.getChildText("timestamp");
+        String _key = eventElement.getAttribute("key").getValue();
+        return new Event(specKey, caseId, taskId, itemId, resourceId, eventType, timestamp, _key);
+    }
 
-		return specificationStatistic;
-	}
+    public static SpecificationStatistic unmarshallSpecificationStatistic(String xml) {
+        SAXBuilder builder = new SAXBuilder();
+        Document document = null;
+        try {
+            document = (Document) builder.build(new StringReader(xml));
+        } catch (JDOMException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        Element element = document.getRootElement();
+
+        if (element == null) return null;
+
+        SpecificationStatistic specificationStatistic = new SpecificationStatistic(element.getAttribute("id").getValue(), element.getAttribute("key").getValue());
+        specificationStatistic.setStarted(Integer.parseInt(element.getChildText("started")));
+        specificationStatistic.setCompleted(Integer.parseInt(element.getChildText("completed")));
+        specificationStatistic.setCancelled(Integer.parseInt(element.getChildText("cancelled")));
+        specificationStatistic.setCompletionMaxtime(element.getChildText("completionMaxtime"));
+        specificationStatistic.setCompletionMintime(element.getChildText("completionMintime"));
+        specificationStatistic.setCompletionAvgtime(element.getChildText("completionAvgtime"));
+        specificationStatistic.setCancelledMaxtime(element.getChildText("cancelledMaxtime"));
+        specificationStatistic.setCancelledMintime(element.getChildText("cancelledMintime"));
+        specificationStatistic.setCancelledAvgtime(element.getChildText("cancelledAvgtime"));
+
+        return specificationStatistic;
+    }
 
 }

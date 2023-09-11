@@ -18,29 +18,29 @@
 package org.yawlfoundation.yawldashboardbackend.session.resourceservice;
 
 
-
 /**
  * A session handle the encapsulates the raw handle.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public class SimpleResourceManagerSessionHandle implements ResourceServiceSessionHandle {
 
-	private final String rawHandle;
+    private final String rawHandle;
 
 
-	public SimpleResourceManagerSessionHandle(String rawHandle) {
-		this.rawHandle = rawHandle;
-	}
+    public SimpleResourceManagerSessionHandle(String rawHandle) {
+        this.rawHandle = rawHandle;
+    }
 
 
-	@Override
-	public String getRawHandle() {
-		return rawHandle;
-	}
+    @Override
+    public String getRawHandle() {
+        return rawHandle;
+    }
 
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void close() {
+    }
 
 }

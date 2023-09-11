@@ -9,17 +9,37 @@ import {LayoutModule} from './common/layout/layout.module';
 import {SessionModule} from './common/session/session.module';
 import {YawlResourcesModule} from './yawl/resources/yawl-resources.module';
 import {DashboardNewModule} from './dashboard-new/dashboard-new.module';
-import {FontAwesomeModule, FaIconLibrary, FaConfig} from '@fortawesome/angular-fontawesome'
-import { faCircleInfo, faChartLine, faArrowRightFromBracket, faBars, faGaugeHigh, faCompass, faBell,
-  faSitemap, faFileCode, faDatabase, faCubes, faCircle, faCaretDown, faCaretRight, faPencil,
-  faArrowsToEye, faArrowLeftLong, faSquare, faFilePen, faChevronDown, faChevronUp, faPlus, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import {FaConfig, FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome'
+import {
+  faArrowLeftLong,
+  faArrowRight,
+  faArrowRightFromBracket,
+  faArrowsToEye,
+  faBars,
+  faBell,
+  faCaretDown,
+  faCaretRight,
+  faChartLine,
+  faChevronDown,
+  faChevronUp,
+  faCircle,
+  faCircleInfo,
+  faCompass,
+  faCubes,
+  faDatabase,
+  faFileCode,
+  faFilePen,
+  faGaugeHigh,
+  faPencil,
+  faPlus,
+  faSitemap,
+  faSquare
+} from '@fortawesome/free-solid-svg-icons';
 /**
  *
  * @author Philipp Thomas
  * @editedBy Robin Steinwarz
  */
-
-
 // Core
 import {routesConfig} from './app.routes';
 import {AppComponent} from './app.component';

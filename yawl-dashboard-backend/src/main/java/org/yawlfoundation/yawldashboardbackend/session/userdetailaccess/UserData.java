@@ -20,7 +20,6 @@ package org.yawlfoundation.yawldashboardbackend.session.userdetailaccess;
 import java.util.Collection;
 
 
-
 /**
  * Data about a user.
  *
@@ -28,34 +27,34 @@ import java.util.Collection;
  */
 public class UserData {
 
-	private String				username;
+    private String username;
 
-	private Collection<String>	authorities;
-
-
-	public UserData(String username, Collection<String> authorities) {
-		this.username = username;
-		this.authorities = authorities;
-	}
+    private Collection<String> authorities;
 
 
-	public String getUsername() {
-		return username;
-	}
+    public UserData(String username, Collection<String> authorities) {
+        this.username = username;
+        this.authorities = authorities;
+    }
 
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
 
-	public Collection<String> getAuthorities() {
-		return authorities;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
 
-	public void setAuthorities(Collection<String> authorities) {
-		this.authorities = authorities;
-	}
+    public Collection<String> getAuthorities() {
+        return authorities;
+    }
+
+
+    public void setAuthorities(Collection<String> authorities) {
+        this.authorities = authorities;
+    }
 
 }

@@ -1,9 +1,4 @@
-import {
-  AfterViewInit, ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatSort, Sort} from "@angular/material/sort";
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {MatTableDataSource} from "@angular/material/table";

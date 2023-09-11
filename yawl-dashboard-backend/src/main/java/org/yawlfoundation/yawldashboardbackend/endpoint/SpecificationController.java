@@ -23,19 +23,15 @@ import org.springframework.web.bind.annotation.*;
 import org.yawlfoundation.yawl.engine.YSpecificationID;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionSpecificationDao;
 import org.yawlfoundation.yawldashboardbackend.dao.ExtensionTaskDao;
-import org.yawlfoundation.yawldashboardbackend.dto.*;
 import org.yawlfoundation.yawldashboardbackend.model.*;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.*;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
-import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Participant;
+import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Resource;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Specification;
 import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Task;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * @author Robin Steinwarz
@@ -84,7 +80,7 @@ class SpecificationController {
         //List<Event> things7 = interfaceEManager.getCaseEvents("37");
         //List<Event> things8 = interfaceEManager.getCaseEvents("38");
         //workItemManager.getSpecificationDefinitionById(specId);
-        List<Participant> participants = resourceManager.getParticipants();
+        List<Resource> resources = resourceManager.getResources();
         List<Specification> specifications = interfaceEManager.getAllSpecifications();
         String things100 = resourceLogManager.getMergedXESLog(specId);
         System.out.println("Test completed.");

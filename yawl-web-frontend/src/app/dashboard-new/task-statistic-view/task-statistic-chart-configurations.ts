@@ -7,7 +7,7 @@ import {FormatUtils} from "../../common/util/format-util";
 
 export class TaskStatisticChartConfigurations {
 
-  static avgCompletionTimeOverPeriodsOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static avgCompletionTimeOverPeriodsOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       normalized: true,
@@ -15,7 +15,7 @@ export class TaskStatisticChartConfigurations {
         x: {
           type: 'time',
           time: {
-            unit: (month)?'month': 'year',
+            unit: (month) ? 'month' : 'year',
             displayFormats: {
               year: 'yyy MMM',
               month: 'yyy MMM',
@@ -60,7 +60,7 @@ export class TaskStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label!,
@@ -73,7 +73,7 @@ export class TaskStatisticChartConfigurations {
     };
   }
 
-  static participantAvgPerformanceOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static resourceAvgPerformanceOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       normalized: true,
@@ -118,7 +118,7 @@ export class TaskStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label!,
@@ -131,7 +131,7 @@ export class TaskStatisticChartConfigurations {
     };
   }
 
-  static participantsProcessedInstancesOptions(month: boolean): ChartConfiguration<'bar'>['options']{
+  static resourcesProcessedInstancesOptions(month: boolean): ChartConfiguration<'bar'>['options'] {
     return {
       animation: false,
       normalized: true,
@@ -172,7 +172,7 @@ export class TaskStatisticChartConfigurations {
           enabled: true,
           callbacks: {
             label: function (tooltipItem: TooltipItem<"bar">): string | void | string[] {
-              if(!tooltipItem){
+              if (!tooltipItem) {
                 return "";
               }
               return [" " + tooltipItem.dataset.label!,

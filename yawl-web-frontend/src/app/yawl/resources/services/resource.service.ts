@@ -1,24 +1,26 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from "rxjs";
-import {Specification} from "../entities/specification.entity";
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {env} from "../../../../environments/environment";
 import {catchError, map} from "rxjs/operators";
-import {Participant} from "../entities/participant.entity";
 import {NotifierService} from "angular-notifier";
 
+/**
+ * @author Robin Steinwarz
+ */
 @Injectable({
   providedIn: 'root'
 })
-export class ParticipantService {
+export class ResourceService {
 
   constructor(private http: HttpClient,
-              private notifierService: NotifierService) { }
+              private notifierService: NotifierService) {
+  }
 
   findAll(): Observable<any[]> {
     let headers = new HttpHeaders();
     headers.append("Accept", "application/json");
-    let url = env.apiUrl + "participants";
+    let url = env.apiUrl + "resources";
 
     // @ts-ignore
     return this.http.get<HttpResponse<any>>(url, {headers, withCredentials: true}).pipe(

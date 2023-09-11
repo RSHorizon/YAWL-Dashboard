@@ -1,5 +1,8 @@
 package org.yawlfoundation.yawldashboardbackend.yawlclient.model;
 
+/**
+ * @author Robin Steinwarz
+ */
 public class Capability {
     private String id;
     private String name;

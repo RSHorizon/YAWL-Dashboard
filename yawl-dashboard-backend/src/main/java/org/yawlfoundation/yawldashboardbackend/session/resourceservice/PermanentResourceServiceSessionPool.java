@@ -21,117 +21,116 @@ import java.io.IOException;
 import java.net.ConnectException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.yawlfoundation.yawl.resourcing.rsInterface.ResourceGatewayClient;
 
 /**
  * PermanentResourceServiceSessionPool.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public class PermanentResourceServiceSessionPool implements ResourceServiceSessionPool {
 
-	private final ResourceGatewayClient	connection;
-	private final String				username;
-	private final String				password;
+    private final ResourceGatewayClient connection;
+    private final String username;
+    private final String password;
 
-	private String						handle = null;
-
-
-	public PermanentResourceServiceSessionPool(ResourceGatewayClient connection, String username, String password) {
-		this.connection = connection;
-		this.username = username;
-		this.password = password;
-	}
+    private String handle = null;
 
 
-	@PostConstruct
-	public synchronized void init() {
-		try {
-			connect();
-		}
-		catch(Exception e) {
-			System.out.println("Could not connect to YAWL-Resource-Service.");
-		}
-	}
+    public PermanentResourceServiceSessionPool(ResourceGatewayClient connection, String username, String password) {
+        this.connection = connection;
+        this.username = username;
+        this.password = password;
+    }
 
 
-	public synchronized void connect() throws IOException {
-		if(isConnected()) {
-			disconnect();
-		}
-
-		try {
-			handle = connection.connect(username, password);
-			if (!connection.successful(handle)) {
-				handle = null;
-				throw new RuntimeException("Could not connect to the YAWL resource service!");
-			}
-		}catch(ConnectException exception){
-			System.out.println("Could not connect to the YAWL resource service!");
-		}
-	}
+    @PostConstruct
+    public synchronized void init() {
+        try {
+            connect();
+        } catch (Exception e) {
+            System.out.println("Could not connect to YAWL-Resource-Service.");
+        }
+    }
 
 
-	@PreDestroy
-	public synchronized void disconnect() throws IOException {
-		if(handle == null || connection == null) {
-			return;
-		}
+    public synchronized void connect() throws IOException {
+        if (isConnected()) {
+            disconnect();
+        }
 
-		try {
-			connection.disconnect(handle);
-		}catch(ConnectException e) {
-			System.out.println("Could not disconnect from the YAWL-Resource-Service.");
-		}
-		finally {
-			handle = null;
-		}
-	}
+        try {
+            handle = connection.connect(username, password);
+            if (!connection.successful(handle)) {
+                handle = null;
+                throw new RuntimeException("Could not connect to the YAWL resource service!");
+            }
+        } catch (ConnectException exception) {
+            System.out.println("Could not connect to the YAWL resource service!");
+        }
+    }
+
+
+    @PreDestroy
+    public synchronized void disconnect() throws IOException {
+        if (handle == null || connection == null) {
+            return;
+        }
+
+        try {
+            connection.disconnect(handle);
+        } catch (ConnectException e) {
+            System.out.println("Could not disconnect from the YAWL-Resource-Service.");
+        } finally {
+            handle = null;
+        }
+    }
 
 
     @Scheduled(fixedRate = 5000)
     public synchronized void refreshSessionHandle() throws IOException {
-		try {
-			String result = connection.checkConnection(handle);
-			if (!connection.successful(result)) {
-				reconnect();
-			}
-		} catch(ConnectException exception){
-			System.out.println("Could not connect to the YAWL resource service!");
-		}
+        try {
+            String result = connection.checkConnection(handle);
+            if (!connection.successful(result)) {
+                reconnect();
+            }
+        } catch (ConnectException exception) {
+            System.out.println("Could not connect to the YAWL resource service!");
+        }
     }
 
 
     @Scheduled(fixedRate = 10000)
     public synchronized void reconnect() throws IOException {
         disconnect();
-		connect();
+        connect();
     }
 
 
-	public synchronized boolean isConnected() {
-		return handle != null;
-	}
+    public synchronized boolean isConnected() {
+        return handle != null;
+    }
 
 
-	public synchronized void checkConnected() {
-		if(!isConnected()) {
-			throw new RuntimeException("No session handle available!");
-		}
-	}
+    public synchronized void checkConnected() {
+        if (!isConnected()) {
+            throw new RuntimeException("No session handle available!");
+        }
+    }
 
 
-	@Override
-	public synchronized ResourceServiceSessionHandle getHandle() {
-		if(!isConnected()) {
-			try {
-				connect();
-			}
-			catch(Exception e) {
-				throw new RuntimeException("No session handle available!");
-			}
-		}
-		return new SimpleResourceManagerSessionHandle(handle);
-	}
+    @Override
+    public synchronized ResourceServiceSessionHandle getHandle() {
+        if (!isConnected()) {
+            try {
+                connect();
+            } catch (Exception e) {
+                throw new RuntimeException("No session handle available!");
+            }
+        }
+        return new SimpleResourceManagerSessionHandle(handle);
+    }
 
 }

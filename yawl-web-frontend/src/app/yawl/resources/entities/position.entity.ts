@@ -3,10 +3,10 @@
  */
 export interface Position {
 
-	id : string;
-	title : string;
-	description : string;
-	notes? : string;
-	belongsToOrgGroup? : string;
-	reportsTo? : string;
+  id: string;
+  title: string;
+  description: string;
+  notes?: string;
+  belongsToOrgGroup?: string;
+  reportsTo?: string;
 }

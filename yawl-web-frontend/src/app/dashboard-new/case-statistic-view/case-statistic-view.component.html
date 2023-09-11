@@ -1,3 +1,4 @@
+<!--@author Robin Steinwarz-->
 <p>
   <mat-button-toggle-group (valueChange)="selectStatistic($event)" appearance="legacy">
     <mat-button-toggle value="performance" [checked]="true">Performance</mat-button-toggle>
@@ -81,8 +82,8 @@
           <div class="statistic-title-text">When do our resources work on this process?</div>
           <div class="statistic-title-info">
             <fa-icon [fixedWidth]="true" icon="circle-info"
-                     matTooltip="This chart shows sums of participants for each day of the specified time window.
-                     Participants take part in the sum of a specific day
+                     matTooltip="This chart shows sums of resources for each day of the specified time window.
+                     Resources take part in the sum of a specific day
                      if they have processed at least one work item on that day.
                      Please note that the maximum time span for this chart is 4 years."></fa-icon>
           </div>
@@ -106,16 +107,18 @@
                      matTooltip="These lists of roles show all resources with this corresponding role, that processed
                                  work items of this process. This is the case, when a resource started a work item
                                  of this process."></fa-icon>
-          </div></div>
+          </div>
+        </div>
         <div class="ngx-charts-small-text">
           <div class="statistic-text-lists">
-            <mat-expansion-panel *ngFor="let keyValue of associatedParticipants | keyvalue, let i = index">
+            <mat-expansion-panel *ngFor="let keyValue of assocResources | keyvalue, let i = index">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   {{keyValue.key}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <span class="statistic-small-list-text" *ngFor="let participant of keyValue.value, let j = index">{{(j > 0)? ", " + participant.firstname + " " + participant.lastname : participant.firstname + " " + participant.lastname}}</span>
+              <span class="statistic-small-list-text"
+                    *ngFor="let resource of keyValue.value, let j = index">{{(j > 0) ? ", " + resource.firstname + " " + resource.lastname : resource.firstname + " " + resource.lastname}}</span>
             </mat-expansion-panel>
           </div>
         </div>

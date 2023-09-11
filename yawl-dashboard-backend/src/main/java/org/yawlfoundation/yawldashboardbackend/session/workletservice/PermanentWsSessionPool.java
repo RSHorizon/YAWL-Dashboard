@@ -25,110 +25,110 @@ import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.ConnectException;
 
+/**
+ * @author Robin Steinwarz
+ */
 public class PermanentWsSessionPool implements WsSessionPool {
 
-	private final WorkletGatewayClient connection;
-	private final String				username;
-	private final String				password;
+    private final WorkletGatewayClient connection;
+    private final String username;
+    private final String password;
 
-	private String						handle = null;
-
-
-	public PermanentWsSessionPool(WorkletGatewayClient connection, String username, String password) {
-		this.connection = connection;
-		this.username = username;
-		this.password = password;
-	}
+    private String handle = null;
 
 
-	@PostConstruct
-	public synchronized void init() {
-		try {
-			connect();
-		}
-		catch(Exception e) {
-			System.out.println("Could not connect to YAWL-Resource-Service.");
-		}
-	}
+    public PermanentWsSessionPool(WorkletGatewayClient connection, String username, String password) {
+        this.connection = connection;
+        this.username = username;
+        this.password = password;
+    }
 
 
-	public synchronized void connect() throws IOException {
-		if(isConnected()) {
-			disconnect();
-		}
-
-		try {
-			handle = connection.connect(username, password);
-			if (!connection.successful(handle)) {
-				handle = null;
-				throw new RuntimeException("Could not connect to the YAWL interface E!");
-			}
-		}catch(ConnectException exception){
-			System.out.println("Could not connect to the YAWL interface E!");
-		}
-	}
+    @PostConstruct
+    public synchronized void init() {
+        try {
+            connect();
+        } catch (Exception e) {
+            System.out.println("Could not connect to YAWL-Resource-Service.");
+        }
+    }
 
 
-	@PreDestroy
-	public synchronized void disconnect() throws IOException {
-		if(handle == null || connection == null) {
-			return;
-		}
+    public synchronized void connect() throws IOException {
+        if (isConnected()) {
+            disconnect();
+        }
 
-		try {
-			connection.disconnect(handle);
-		}catch(ConnectException e) {
-			System.out.println("Could not disconnect from the YAWL-Resource-Service.");
-		}
-		finally {
-			handle = null;
-		}
-	}
+        try {
+            handle = connection.connect(username, password);
+            if (!connection.successful(handle)) {
+                handle = null;
+                throw new RuntimeException("Could not connect to the YAWL interface E!");
+            }
+        } catch (ConnectException exception) {
+            System.out.println("Could not connect to the YAWL interface E!");
+        }
+    }
+
+
+    @PreDestroy
+    public synchronized void disconnect() throws IOException {
+        if (handle == null || connection == null) {
+            return;
+        }
+
+        try {
+            connection.disconnect(handle);
+        } catch (ConnectException e) {
+            System.out.println("Could not disconnect from the YAWL-Resource-Service.");
+        } finally {
+            handle = null;
+        }
+    }
 
 
     @Scheduled(fixedRate = 5000)
     public synchronized void refreshSessionHandle() throws IOException {
-		try {
-			String result = connection.checkConnection(handle);
-			if (!connection.successful(result)) {
-				reconnect();
-			}
-		} catch(ConnectException exception){
-			System.out.println("Could not connect to the YAWL interface E!");
-		}
+        try {
+            String result = connection.checkConnection(handle);
+            if (!connection.successful(result)) {
+                reconnect();
+            }
+        } catch (ConnectException exception) {
+            System.out.println("Could not connect to the YAWL interface E!");
+        }
     }
 
 
     @Scheduled(fixedRate = 10000)
     public synchronized void reconnect() throws IOException {
         disconnect();
-		connect();
+        connect();
     }
 
 
-	public synchronized boolean isConnected() {
-		return handle != null;
-	}
+    public synchronized boolean isConnected() {
+        return handle != null;
+    }
 
 
-	public synchronized void checkConnected() {
-		if(!isConnected()) {
-			throw new RuntimeException("No session handle available!");
-		}
-	}
+    public synchronized void checkConnected() {
+        if (!isConnected()) {
+            throw new RuntimeException("No session handle available!");
+        }
+    }
 
 
-	@Override
-	public synchronized WsSessionHandle getHandle() {
-		if(!isConnected()) {
-			try {
-				connect();
-			}
-			catch(Exception e) {
-				throw new RuntimeException("No session handle available!");
-			}
-		}
-		return new SimpleWsSessionHandle(handle);
-	}
+    @Override
+    public synchronized WsSessionHandle getHandle() {
+        if (!isConnected()) {
+            try {
+                connect();
+            } catch (Exception e) {
+                throw new RuntimeException("No session handle available!");
+            }
+        }
+        return new SimpleWsSessionHandle(handle);
+    }
 
 }

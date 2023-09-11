@@ -17,8 +17,11 @@
  */
 package org.yawlfoundation.yawldashboardbackend.session.workletservice;
 
+/**
+ * @author Robin Steinwarz
+ */
 public interface WsSessionPool {
 
-	WsSessionHandle getHandle();
+    WsSessionHandle getHandle();
 
 }

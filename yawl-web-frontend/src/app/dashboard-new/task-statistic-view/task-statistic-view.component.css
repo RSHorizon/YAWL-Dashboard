@@ -1,14 +1,15 @@
+/* @author Robin Steinwarz */
 .mat-grid-tile {
   border-radius: 2px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 3px;
 }
 
-.statistic-filter{
+.statistic-filter {
   padding: 0;
   margin: 0 0 .5em;
 }
 
-mat-grid-list{
+mat-grid-list {
   width: 100%;
 }
 

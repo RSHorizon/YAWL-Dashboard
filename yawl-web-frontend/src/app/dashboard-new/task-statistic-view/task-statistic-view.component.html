@@ -1,3 +1,4 @@
+<!-- @author Robin Steinwarz--->
 <div class="statistic-filter">
   <mat-form-field appearance="legacy">
     <mat-label>Select statistic range</mat-label>
@@ -51,15 +52,15 @@
         <div class="statistic-title-text">How do our resources perform on average on the selected task?</div>
         <div class="statistic-title-info">
           <fa-icon [fixedWidth]="true" icon="circle-info"
-                   matTooltip="This chart visualizes the average time it takes to complete the selected task ({{specificTaskStatistic}} for our resources."></fa-icon>
+                   matTooltip="This chart visualizes the average time it takes to complete the selected task ({{specificTaskStatistic}}) for our resources."></fa-icon>
         </div>
       </div>
       <div class="statistic-body ngx-charts-small-text">
         <div class="statistic-graph">
           <app-chart-capsule class="chart-capsule" [type]="'bar'"
-                             [datasets]="participantAvgPerformanceData.datasets"
-                             [labels]="participantAvgPerformanceData.labels"
-                             [options]="participantAvgPerformanceOptions"></app-chart-capsule>
+                             [datasets]="resourceAvgPerformanceData.datasets"
+                             [labels]="resourceAvgPerformanceData.labels"
+                             [options]="resourceAvgPerformanceOptions"></app-chart-capsule>
         </div>
       </div>
     </div>
@@ -78,9 +79,9 @@
       <div class="statistic-body ngx-charts-small-text">
         <div class="statistic-graph">
           <app-chart-capsule class="chart-capsule" [type]="'bar'"
-                             [datasets]="participantsProcessedInstancesData.datasets"
-                             [labels]="participantsProcessedInstancesData.labels"
-                             [options]="participantsProcessedInstancesOptions"></app-chart-capsule>
+                             [datasets]="resourcesProcessedInstancesData.datasets"
+                             [labels]="resourcesProcessedInstancesData.labels"
+                             [options]="resourcesProcessedInstancesOptions"></app-chart-capsule>
         </div>
       </div>
     </div>

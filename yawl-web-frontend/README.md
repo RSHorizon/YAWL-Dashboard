@@ -1,8 +1,8 @@
-# YAWL Web Frontend
+# YAWL Dashboard Frontend
 
 ## Start Requirements
 
-YAWL Web Admin is based on the Angular framework and Typescript and some other libraries.
+The YAWL Dashboard is based on the Angular framework and Typescript and some other libraries.
 The most libraries are downloaded automatically by the package manager npm. But for this to work, you have to install nodejs and angular-cli.
 
 1. Download the current version of [nodejs](https://nodejs.org/en/).
@@ -17,14 +17,14 @@ The most libraries are downloaded automatically by the package manager npm. But 
 2. Install all dependencies automatically under node_modules with `yarn install`.
 3. Start build process with `ng build --prod` and wait.
 4. All result files are in the directory `dist`.
-5. Copy all files from dist to a webspace.
+5. Copy all files from dist to a webspace. (Alternatively, it is possible to host the YAWL Dashboard Frontend as a static resource in the Backend. To achieve this, static files have to be copied into yawl-dashboard-backend/src/resources/static/*, before building the backend.)
 6. Configure the webspace, that it delivers the index.html file for GET-Path `/` and all 404 errors. This is due to the routing mechanism in YAWL Web Admin. [More about this routing mechanism called HTML5 History PushState](https://angular.io/guide/router#appendix-locationstrategy-and-browser-url-styles).
 7. Customize your configuration by editing `config.json`.
 
 
-## Development version
+## Deployment for development
 
-1. Goto root path of YAWL Web Admin. (E.g. `cd ~/yawl-web-frontend`)
+1. Goto root path of YAWL Dashboard frontend. (E.g. `cd ~/yawl-web-frontend`)
 2. Install all dependencies automatically under node_modules with `yarn install`.
 3. Start serve process with `ng serve` and wait.
 

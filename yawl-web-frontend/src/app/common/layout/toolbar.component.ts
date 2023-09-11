@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 /**
  * @author Philipp R. Thomas
@@ -6,8 +6,8 @@ import { Component } from '@angular/core';
 
 
 @Component({
-    selector: 'toolbar',
-    template: '<ng-content></ng-content>'
+  selector: 'toolbar',
+  template: '<ng-content></ng-content>'
 })
 export class ToolbarComponent {
 }

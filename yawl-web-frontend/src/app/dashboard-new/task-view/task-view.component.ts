@@ -7,6 +7,7 @@ import {NotifierService} from "angular-notifier";
 import {SpecificationDataContainer} from "../../yawl/resources/dto/specification-data-container.entity";
 import {featuresConfig} from "../../common/config/features-config";
 import {animate, state, style, transition, trigger} from "@angular/animations";
+
 /**
  * @author Robin Steinwarz
  */
@@ -24,11 +25,11 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
   ],
 })
 export class TaskViewComponent implements OnInit, AfterViewInit {
-  featuresConfig=featuresConfig;
+  featuresConfig = featuresConfig;
   @Input("specificationDataContainer") specificationDataContainer!: SpecificationDataContainer;
   @ViewChild(MatSort) sort: MatSort | undefined;
-  displayedColumns: string[] = ['color', 'name', 'decompositionOrder', 'avgOccurrencesPerWeek', 'automated',
-    'costResourceHour', 'maxQueueAge', 'maxTaskAge'];
+  displayedColumns: string[] = ['color', 'name', 'order', 'avgOccurrencesPerWeek', 'automated',
+    'costResourceHour', 'maxQueueAge', 'maxTaskAge', 'actions'];
   displayedColumnsWithExpand = ['expand', ...this.displayedColumns];
   expandedElement: {} | undefined;
   dataSource: MatTableDataSource<TaskStatistic> = new MatTableDataSource<TaskStatistic>();
@@ -50,7 +51,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
           return row.name;
         case 'automated':
           return "" + row.automated
-        case 'decompositionOrder':
+        case 'order':
           return row.minimalOrder
         case 'avgQueueTime':
           return row.avgQueueTime
@@ -68,7 +69,7 @@ export class TaskViewComponent implements OnInit, AfterViewInit {
           return row.minimalOrder;
       }
     };
-    if(this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS.length > 0){
+    if (this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS.length > 0) {
       this.specificTaskStatisticSelection = this.specificationDataContainer?.specificationStatistic!.taskStatisticDTOS[0].taskid;
     }
     this.dataSource.data.sort((a, b) => {

@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * The security configuration.
+ *
  * @author Philipp R. Thomas <philipp.thomas@floaz.de>
  * @editedBy Robin Steinwarz
  */
@@ -33,12 +34,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class YawlDashboardBackendApplication extends SpringBootServletInitializer {
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(YawlDashboardBackendApplication.class);
-	}
-	public static void main(String[] args) {
-		SpringApplication.run(YawlDashboardBackendApplication.class, args);
-	}
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(YawlDashboardBackendApplication.class);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(YawlDashboardBackendApplication.class, args);
+    }
 
 }

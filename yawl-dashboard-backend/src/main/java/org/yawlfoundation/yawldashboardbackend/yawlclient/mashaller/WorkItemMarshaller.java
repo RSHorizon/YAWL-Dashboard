@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -31,30 +32,31 @@ import org.yawlfoundation.yawldashboardbackend.yawlclient.model.Event;
 
 /**
  * ConsoleApplication.
+ *
  * @author Philipp Thomas <philipp.thomas@floaz.de>
  */
 public abstract class WorkItemMarshaller {
 
     public static List<WorkItemRecord> unmarshalWorkItems(String xml) throws JDOMException, IOException {
-		List<WorkItemRecord> set = new LinkedList<>();
+        List<WorkItemRecord> set = new LinkedList<>();
 
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		for(Element workItemElement : root.getChildren()) {
-			set.add(unmarshalWorkItem(workItemElement));
-		}
+        SAXBuilder builder = new SAXBuilder();
+        Document document = (Document) builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
+        for (Element workItemElement : root.getChildren()) {
+            set.add(unmarshalWorkItem(workItemElement));
+        }
 
-		return set;
-	}
+        return set;
+    }
 
 
     public static WorkItemRecord unmarshalWorkItem(String xml) throws JDOMException, IOException {
-		SAXBuilder builder = new SAXBuilder();
-		Document document = (Document) builder.build(new StringReader(xml));
-		Element root = document.getRootElement();
-		return unmarshalWorkItem(root);
-	}
+        SAXBuilder builder = new SAXBuilder();
+        Document document = (Document) builder.build(new StringReader(xml));
+        Element root = document.getRootElement();
+        return unmarshalWorkItem(root);
+    }
 
 
     public static WorkItemRecord unmarshalWorkItem(Element workItemElement) {
@@ -67,7 +69,7 @@ public abstract class WorkItemMarshaller {
         String specURI = workItemElement.getChildText("specuri");
         String enablementTime = workItemElement.getChildText("enablementTime");
         if (caseID != null && taskID != null && specURI != null &&
-            enablementTime != null && status != null) {
+                enablementTime != null && status != null) {
 
             wir = new WorkItemRecord(caseID, taskID, specURI, status);
             //wir.setExtendedAttributes(unmarshalWorkItemAttributes(workItemElement));
@@ -75,12 +77,12 @@ public abstract class WorkItemMarshaller {
             wir.setTaskName(workItemElement.getChildText("taskname"));
             wir.setDocumentation(workItemElement.getChildText("documentation"));
             wir.setAllowsDynamicCreation(workItemElement.getChildText(
-                                                              "allowsdynamiccreation"));
+                    "allowsdynamiccreation"));
             wir.setRequiresManualResourcing(workItemElement.getChildText(
-                                                           "requiresmanualresourcing"));
+                    "requiresmanualresourcing"));
             wir.setCodelet(workItemElement.getChildText("codelet"));
             wir.setDeferredChoiceGroupID(workItemElement.getChildText(
-                                                              "deferredChoiceGroupID"));
+                    "deferredChoiceGroupID"));
             wir.setSpecVersion(workItemElement.getChildText("specversion"));
             wir.setCompletionTimeMs(workItemElement.getChildText("completionTime"));
             wir.setEnablementTimeMs(workItemElement.getChildText("enablementTimeMs"));
@@ -93,7 +95,7 @@ public abstract class WorkItemMarshaller {
             wir.setTag(workItemElement.getChildText("tag"));
             wir.setCustomFormURL(workItemElement.getChildText("customform"));
 
-            String specid = workItemElement.getChildText("specidentifier") ;
+            String specid = workItemElement.getChildText("specidentifier");
             if (specid != null) wir.setSpecIdentifier(specid);
 
             String resStatus = workItemElement.getChildText("resourceStatus");
@@ -101,11 +103,11 @@ public abstract class WorkItemMarshaller {
 
             Element data = workItemElement.getChild("data");
             if ((null != data) && (data.getContentSize() > 0))
-                   wir.setDataList((Element) data.getContent(0));
+                wir.setDataList((Element) data.getContent(0));
 
             Element updateddata = workItemElement.getChild("updateddata");
             if ((null != updateddata) && (updateddata.getContentSize() > 0))
-                   wir.setUpdatedData((Element) updateddata.getContent(0));
+                wir.setUpdatedData((Element) updateddata.getContent(0));
 
             Element logPredicate = workItemElement.getChild("logPredicate");
             if (logPredicate != null) {
