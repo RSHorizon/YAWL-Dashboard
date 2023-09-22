@@ -752,7 +752,10 @@ public class WorkItemManagerImpl implements WorkItemManager {
         return tasks;
     }
 
+
+    private List<String> previousConditions;
     private Map<String, String> getTaskOrderingFromNet(YNet net) {
+        previousConditions = new ArrayList<>();
         return verticalSpecificationMovement(net, null, null, "");
     }
 
@@ -778,14 +781,17 @@ public class WorkItemManagerImpl implements WorkItemManager {
     }
 
     private void horizontalSpecificationMovement(YExternalNetElement yExternalNetElement, Map<String, String> taskOrdering, List<String> previousTasks, String orderingDepthString, int horizontalDepth) {
-        if (yExternalNetElement.getClass().getName().equals("org.yawlfoundation.yawl.elements.YCondition")) {
+        if (yExternalNetElement.getClass().getName().equals("org.yawlfoundation.yawl.elements.YCondition")
+                && !previousConditions.contains(yExternalNetElement.getID())) {
+            previousConditions.add(yExternalNetElement.getID());
             for (YExternalNetElement nextElement : yExternalNetElement.getPostsetElements()) {
                 horizontalSpecificationMovement(nextElement, taskOrdering, previousTasks, orderingDepthString, horizontalDepth);
             }
             return;
         }
-        if (previousTasks.contains(yExternalNetElement.getName())
-                || (!yExternalNetElement.getClass().getName().equals("org.yawlfoundation.yawl.elements.YCompositeTask")
+
+        if ((yExternalNetElement.getName() == null || previousTasks.contains(yExternalNetElement.getID())) ||
+                (!yExternalNetElement.getClass().getName().equals("org.yawlfoundation.yawl.elements.YCompositeTask")
                 && !yExternalNetElement.getClass().getName().equals("org.yawlfoundation.yawl.elements.YAtomicTask"))) {
             return;
         }
