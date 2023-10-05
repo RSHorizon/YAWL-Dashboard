@@ -59,10 +59,7 @@ public class PMIController {
                 && c.getSpecversion().equals(specversion)
                 && c.getId().equals(specificationID)).collect(Collectors.toList());
         String speckey = "";
-        if (keys.size() == 0) {
-            System.out.println("ERROR - specification key not found in loaded YAWL specifications.");
-            return null;
-        } else {
+        if (keys.size() != 0) {
             speckey = keys.get(0).getKey();
         }
 
@@ -76,7 +73,9 @@ public class PMIController {
         Map<String, Set<Resource>> roleRelatedResources = new HashMap<>();
         // Map all resource events to separate case objects
         List<CaseDTO> cases = new ArrayList<>();
-        mapEventsToCases(events, cases, speckey);
+        if(speckey != ""){
+            mapEventsToCases(events, cases, speckey);
+        }
 
         // Fix task order in cases
         Map<String, String> smallestOrders = new HashMap<>();
