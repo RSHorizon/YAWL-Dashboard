@@ -55,12 +55,13 @@ public class PMIController {
 
         // Retrieve speckey from specId
         List<Specification> specifications = interfaceEManager.getAllSpecifications();
-        List<Specification> keys = specifications.stream().filter(c -> c.getUri().equals(uri)
+        List<Specification> relatedSpecificationInstances = specifications.stream().filter(c -> c.getUri().equals(uri)
                 && c.getSpecversion().equals(specversion)
                 && c.getId().equals(specificationID)).collect(Collectors.toList());
         String speckey = "";
-        if (keys.size() != 0) {
-            speckey = keys.get(0).getKey();
+        HashMap<String, Boolean> equivalentSpeckeys = new HashMap<String, Boolean>();
+        if (relatedSpecificationInstances.size() != 0) {
+            speckey = relatedSpecificationInstances.get(0).getKey();
         }
 
         // Retrieve all resource events and information
@@ -74,7 +75,7 @@ public class PMIController {
         // Map all resource events to separate case objects
         List<CaseDTO> cases = new ArrayList<>();
         if(speckey != ""){
-            mapEventsToCases(events, cases, speckey);
+            mapEventsToCases(events, cases, speckey, specId, equivalentSpeckeys);
         }
 
         // Fix task order in cases
@@ -151,9 +152,17 @@ public class PMIController {
         return specificationStatistic;
     }
 
-    private void mapEventsToCases(List<Event> events, List<CaseDTO> cases, String speckey) {
+    private void mapEventsToCases(List<Event> events, List<CaseDTO> cases, String speckey, YSpecificationID specId, HashMap<String, Boolean> equivalentSpeckeys) {
         events.forEach(event -> {
-            if (event.getSpeckey().equals(speckey)) {
+            boolean eventIsRelated = false;
+            if(!equivalentSpeckeys.containsKey(event.getSpeckey())){
+                YSpecificationID specKeyYID = resourceLogManager.getSpecificationIdentifiers(event.getSpeckey());
+                equivalentSpeckeys.put(event.getSpeckey(), specKeyYID.equals(specId));
+            }
+            if (event.getSpeckey().equals(speckey) || equivalentSpeckeys.get(event.getSpeckey())) {
+                eventIsRelated = true;
+            }
+            if (eventIsRelated) {
                 String pureCaseId = event.getCaseid().split("\\.")[0];
                 // Ensure case object exists
                 if (cases.stream().noneMatch(caseDTOInstance -> caseDTOInstance.getId().equals(event.getCaseid()
